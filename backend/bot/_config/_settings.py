@@ -8,8 +8,6 @@ Structure:
     - _TESSERACT
     - _GOOGLE
 
-
-
 Usage: from config._settings import *
 """
 
@@ -24,7 +22,8 @@ _ENV = {
 }
 
 _PATH = {
-    '_IMAGES_FOLDER': 'images/',
+    '_IMAGES_FOLDER': '../images/',
+    '_SCREENSHOT_FOLDER': '../images/screenshots/'
 }
 
 
@@ -37,12 +36,12 @@ _TESSERACT = {
 
 
 _GOOGLE = {
-    '_JSON': 'rokbot-277810-2169d721e218.json',
+    '_JSON': '../_config/rok_service_account_googledrive.json',
     '_SCOPE': [
         'https://spreadsheets.google.com/feeds',
         'https://www.googleapis.com/auth/drive',
     ],
-    '_URL': [
-        '_TEST': 'https://docs.google.com/spreadsheets/d/1zwHf6FEcqb_vyHC-3uSlzzE0ln8zoMsW5-YwNzTryLU/edit#gid=0'
-    ]
+    '_URLS': {
+        'TEST': 'https://docs.google.com/spreadsheets/d/1zwHf6FEcqb_vyHC-3uSlzzE0ln8zoMsW5-YwNzTryLU/edit#gid=0'
+    }
 }

@@ -61,8 +61,12 @@ from _settings import _ENV, _PATH, _TESSERACT
 # pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
 # tessdata_dir_config = '--tessdata-dir "C:\\Program Files\\Tesseract-OCR\\tessdata"'
 
-pytesseract.pytesseract.tesseract_cmd = _TESSERACT['_EXE']
-tessdata_dir_config = _TESSERACT['_DATA']
+pytesseract.pytesseract.tesseract_cmd = '/usr/local/Cellar/tesseract/4.1.1/bin/tesseract'
+tessdata_dir_config = '--tessdata-dir "/usr/local/Cellar/tesseract-lang/4.0.0/share/tessdata/"'
+
+
+# pytesseract.pytesseract.tesseract_cmd = _TESSERACT['_EXE']
+# tessdata_dir_config = _TESSERACT['_DATA']
 
 ##@@@@========================================================================
 ##@@@@ Functions

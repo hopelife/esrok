@@ -55,10 +55,13 @@
 #### 리눅스, 맥
  
 ```bash
-$ pip install virtualenv  // 가상환경 모듈 설치
-$ virtualenv vrok  // 가상환경 만들기
-$ source vrok/bin/activate  // 가상환경 활성화
-(venv) $ pip list  // 설치 패키지 목록 확인
+/Volumes/data/dev/SynologyDrive/projects$ mkdir _venv
+/Volumes/data/dev/SynologyDrive/projects$ cd _venv
+/Volumes/data/dev/SynologyDrive/projects/_venv$ pip install virtualenv  // 가상환경 모듈 설치
+/Volumes/data/dev/SynologyDrive/projects/_venv$ virtualenv rok  // 가상환경 만들기
+/Volumes/data/dev/SynologyDrive/projects/_venv$ source rok/bin/activate  // 가상환경 활성화
+(venv) /Volumes/data/dev/SynologyDrive/projects/_venv$ cd ../ESROK
+(venv) /Volumes/data/dev/SynologyDrive/projects/ESROK$ pip list  // 설치 패키지 목록 확인
 ```
  
 #### 윈도우
@@ -113,7 +116,7 @@ git pull origin master
  
 - GUI 
 ```
-pip install pyautogui
+pip3 install pyautogui
 ```
  
  
@@ -125,7 +128,7 @@ pip uninstall opencv-contrib-python
 pip uninstall opencv-python
  
 # 가상환경인 경우
-pip install opencv-contrib-python==3.4.2.16
+pip3 install opencv-contrib-python==3.4.2.16
  
 # 가상환경이 아닌 경우
 pip install --user opencv-contrib-python==3.4.2.16
@@ -134,8 +137,8 @@ pip install --user opencv-contrib-python==3.4.2.16
 #### gspread / oauth2client
 ```
 # 가상환경인 경우
-pip install gspread
-pip install --upgrade oauth2client
+pip3 install gspread
+pip3 install --upgrade oauth2client
  
 # 가상환경이 아닌 경우
 pip install --user gspread
@@ -145,7 +148,30 @@ pip install --user --upgrade oauth2client
 #### pytesseract
  
 - https://github.com/UB-Mannheim/tesseract/wiki
- 
+
+##### osx
+
+```
+
+
+brew install tesseract
+
+
+sudo chown -R macmini /usr/local/share/Library/Caches/Yarn/v4
+
+
+brew install tesseract-lang
+
+brew list tesseract
+
+
+
+/usr/local/Cellar/tesseract/4.1.1/bin/tesseract
+/usr/local/Cellar/tesseract-lang/4.0.0/share/tessdata/
+
+```
+
+
 ```
 pip install pytesseract
 ```

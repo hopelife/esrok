@@ -58,6 +58,17 @@ def wait_match_image(template, image=None, duration=0):
 
 
 
+
+def do_verification_rewards():
+    if not wait_match_image(template, image):
+        return True
+    else:
+        return False
+
+
+def set_rok_ui():
+    pass
+
 ##@@@-------------------------------------------------------------------------
 ##@@@ Account / Character
 

@@ -26,11 +26,13 @@ Usage: import _basics
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ Basic Libraries
-
-
+import sys
+import time
+import random
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ Installed(conda/pip) Libraries
+import pyautogui as pag
 
 
 ##@@@-------------------------------------------------------------------------
@@ -55,17 +57,28 @@ Usage: import _basics
 ##@@@-------------------------------------------------------------------------
 ##@@@ Basic Functions
 
-def delay(interval=_ENV['_CLICK_INTERVAL'], random=False):
+## @@@@@@
+# def do_infinite_loop(callback, hotkey=''):
+#     while True:
+#         callback()
+#         print("All done!")
+
+#     if cv2.waitKey(0)
+#         sys.exit()
+
+
+
+def delay(interval=_ENV['_CLICK_INTERVAL'], rand=False):
     """
     Brief: delay intervals(sec)
     Args:
         interval (int): delay interval[sec].
-        random (boolean): generate random time
+        rand (boolean): generate random time
     Returns:
     Note:
         import time
     """
-    if random == True:
+    if rand == True:
         time.sleep(random.uniform(interval + 0.0101, interval+ 0.0299))
     else:
         time.sleep(interval)

@@ -40,6 +40,24 @@ _UI = emulators[_ENV['_EMULATOR']]
 ##@@@@========================================================================
 ##@@@@ Functions
 
+
+def wait_match_image(template, image=None, duration=0):
+    center = get_center_match_image(template, image)
+    _ITV_MATCH_IMAGE = 0.1
+    if duration == 0:
+        return center
+    else:
+        n = duration // _ITV_MATCH_IMAGE
+        for _ in range(0, 15):
+            center = get_center_match_image(template, image)
+            if center == False:
+                delay(_ITV_MATCH_IMAGE)
+            else:
+                return center
+    return False
+
+
+
 ##@@@-------------------------------------------------------------------------
 ##@@@ Account / Character
 

@@ -134,7 +134,7 @@ def click_mouse_series(positions, interval=_ENV['_CLICK_INTERVAL'], clicks=1):
     """
     for position in positions:
         for _ in range(0, clicks):
-            clickMouse(position)
+            click_mouse(position)
             time.sleep(interval)
 
 
@@ -167,6 +167,29 @@ def click_mouse2(position=[0, 0], button='LEFT', duration=_ENV['_MOUSE_DURATION'
     pag.click(clicks=2)
 
 
+def scrollMouse():
+    """
+    Brief: scrollMouse(마우스 스크롤)
+    Args:
+    """
+    pass
+
+
+def press_keys():
+    """
+    Brief: pressKeys
+    Args:
+    """
+    pass
+
+
+def press_hotkey():
+    """
+    Brief: pressHotKey
+    Args:
+    """
+    pass
+
 def down_mouse(callback, position=[0, 0], duration=1):
     """
     Brief: down Mouse(마우스 다운 - 액션 - 업)
@@ -192,30 +215,19 @@ def drag_in_map(relPoint=[0, 0], zeroPoint=[_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2
         duration (int):
     """
     pag.moveTo(zeroPoint[0], zeroPoint[1], duration=0.0)
-    pag.dragRel(relPoint[0], relPoint[1], delay)
+    pag.dragRel(relPoint[0], relPoint[1], duration=0.2, button='left')
 
 
-def scrollMouse():
-    """
-    Brief: scrollMouse(마우스 스크롤)
-    Args:
-    """
-    pass
-
-
-def press_keys():
-    """
-    Brief: pressKeys
-    Args:
-    """
-    pass
-
-
-def press_hotkey():
-    """
-    Brief: pressHotKey
-    Args:
-    """
+def go_by_coordinate(location=[0,0]):
+    positions = [
+        [670, 38],  ## 좌표로 찾기 버튼
+        [686, 216],  ## Server 필드
+        [924, 216],  ## X 좌표 필드
+        [1168, 216],  ## Y 좌표 필드
+        [50, 988],  ## 텍스트 입력 필드
+        [1330, 214]  ## 좌표로 가기 버튼
+    ]
+    click_mouse_series(positions, 2)
     pass
 
 
@@ -223,5 +235,10 @@ def press_hotkey():
 ##@@@@ Execute Test
 if __name__ == "__main__":
     time.sleep(5)
-    get_clipboard()
-    pass
+    go_by_coordinate()
+    #get_clipboard()
+    #drag_in_map([_ENV['_MAX_X']//2, 0])
+    # print(_ENV['_MAX_X']//2)
+    # pag.moveTo(_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2, duration=0.0)
+    # pag.dragRel(500, 400, duration=0.2, button='left')
+    # pass

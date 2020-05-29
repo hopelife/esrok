@@ -27,13 +27,14 @@ Usage: import _basics
 ##@@@-------------------------------------------------------------------------
 ##@@@ Basic Libraries
 import sys
+import os
 import time
 import random
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ Installed(conda/pip) Libraries
 import pyautogui as pag
-
+import pyperclip
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ User Libraries
@@ -45,7 +46,8 @@ import pyautogui as pag
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ External(.json/.py)
-
+sys.path.append(os.path.join(os.path.dirname(sys.path[0]), '_config'))
+from _settings import _ENV, _PATH
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ internal
@@ -66,6 +68,10 @@ import pyautogui as pag
 #     if cv2.waitKey(0)
 #         sys.exit()
 
+
+def get_clipboard(position=[1002, 346]):
+    click_mouse(position)
+    print(pyperclip.paste())
 
 
 def delay(interval=_ENV['_CLICK_INTERVAL'], rand=False):
@@ -216,4 +222,6 @@ def press_hotkey():
 ##@@@@========================================================================
 ##@@@@ Execute Test
 if __name__ == "__main__":
+    time.sleep(5)
+    get_clipboard()
     pass

@@ -171,8 +171,208 @@ def insert_cell(dic={}, first=[], header=0, sheet=_SHEET, file=_FILE):
 
 
 
+# spreadsheetId = "###"  # Please set the Spreadsheet ID.
+# sheetName = "Sheet1"  # Please set the sheet name.
+
+# sheet_data = [{
+#     "timestamp": "09-04-2019",
+#     "value": "10.0",
+#     "company_name": "Xbox",
+#     "product": "Buy"
+# }, {
+#     "timestamp": "09-03-2019",
+#     "value": "2.0",
+#     "company_name": "something",
+#     "product": "Sell"
+# }]
+
+# header_to_key = {
+#     'Date': 'timestamp',
+#     'Company_Name': 'company_name',
+#     'Traffic': 'value',
+#     'Product': 'product'
+# }
+
+# client = gspread.authorize(credentials)
+# spreadsheet = client.open_by_key(spreadsheetId)
+# worksheet = spreadsheet.worksheet(sheetName)
+
+# headers = worksheet.row_values(1)
+# put_values = []
+# for v in sheet_data:
+#     temp = []
+#     for h in headers:
+#         temp.append(v[header_to_key[h]])
+#     put_values.append(temp)
+# spreadsheet.values_append(sheetName, {'valueInputOption': 'USER_ENTERED'}, {'values': put_values})
+
+
+
+def fill_google_rows(worksheet='', sheet_data={}, header_to_key={}, NUM_HEADER_ROW=1):
+    headers = worksheet.row_values(NUM_HEADER_ROW)
+    print(headers)
+    put_values = []
+    for v in sheet_data:
+        temp = []
+        for h in headers:
+            temp.append(v[header_to_key[h]])
+        put_values.append(temp)
+    print(put_values)
+    spreadsheet.values_append(sheetName, {'valueInputOption': 'USER_ENTERED'}, {'values': put_values})
+
+
+def create_google_rows2(worksheet='', sheet_data={}, START_CELL=[1,1]):
+    headers = [key for key, val in sheet_data[0].items()]
+
+    # put_values = headers.copy()
+    put_values = []
+    put_values.append(headers)
+    for v in sheet_data:
+        temp = []
+        for h in headers:
+            temp.append(v[h])
+        put_values.append(temp)
+    print(put_values)
+    spreadsheet.values_append(sheetName, {'valueInputOption': 'USER_ENTERED'}, {'values': put_values})
+
+
+def update_sheet(ws, rows, left=1, top=1):
+    """
+    updates the google spreadsheet with given table
+    - ws is gspread.models.Worksheet object
+    - rows is a table (list of lists)
+    - left is the number of the first column in the target document (beginning with 1)
+    - top is the number of first row in the target document (beginning with 1)
+    """
+
+    # number of rows and columns
+    num_lines, num_columns = len(rows), len(rows[0])
+
+    cell_list = ws.range(
+        gspread.utils.rowcol_to_a1(left,top)+':'+colrow_to_A1(left+num_columns-1, top+num_lines-1)
+    )
+
+    # modifying the values in the range
+
+    for cell in cell_list:
+        val = rows[cell.row-top][cell.col-left]
+        cell.value = val
+
+    # update in batch
+    ws.update_cells(cell_list)
+
 ##@@@@========================================================================
 ##@@@@ Execute Test
 if __name__ == "__main__":
-  #find_firstHeaderCell(file=open_google_sheet('TEST'))
-  find_firstHeaderCell(file=open_google_sheet('https://docs.google.com/spreadsheets/d/1zwHf6FEcqb_vyHC-3uSlzzE0ln8zoMsW5-YwNzTryLU/edit#gid=0'))
+    #find_firstHeaderCell(file=open_google_sheet('TEST'))
+    #find_firstHeaderCell(file=open_google_sheet('https://docs.google.com/spreadsheets/d/1zwHf6FEcqb_vyHC-3uSlzzE0ln8zoMsW5-YwNzTryLU/edit#gid=0'))
+    #spreadsheetId = "###"  # Please set the Spreadsheet ID.
+    #sheetName = "Sheet1"  # Please set the sheet name.
+
+    # 스프레스시트 문서 가져오기 
+    #spreadsheet = gc.open_by_url(_GOOGLE['_URLS']['TEST'])
+
+    # 시트 선택하기
+    # _SHEET = doc.worksheet('crop')
+    #_SHEET = 'crop'
+    sheetName = 'test'
+
+    spreadsheet = gc.open_by_url(_GOOGLE['_URLS']['TEST'])
+    worksheet = spreadsheet.worksheet(sheetName)
+
+    sheet_data = [{
+        "timestamp": "09-04-2019",
+        "value": "10.0",
+        "company_name": "Xbox",
+        "product": "Buy"
+    }, {
+        "timestamp": "09-03-2019",
+        "value": "2.0",
+        "company_name": "something",
+        "product": "Sell"
+    }]
+
+    header_to_key = {
+        'Date': 'timestamp',
+        'Company_Name': 'company_name',
+        'Traffic': 'value',
+        'Product': 'product'
+    }
+
+  # client = gspread.authorize(credentials)
+  # spreadsheet = client.open_by_key(spreadsheetId)
+  # worksheet = spreadsheet.worksheet(sheetName)
+
+#   headers = worksheet.row_values(1)
+#   print(headers)
+#   put_values = []
+#   for v in sheet_data:
+#       temp = []
+#       for h in headers:
+#           temp.append(v[header_to_key[h]])
+#       put_values.append(temp)
+#   print(put_values)
+#   spreadsheet.values_append(sheetName, {'valueInputOption': 'USER_ENTERED'}, {'values': put_values})
+
+
+
+
+
+    # create_google_rows2(worksheet, sheet_data)
+
+
+
+
+
+
+
+    table = [['one', 'two', 'three'], [1, 2, 3]]
+
+    # you may need to resize your worksheet so it have the neccessary cells
+    # ws.resize(len(table),len(table[0]))
+
+    update_sheet(worksheet, table, 3, 3)
+
+
+def complete_quest():
+	pass
+
+
+def do_event():
+	pass
+
+
+def record_event_schedule(unit='DAY, WEEK'):
+	pass
+
+
+
+
+
+def write_villages_caves()
+	pass
+
+def find_villages_caves(center='', viewMode='', type=''):
+	pass
+
+
+def record_alliance_members(alliance='name/ranking', grade):
+	pass
+	
+	
+def record_alliance_members_by_ranking(ranking, grade):
+	go_alliance_record()
+	go_members_grade()
+	count_members()
+	get_members_info()
+	fill_sheet_cells()
+	pass		
+
+def record_alliance_members_by_name(name, grade):
+	pass
+
+
+
+
+
+Date	Company_Name      Traffic      Product

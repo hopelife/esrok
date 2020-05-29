@@ -269,6 +269,414 @@ def doCallbackSeries(start, cbs, end):
     print("I'm doCallbackSeries, Now End===================")
 
 
+
+##==============================
+from helpers import *
+
+_EMULATOR_ = 'ldplayer'
+_GIFT_MAX = 20
+_AVAST_POPUP = [1900, 900]
+_ZOOM_NO = 8
+_ZOOM_WHEEL = 100
+
+_SCREEN = [1920, 1080]
+_DELAY_CLICK = 2
+_CENTER = [_SCREEN[0]//2, _SCREEN[1]//2]
+_AREA_MARGIN = 50
+
+
+
+## 에뮬레이터 켜기
+def turn_on(emulator=_EMULATOR_):
+    if emulator == 'bluestack':
+        double_click(emulators[emulator]['location']['icon_wallpaper'])
+        time.sleep(10)
+        click([1000, 500])
+        time.sleep(30)
+        ## full screen
+        pag.press('f11')
+        time.sleep(120)
+        pag.press('f11')
+    elif emulator == 'ldplayer':
+        double_click(emulators[emulator]['location']['icon_wallpaper'])
+        time.sleep(emulators[emulator]['delay']['loading'])
+        ## avast popup 닫기
+        click(_AVAST_POPUP)
+
+        click(emulators[emulator]['location']['icon_rok'])
+        time.sleep(emulators[emulator]['delay']['loading'])
+        time.sleep(emulators[emulator]['delay']['loading'])
+        click(emulators[emulator]['menubar']['max'])
+        # time.sleep(120)
+        # pag.press('f11')
+
+    ## 메뉴 버튼 펼치기!!! (로딩후 바로 디폴트값으로 변경!!!)
+    click(emulators[emulator]['rok_main_menu']['menus'])
+
+
+## view mode가 map인가?
+def is_view_map():
+    pass
+
+
+## view mode를 castle
+def toggle_view_castle():
+    if is_view_map():
+        click(emulators[emulator]['rok_main_menu']['zoom'])
+
+
+
+## 도시 줌인
+def zoom_city(nth=_ZOOM_NO, emulator=_EMULATOR_):
+    ## zoom mode 확인!!!
+    time.sleep(3)
+    #toggle_view_castle()
+    ## 화면 중앙으로 마우스 포인터 이동
+    #pag.press('f11')
+    #time.sleep(1)
+
+    pag.moveTo(_CENTER[0], _CENTER[1], duration=0.0)
+    pag.rightClick()
+
+    #pag.moveTo(_CENTER[0], _CENTER[1], duration=0.0)
+    pag.keyDown('ctrl')
+    time.sleep(2)
+    # pag.mouseDown()
+    #pag.moveTo(_CENTER[0], _CENTER[1] + _ZOOM_WHEEL)
+    pag.scroll(_ZOOM_WHEEL)
+    # for s in range(100):
+    #     pag.scroll(-1)
+    #     time.sleep(0.5)
+    #pag.dragRel(0, _ZOOM_WHEEL)
+    # pag.mouseUp()
+    #pag.click()
+    #time.sleep(1)
+    
+    #time.sleep(0.1)
+    #pag.scroll(_ZOOM_WHEEL)
+    time.sleep(0.1)
+    pag.keyUp('ctrl')
+
+    # pag.keyDown('shift')
+    # time.sleep(0.1)
+    # for _ in range(0, nth):
+    #     # 설정에서 단축키(축소) 지정 확인@@@@@@
+    #     #pag.hotkey('shift', '-')
+    #     pag.press('-')
+    #     time.sleep(3)
+    
+    # pag.keyUp('shift')
+
+
+## 도시 줌인
+def zoom_kingdom(nth=_ZOOM_NO, emulator=_EMULATOR_):
+    ## zoom mode 확인!!!
+    time.sleep(3)
+    pag.moveTo(_CENTER[0], _CENTER[1], duration=0.0)
+    pag.rightClick()
+
+    for _ in range(0, 300):
+        #time.sleep(2)
+        #설정에서 단축키(축소) 지정 확인@@@@@@
+        pag.hotkey('shift', '-')
+        #time.sleep(2)
+
+
+## 좌표로 지도 이동
+def go_by_location(location=[0, 0], viewmode='kingdom'):
+    if viewmode == 'kingdom':
+        zoom_kingdom()
+        time.sleep(3)
+        input_coordinate(location)
+    elif viewmode == 'alliance':
+        zoom_kingdom()
+        time.sleep(3)
+        input_coordinate(location)
+    elif viewmode == 'castle':
+        zoom_kingdom()
+        time.sleep(3)
+        input_coordinate(location)
+
+    click([1284, 235])
+    click([1284, 235])
+    
+
+## 이동할 좌표 입력
+def input_coordinate(location=[0, 0]):
+    time.sleep(3)
+    click([662, 62], 0)
+    #확인!!! textArea 있는지
+    time.sleep(1)
+
+    click([902, 235], 0)
+    time.sleep(1)
+    click([100, 980], 0)
+    time.sleep(0.5)
+    #확인!!! textArea 있는지
+    pag.typewrite(str(location[0]))
+
+    time.sleep(2)
+    click([1116, 235], 0)
+    time.sleep(1)
+    click([1116, 235], 0)
+    time.sleep(1)
+
+    click([100, 980], 0)
+    time.sleep(0.5)
+    pag.typewrite(str(location[1]))
+    #pag.typewrite('345')
+    time.sleep(2)
+
+
+## 캐릭터 로그인
+def login_character(nick, emulator=_EMULATOR_):
+  time.sleep(1)
+  click(emulators[emulator]['rok_main_menu']['profile'])
+  time.sleep(3)  
+  click(emulators[emulator]['rok_profiles']['settings'])
+  time.sleep(3) 
+  click(emulators[emulator]['rok_settings']['character_management'])
+  time.sleep(3)
+  click(emulators[emulator]['rok_character_management_icons'][get_character_index(nick)])
+  time.sleep(3)
+  click(emulators[emulator]['rok_character_login_icons']['yes'])
+  time.sleep(time.sleep(emulators[emulator]['delay']['loading']))
+
+  ## 메뉴 버튼 펼치기!!! (로딩후 바로 디폴트값으로 변경!!!)
+  click(emulators[emulator]['rok_main_menu']['menus'])
+
+  return 0
+
+
+## 빌딩 클릭
+def click_building(nick='천년왕국', building='farm'):
+    zoom_city()
+    time.sleep(2)
+    #building_index = get_building_index(nick)
+    click(get_building_location(nick, building))
+    time.sleep(2)
+
+
+## 도시 자원 채취
+def collect_city_resources(nick='천년왕국'):
+    click_building(nick, 'farm')
+
+    #buildings = ['farm', 'lumber_mill', 'quarry', 'goldmine']
+    buildings = ['lumber_mill', 'quarry', 'goldmine']
+    for building in buildings:
+        click(get_building_location(nick, building))
+        time.sleep(2)
+
+
+
+
+def send_troop(troop='new', location=''):
+    pass
+
+
+
+def gather_resource(resource='food', troop='new', levelup=0, emulator=_EMULATOR_):
+
+    if resource == 'food':
+        place = 'cropland'
+    elif resource == 'wood':
+        place = 'logging_camp'
+    elif resource == 'stone':
+        place = 'stone_deposit'
+    elif resource == 'gold':
+        place = 'gold_deposit'
+    else:
+        place = resource
+
+    time.sleep(1)
+    ## zoom mode 확인: default = castle  *map
+    click(emulators[emulator]['rok_main_menu']['zoom'])
+    time.sleep(3)
+    click(emulators[emulator]['rok_main_menu']['search'])
+    time.sleep(3)
+    click(emulators[emulator]['rok_search'][place]['icon'])
+    time.sleep(3)
+
+
+    ## 자원지가 존재하는지 확인!!! opencv ()
+
+    ## level up(plus)
+    for _ in range(0, levelup):
+        click(emulators[emulator]['rok_search'][place]['plus'])
+        time.sleep(1)
+
+    click(emulators[emulator]['rok_search'][place]['search'])
+
+
+    ## zoom mode : map mode -> castle mode
+    click(emulators[emulator]['rok_main_menu']['zoom'])
+    time.sleep(3)
+    click(_CENTER)
+    time.sleep(3)
+
+    click(emulators[emulator]['rok_search']['gather'])
+    time.sleep(3)
+
+    if troop == 'old':
+        click(emulators[emulator]['troop_queues'][0]['march'])
+    elif troop == 'new':  ## 부대 지정!!!!!
+        click(emulators[emulator]['new_troop']['icon'])
+        time.sleep(3)
+        #click(emulators[emulator]['new_troop']['1'])
+        click(emulators[emulator]['new_troop']['minus'])
+        time.sleep(3)
+        click(emulators[emulator]['new_troop']['march'])
+
+
+def defeat_barbarian_troops():
+    pass
+
+
+
+## 연맹 선물 받기
+def receive_alliance_gifts(emulator=_EMULATOR_):
+    ## 메뉴 버튼 펼치기!!! (로딩후 바로 디폴트값으로 변경!!!)
+    # click(emulators[emulator]['rok_main_menu']['menus'])
+    click(emulators[emulator]['alliance']['icon'])
+    time.sleep(3)
+    click(emulators[emulator]['alliance']['gifts'])
+    time.sleep(3)
+
+    # 희귀 선물
+    click(emulators[emulator]['alliance_gifts']['tab_rare'])
+    time.sleep(2)
+
+    for _ in range(0, _GIFT_MAX):
+        click(emulators[emulator]['alliance_gifts']['bottom_claim'])
+        time.sleep(1)
+
+    loc = emulators[emulator]['alliance_gifts']['top_claim']
+    for i in range(0, 4):
+        click([loc[0], loc[1] + 140*i])
+        time.sleep(1)
+
+
+    # 일반 선물
+    click(emulators[emulator]['alliance_gifts']['tab_normal'])
+    time.sleep(2)
+    click(emulators[emulator]['alliance_gifts']['claim_all'])
+    time.sleep(2)
+    click(emulators[emulator]['alliance_gifts']['confirm'])
+    time.sleep(2)
+
+    click(emulators[emulator]['alliance_gifts']['close'])
+    time.sleep(2)
+    click(emulators[emulator]['alliance']['close'])
+
+
+### 계정 생성
+def create_new_character(server=''):
+    pass
+
+
+### 안개 걷어내기
+def recover_fog():
+    pass
+
+
+### 신비의 동굴 탐색
+def explore_mysterious_cave(coord=[0,0]):
+    click(coord)
+    time.sleep(1)
+    click(_CENTER)
+    coord1 = compare_image_area('images/btn_mysteriousCave_investigate_1186_660_260_82.png')
+    if coord1:
+        click(coord1)
+        time.sleep(2)
+        coord2 = compare_image_area('images/btn_mysteriousCave_send_1326_224_252_82.png')
+        if coord2:
+            click(coord2)
+    time.sleep(2)
+
+
+
+### 부족 선물 얻기
+def receive_tribal_village_gift(coord=[0,0]):
+    click(coord)
+    time.sleep(1)
+    click(_CENTER)
+    time.sleep(0.1)
+    pag.click(_CENTER[0], _CENTER[1] - 200)
+    time.sleep(1)
+
+
+
+### 탐사 보고로 부터 성지, 관문 등 안개 해제, 부족 선물 얻기, 신비의 동굴 탐색(!!!)
+def recover_special_site_from_mail():
+    pass
+
+
+## 자기 도시로 돌아가기
+def go_home():
+    click([140, 940], 1)
+    click([140, 940], 1)
+
+
+### 작업 시간 지정!!!
+
+
+
+
+###
+# verificatoin
+
+
+
+### 동시 접속 감지 및 해결!!!
+
+
+
+####################################
+if __name__ == "__main__":
+    #turn_on(_EMULATOR_)
+    #zoom_city()
+    #zoom_kingdom()
+    #go_by_location([160, 120])
+
+    # time.sleep(3)
+    # click([100, 980])
+    # time.sleep(2)
+    # #확인!!! textArea 있는지
+    # #pag.press(str(location[0]))
+    # # pag.press('backspace')
+    # # time.sleep(2)
+    # # pag.press('backspace')
+    # pag.typewrite('12')
+    # time.sleep(2)
+
+    #login_character('천년왕국', _EMULATOR_)
+    #gather_resource('wood', 'old')
+    #gather_resource('wood', 'new')
+    #receive_alliance_gifts()
+    #click_building('천년왕국', 'alliance_center')
+    #collect_city_resources('천년왕국')
+
+
+    for i in range(0, 2):
+        go_by_location([160*(i+1), 120])
+        for _ in range(0, 15):
+            #go_home()
+            # time.sleep(1)
+            zoom_kingdom()
+            time.sleep(3)
+            #coord = compare_image_area('images/_caveTest.png')
+            coord = compare_image_area('images/_villageTest1.png')
+            #coord = compare_image_area('images/_mask_mysteriousCaveUninvestigated_.png')
+            time.sleep(2)
+            if coord:
+                receive_tribal_village_gift(coord)
+                # explore_mysterious_cave(coord)
+                # time.sleep(2)
+                # #go_home()
+                # time.sleep(1)
+
+
+
 ##@@@@========================================================================
 ##@@@@ Execute Test
 if __name__ == "__main__":
@@ -294,3 +702,6 @@ if __name__ == "__main__":
 
 
     #doCallbackSeries(starter, [cb1, cb2, cb3], ender)
+
+
+

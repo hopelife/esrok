@@ -28,6 +28,7 @@ Usage: import
 ##@@@ Basic Libraries
 import os
 import sys
+import time
 import numpy as np
 
 ##@@@-------------------------------------------------------------------------
@@ -74,7 +75,7 @@ tessdata_dir_config = '--tessdata-dir "/usr/local/Cellar/tesseract-lang/4.0.0/sh
 ##@@@-------------------------------------------------------------------------
 ##@@@ Basic Functions
 
-def get_image(image, color='COLOR'):
+def get_image(image=None, color='COLOR', show=False):
     """
     Brief: file path or screen area => image
     Args:
@@ -90,9 +91,16 @@ def get_image(image, color='COLOR'):
         print('local image')
     elif type(image) is list: ## scren selected box
         img = snap_screenshot(image)
-        print('screen image')
+        print('screen area image')
     else: ## image data are none or wrong
-        return []
+        img = snap_screenshot()
+        print('full screen image')
+        #return []
+
+    if show:
+        cv2.imshow('image', img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     return img
 
@@ -199,7 +207,7 @@ def get_center_match_image(template, offset=[0, 0], image=None, mask=None, preci
     center = match_image_box(template, image, mask, precision, method)
     if center:
         point = [center[0] + offset[0], center[1] + offset[1]]
-        clickMouse(point)
+        click_mouse(point)
         return point
     else:
         return False
@@ -208,6 +216,15 @@ def get_center_match_image(template, offset=[0, 0], image=None, mask=None, preci
 def match_image_box(template, image=None, mask=None, precision=0.9, method=cv2.TM_CCOEFF_NORMED, show=False, multi=0):
     img = get_image(image)
     tpl = get_image(template)
+
+    # cv2.imshow('image', img)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
+    # cv2.imshow('tpl', tpl)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
     """
     Brief:
         - 매칭 되는 이미지(>precision) 중앙 좌표 반환, 없으면 False
@@ -231,7 +248,7 @@ def match_image_box(template, image=None, mask=None, precision=0.9, method=cv2.T
     return find_match_image_box(tpl, img, mask, precision, method, show, multi)
 
 
-def find_match_image_box(template, image, mask=None, precision=0.9, method=cv2.TM_CCOEFF_NORMED, show=False, multi=0):
+def find_match_image_box(template, image=None, mask=None, precision=0.9, method=cv2.TM_CCOEFF_NORMED, show=False, multi=0):
     """
     Brief: 매칭 되는 이미지(>precision) 중앙 좌표 반환, 없으면 False
     Args:
@@ -239,14 +256,25 @@ def find_match_image_box(template, image, mask=None, precision=0.9, method=cv2.T
         image (cv2 image array):
     """
     img_original = image.copy()
-    image = cv2.cvtColor(img_original, cv2.COLOR_BGR2GRAY)
+    #image = cv2.cvtColor(img_original, cv2.COLOR_BGR2GRAY)
+
+    # cv2.imshow('template', template)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
+    # cv2.imshow('image', image)
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
+    # image.astype(np.float32)
+    # template.astype(np.float32)
 
     if type(mask) == list:
         res = cv2.matchTemplate(image, template, method, mask)
     else:
         res = cv2.matchTemplate(image, template, method)
 
-    w, h = template.shape[::-1]
+    w, h, _ = template.shape[::-1]
     min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
 
     print(max_val)
@@ -312,7 +340,7 @@ def feature_image_box(template, image, precision=0.7, inverse=True):
     return find_feature_image_box(tpl, img, origin, precision, inverse)
 
 
-def find_feature_image_box(template, image, origin=[0, 0], precision=0.7, inverse=True):
+def find_feature_image_box(template, image=None, origin=[0, 0], precision=0.7, inverse=True):
     """
     Brief:
         - 매칭 되는 이미지(>precision) 중앙 좌표 반환, 없으면 False
@@ -394,5 +422,10 @@ def rectifyOcr(text, lang='digit'):
 ##@@@@ Execute Test
 if __name__ == "__main__":
     #save_screenshot([1, 1, 500, 300])
-    print(doOcr([524, 214, 1096, 270], 'kor+eng'))
-
+    #print(doOcr([524, 214, 1096, 270], 'kor+eng'))
+    #get_image('../images/btn_GoWorldView.png')
+    time.sleep(5)
+    get_center_match_image('../images/btn_GoWorldView.png')
+    #print(get_center_match_image(os.path.abspath('../images/btn_GoWorldView.png')))
+    #print(match_image_box(os.path.abspath('../images/btn_GoWorldView.png')))
+    #print(match_image_box('../images/btn_GoWorldView.png'))

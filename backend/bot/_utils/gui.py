@@ -38,6 +38,7 @@ import pyperclip
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ User Libraries
+import image_recognition as ir
 
 
 ##@@@@========================================================================
@@ -48,6 +49,8 @@ import pyperclip
 ##@@@ External(.json/.py)
 sys.path.append(os.path.join(os.path.dirname(sys.path[0]), '_config'))
 from _settings import _ENV, _PATH
+from emulators import LOCATION_ROK_FULL as ui_xy
+from emulators import IMAGE_ROK_FULL as ui_img
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ internal
@@ -122,7 +125,7 @@ def get_wh_from_box(box):
     return [box[0], box[1], box[2] - box[0], box[3] - box[1]]
 
 ##@@@-------------------------------------------------------------------------
-##@@@ GUI Functions(pyautogui:: mouse/keyboard)
+##@@@ simple GUI Functions(pyautogui:: mouse/keyboard) 
 
 def click_mouse_series(positions, interval=_ENV['_CLICK_INTERVAL'], clicks=1):
     """
@@ -147,6 +150,7 @@ def click_mouse(position=[0, 0], button='LEFT', duration=_ENV['_MOUSE_DURATION']
         duration (int):
     """
     pag.moveTo(position[0], position[1], duration)
+    time.sleep(random.uniform(0.0101, 0.0299))
     pag.mouseDown()
     time.sleep(random.uniform(0.0101, 0.0299))
     pag.mouseUp()
@@ -204,6 +208,25 @@ def down_mouse(callback, position=[0, 0], duration=1):
     callback()
     pag.mouseUp()
 
+##@@@-------------------------------------------------------------------------
+##@@@ complex GUI Functions(pyautogui:: mouse/keyboard)
+
+def get_image_path(name):
+    print(_PATH['_IMAGES_FOLDER'] + ui_img[name] + _ENV['_IMG_EXT'])
+    return _PATH['_IMAGES_FOLDER'] + ui_img[name] + _ENV['_IMG_EXT']
+
+
+def get_viewmode():
+    cityview = ir.get_center_match_image(get_image_path('btn_GoWorldView'))
+    if cityview:
+        return 'CITY_VIEW'
+    else:
+        return 'WORLD_VIEW'
+
+
+def set_viewmode(mode='CITY_VIEW'):
+    pass
+
 
 def drag_in_map(relPoint=[0, 0], zeroPoint=[_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2], viewMode='_CASTLE', duration=_ENV['_MOUSE_DURATION']):
     """
@@ -218,27 +241,44 @@ def drag_in_map(relPoint=[0, 0], zeroPoint=[_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2
     pag.dragRel(relPoint[0], relPoint[1], duration=0.2, button='left')
 
 
-def go_by_coordinate(location=[0,0]):
-    positions = [
-        [670, 38],  ## 좌표로 찾기 버튼
-        [686, 216],  ## Server 필드
-        [924, 216],  ## X 좌표 필드
-        [1168, 216],  ## Y 좌표 필드
-        [50, 988],  ## 텍스트 입력 필드
-        [1330, 214]  ## 좌표로 가기 버튼
-    ]
-    click_mouse_series(positions, 2)
-    pass
+def go_by_coordinate(location=[0,0], viewmode='CITY_VIEW'):
+    """
+    Brief: 지도에서 x, y 좌표를 입력하여 이동
+    Args:
+        location (list): 좌표
+        viewmode (str): CITY_VIEW / WORLD_VIEW(min -> GLOBE)
+    """
+    set_viewmode(viewmode)
+
+    click_mouse(ui_xy['btn_LocationSearch'])  ## 좌표로 찾기 버튼
+    click_mouse(ui_xy['btn_Pop_LocationSearch_X'])  ## X 좌표 필드
+    click_mouse(ui_xy['npt_Pop_LocationSearch_Field'])  ## 텍스트 입력 필드
+    pag.typewrite(str(location[0]))
+
+    delay(1)
+
+    click_mouse(ui_xy['btn_Pop_LocationSearch_Y'])  ## Y 좌표 필드
+    click_mouse(ui_xy['btn_Pop_LocationSearch_Y'])  ## Y 좌표 필드
+    click_mouse(ui_xy['npt_Pop_LocationSearch_Field'])  ## 텍스트 입력 필드
+    pag.typewrite(str(location[1]))
+    delay(1)
+
+    click_mouse2(ui_xy['btn_Pop_LocationSearch_Go'])
+
+
+
 
 
 ##@@@@========================================================================
 ##@@@@ Execute Test
 if __name__ == "__main__":
     time.sleep(5)
-    go_by_coordinate()
+    #go_by_coordinate([500, 500])
     #get_clipboard()
     #drag_in_map([_ENV['_MAX_X']//2, 0])
     # print(_ENV['_MAX_X']//2)
     # pag.moveTo(_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2, duration=0.0)
     # pag.dragRel(500, 400, duration=0.2, button='left')
     # pass
+    #get_image_path('btn_GoWorldView')
+    print(get_viewmode())

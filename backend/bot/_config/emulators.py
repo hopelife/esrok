@@ -13,12 +13,19 @@ Usage: from config.emulators import *
 """
 
 LOCATION_ROK_FULL = {
-    '':[]
+    'btn_LocationSearch': [670, 38], ## 좌표로 찾기 버튼
+    'btn_Pop_LocationSearch_Server': [686, 216],  ## Server 필드
+    'btn_Pop_LocationSearch_X': [924, 216],  ## X 좌표 필드
+    'btn_Pop_LocationSearch_Y': [1168, 216],  ## Y 좌표 필드
+    'npt_Pop_LocationSearch_Field':  [50, 988],  ## 텍스트 입력 필드
+    'btn_Pop_LocationSearch_Go': [1330, 214]  ## 좌표로 가기 버튼
+
 }
 
 
 IMAGE_ROK_FULL = {
-    '':''
+    'btn_GoCityView':'btn_GoCityView',
+    'btn_GoWorldView':'btn_GoWorldView',
 }
 
 # _ENV = {

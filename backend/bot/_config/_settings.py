@@ -15,6 +15,7 @@ _ENV = {
     '_OS': 'WIN',
     '_MAX_X': 1920,
     '_MAX_Y': 1080,
+    '_IMG_EXT': '.png',
     '_EMULATOR': 'LDPLAYER',
     '_SCREENSHOT': 'shots/',
     '_MOUSE_DURATION': 0.5,

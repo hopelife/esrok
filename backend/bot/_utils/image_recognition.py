@@ -181,8 +181,8 @@ def save_screenshot(box=[1, 1, _ENV['_MAX_X'], _ENV['_MAX_Y']], path=None):
     image = snap_screenshot(box)
     if path == None:
         path = _PATH['_SCREENSHOT_FOLDER'] + str(box[0]) + '_' + str(box[1]) + '_' + str(box[2]) + '_' + str(box[3]) + '.png'
-        print(path)
-        cv2.imwrite(path, image)
+    print(path)
+    cv2.imwrite(path, image)
     return 0
 
 

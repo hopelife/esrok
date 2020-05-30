@@ -85,15 +85,6 @@ def find_newRowNum(worksheet, col=1):
     #return str(len(str_list)+1)
 
 
-# ## @@brief:: 첫번째 header 위치
-# ## @@note:: 
-# def find_newRowNum(worksheet, col=1):
-#     str_list = list(filter(None, worksheet.col_values(1)))
-#     print(str_list)
-#     return len(str_list)+1
-#     #return str(len(str_list)+1)
-
-
 ## @@brief:: 값으로 collum 번호 찾기
 ## @@note:: col = 1 (기준 열 번호 1 => A) / 기준열은 비어있는 값이 있으면 안됨!!!
 def find_colbyValue(value, sheet=_SHEET, file=_FILE, row=None):
@@ -165,47 +156,26 @@ def insert_cell(dic={}, first=[], header=0, sheet=_SHEET, file=_FILE):
 ##@@@-------------------------------------------------------------------------
 ##@@@ Basic Functions
 
+# Getting All Values From a Row or a Column
+# # Get all values from the first row
+# values_list = worksheet.row_values(1)
+
+# # Get all values from the first column
+# values_list = worksheet.col_values(1)
+# Getting All Values From a Worksheet as a List of Lists
+# list_of_lists = worksheet.get_all_values()
+# Finding a Cell
+# # Find a cell with exact string value
+# cell = worksheet.find("Dough")
+
+# print("Found something at R%sC%s" % (cell.row, cell.col))
+
+# # Find a cell matching a regular expression
+# amount_re = re.compile(r'(Big|Enormous) dough')
+# cell = worksheet.find(amount_re)
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ Complex Functions
-
-
-
-# spreadsheetId = "###"  # Please set the Spreadsheet ID.
-# sheetName = "Sheet1"  # Please set the sheet name.
-
-# sheet_data = [{
-#     "timestamp": "09-04-2019",
-#     "value": "10.0",
-#     "company_name": "Xbox",
-#     "product": "Buy"
-# }, {
-#     "timestamp": "09-03-2019",
-#     "value": "2.0",
-#     "company_name": "something",
-#     "product": "Sell"
-# }]
-
-# header_to_key = {
-#     'Date': 'timestamp',
-#     'Company_Name': 'company_name',
-#     'Traffic': 'value',
-#     'Product': 'product'
-# }
-
-# client = gspread.authorize(credentials)
-# spreadsheet = client.open_by_key(spreadsheetId)
-# worksheet = spreadsheet.worksheet(sheetName)
-
-# headers = worksheet.row_values(1)
-# put_values = []
-# for v in sheet_data:
-#     temp = []
-#     for h in headers:
-#         temp.append(v[header_to_key[h]])
-#     put_values.append(temp)
-# spreadsheet.values_append(sheetName, {'valueInputOption': 'USER_ENTERED'}, {'values': put_values})
-
 
 
 def fill_google_rows(worksheet='', sheet_data={}, header_to_key={}, NUM_HEADER_ROW=1):

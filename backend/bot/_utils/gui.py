@@ -30,6 +30,7 @@ import sys
 import os
 import time
 import random
+import math
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ Installed(conda/pip) Libraries
@@ -38,7 +39,7 @@ import pyperclip
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ User Libraries
-import image_recognition as ir
+import image_recognition as _ir
 
 
 ##@@@@========================================================================
@@ -48,7 +49,8 @@ import image_recognition as ir
 ##@@@-------------------------------------------------------------------------
 ##@@@ External(.json/.py)
 sys.path.append(os.path.join(os.path.dirname(sys.path[0]), '_config'))
-from _settings import _ENV, _PATH
+from _settings import _ENV, _PATH, _MAP
+from emulators import KEY_MAP as ui_key
 from emulators import LOCATION_ROK_FULL as ui_xy
 from emulators import IMAGE_ROK_FULL as ui_img
 
@@ -211,13 +213,12 @@ def down_mouse(callback, position=[0, 0], duration=1):
 ##@@@-------------------------------------------------------------------------
 ##@@@ complex GUI Functions(pyautogui:: mouse/keyboard)
 
-def get_image_path(name):
-    print(_PATH['_IMAGES_FOLDER'] + ui_img[name] + _ENV['_IMG_EXT'])
-    return _PATH['_IMAGES_FOLDER'] + ui_img[name] + _ENV['_IMG_EXT']
+def get_image_path(name, category='_UIS'):
+    return _PATH[category] + ui_img[name] + _ENV['_IMG_EXT']
 
 
 def get_viewmode():
-    cityview = ir.get_center_match_image(get_image_path('btn_GoWorldView'))
+    cityview = _ir.get_center_match_image(get_image_path('btn_GoWorldView'))
     if cityview:
         return 'CITY_VIEW'
     else:
@@ -225,7 +226,20 @@ def get_viewmode():
 
 
 def set_viewmode(mode='CITY_VIEW'):
-    pass
+    if get_viewmode() != mode:
+        click_mouse(ui_xy['btn_GoWorldView'])
+
+
+def zoom_out(nth=_ENV['_ZOOM_MAX']):
+    pag.moveTo(_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2)
+    keys = ui_key[_ENV['_OS']]['ZOOM_OUT']
+    for _ in range(0, nth):
+        for key in keys:
+            pag.keyDown(key)
+            time.sleep(0.5)
+        for key in keys:
+            pag.keyUp(key)
+            time.sleep(0.01)
 
 
 def drag_in_map(relPoint=[0, 0], zeroPoint=[_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2], viewMode='_CASTLE', duration=_ENV['_MOUSE_DURATION']):
@@ -241,14 +255,14 @@ def drag_in_map(relPoint=[0, 0], zeroPoint=[_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2
     pag.dragRel(relPoint[0], relPoint[1], duration=0.2, button='left')
 
 
-def go_by_coordinate(location=[0,0], viewmode='CITY_VIEW'):
+def go_by_coordinate(location=[0,0]):
     """
     Brief: 지도에서 x, y 좌표를 입력하여 이동
     Args:
         location (list): 좌표
         viewmode (str): CITY_VIEW / WORLD_VIEW(min -> GLOBE)
     """
-    set_viewmode(viewmode)
+    #set_viewmode(viewmode)
 
     click_mouse(ui_xy['btn_LocationSearch'])  ## 좌표로 찾기 버튼
     click_mouse(ui_xy['btn_Pop_LocationSearch_X'])  ## X 좌표 필드
@@ -267,18 +281,98 @@ def go_by_coordinate(location=[0,0], viewmode='CITY_VIEW'):
 
 
 
+def save_whole_maps(searchMode='Explore', zoom=320, max_size=_MAP['ONE_MAX']):
+    """
+    Brief: 지도 스크린샷 저장
+    Args:
+        searchMode (str): Alliance, Explore, Resources, Markers, Barbarian Stronghold
+    """
+    #set_fullscreen()
+    #get_server_num()
+    #set_searchmode()
+    # _MAP : {
+    #     'WHOLE': [1200, 1200],
+    #     'ONE_MIN': [8, 6],
+    #     'ONE_MAX': [320, 240],
+    #     'EDGE': [210, 210, 1160, 940]
+    # }
+    server = '1621'
+
+    ## edge 고려 안함
+    # w = shotsize[0]
+    # h = shotsize[1]
+    # start = [w//2, h//2]
+    box = _MAP['EDGE']
+    ratio_x = _ENV['_MAX_X'] / _MAP['ONE_MAX'][0]
+    ratio_y = _ENV['_MAX_Y'] / _MAP['ONE_MAX'][1]
+    x1_ = math.floor(_MAP['EDGE'][0]/ratio_x)
+    y1_ = math.floor(_MAP['EDGE'][1]/ratio_y)
+    x2_ = math.floor((_ENV['_MAX_X'] - _MAP['EDGE'][2])/ratio_x)
+    y2_ = math.floor((_ENV['_MAX_Y'] - _MAP['EDGE'][3])/ratio_y)
+    w = _MAP['ONE_MAX'][0] - x2_ + x1_
+    h = _MAP['ONE_MAX'][1] - y1_ + y2_
+    # w = _MAP['ONE_MAX'][0] - x1_ - x2_
+    # h = _MAP['ONE_MAX'][1] - y1_ - y2_
+    start = [_MAP['ONE_MAX'][0]//2 - x1_, _MAP['ONE_MAX'][1]//2 - y2_]
+
+    # w = (_MAP['EDGE'][2] - _MAP['EDGE'][0]) / ratio_x
+    # h = (_MAP['EDGE'][3] - _MAP['EDGE'][1]) / ratio_y
+
+    x_no = _MAP['WHOLE'][0]//w - 1
+    y_no = _MAP['WHOLE'][1]//h - 3
+
+    print('ratio_x: {}, ratio_y: {}'.format(ratio_x, ratio_y))
+    print('w: {}, h: {}, x1_: {}, _x2: {}, _y1: {}, y2_: {}, start: {}'.format(w, h, x1_, x2_, y1_, y2_, start))
+    print('x_no: {}, y_no: {}'.format(x_no, y_no))
+
+    for j in range(0, y_no):
+        for i in range(0, x_no):
+            location = [start[0] + i*w, start[1] + j*h]
+            #print(location)
+            save_screenshot_map(location, searchMode, box, server)
+            delay(1)
+
+    return 0
+
+
+def save_screenshot_map(location=[160, 120], searchMode='Explore', box=[], server=''):
+    go_by_coordinate(location)
+    #set_searchMode()
+    #set_zoomMode(zoom)
+    path = _PATH['_MAPS'] + server + '_' + searchMode + '_' + str(location[0]) + '_' + str(location[1]) + _ENV['_IMG_EXT']
+    delay(3)
+    _ir.save_screenshot(box, path)
+
 
 
 ##@@@@========================================================================
 ##@@@@ Execute Test
 if __name__ == "__main__":
-    time.sleep(5)
+    delay(5)
     #go_by_coordinate([500, 500])
     #get_clipboard()
+    #drag_in_map([-_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
     #drag_in_map([_ENV['_MAX_X']//2, 0])
     # print(_ENV['_MAX_X']//2)
     # pag.moveTo(_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2, duration=0.0)
     # pag.dragRel(500, 400, duration=0.2, button='left')
     # pass
     #get_image_path('btn_GoWorldView')
-    print(get_viewmode())
+    #print(get_viewmode())
+    #zoom_out()
+    #save_screenshot_map()
+    #save_whole_maps()
+    #print(_ENV['_MAX_X'] / _MAP['ONE_MAX'][0])
+    #print(_ENV['_MAX_Y'] / _MAP['ONE_MAX'][1])
+    #'EDGE': [210, 150, 1610, 940]
+    go_by_coordinate([125,89])
+    # delay(3)
+    # pag.moveTo(_MAP['EDGE'][2], _ENV['_MAX_Y']//2)
+    # delay(0.1)
+    # pag.mouseDown()
+    # delay(0.3)
+    # pag.moveTo(_MAP['EDGE'][0], _ENV['_MAX_Y']//2, duration=4.5)
+    # delay(0.3)
+    # pag.mouseUp()
+    #drag_in_map([_ENV['_MAX_X']//2, 0])
+    _ir.match_image_box(template, image=None, mask=None, precision=0.9, method=cv2.TM_CCOEFF_NORMED, show=True, multi=1)

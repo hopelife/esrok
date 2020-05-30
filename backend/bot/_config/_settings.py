@@ -12,8 +12,8 @@ Usage: from config._settings import *
 """
 
 _ENV = {
-    #'_OS': 'WIN',
-    '_OS': 'OSX',
+    '_OS': 'WIN',
+    #'_OS': 'OSX',
     '_MAX_X': 1920,
     '_MAX_Y': 1080,
     '_ZOOM_MAX': 20,

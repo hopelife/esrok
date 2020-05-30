@@ -22,8 +22,8 @@ KEY_MAP = {
         'ZOOM_OUT': ['down'],
     },
     'WIN': {
-        'ZOOM_IN': ['shift', 'up'],
-        'ZOOM_IN': ['shift', 'down'],
+        'ZOOM_IN': ['ctrl', 'up'],
+        'ZOOM_IN': ['ctrl', 'down'],
     },
 }
 

@@ -365,7 +365,7 @@ if __name__ == "__main__":
     #print(_ENV['_MAX_X'] / _MAP['ONE_MAX'][0])
     #print(_ENV['_MAX_Y'] / _MAP['ONE_MAX'][1])
     #'EDGE': [210, 150, 1610, 940]
-    go_by_coordinate([125,89])
+    #go_by_coordinate([125,89])
     # delay(3)
     # pag.moveTo(_MAP['EDGE'][2], _ENV['_MAX_Y']//2)
     # delay(0.1)
@@ -375,4 +375,31 @@ if __name__ == "__main__":
     # delay(0.3)
     # pag.mouseUp()
     #drag_in_map([_ENV['_MAX_X']//2, 0])
-    _ir.match_image_box(template, image=None, mask=None, precision=0.9, method=cv2.TM_CCOEFF_NORMED, show=True, multi=1)
+    template = '../images/uis/img_ExploreVillage.png'
+    #image = '../images/maps/1621_Explore_125_89.png'
+    #mask = '../images/uis/mask_ExploreVillage.png'
+    # template = '../images/uis/img_ExploreCave.png'
+    # image = '../images/maps/1621_Explore_125_89.png'
+    # mask = '../images/uis/mask_ExploreCave.png'
+    # template = '../images/target.png'
+    # image = '../images/image.png'
+    # mask = '../images/mask.png'
+    #centers = _ir.match_image_box(template, image, mask, precision=0.9, show=True, multi=1)
+    #centers = _ir.match_image_box(template, image, mask, precision=0.9983, show=True, multi=1)
+    #centers = _ir.match_image_box(template, image, precision=0.998, show=True, multi=1)
+
+    for _ in range(0, 5):
+        center = _ir.match_image_box(template, precision=0.997)
+        delay(1)
+        click_mouse(center)
+        print(center)
+        delay(5)
+        click_mouse([-_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
+        delay(1)
+        click_mouse([-_ENV['_MAX_X']//2 - 200, _ENV['_MAX_Y']//2])
+        for _ in range(0, 40):
+            pag.hotkey('ctrl', 'down')
+            delay(0.1)
+        delay(3)
+
+

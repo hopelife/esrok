@@ -75,6 +75,12 @@ tessdata_dir_config = '--tessdata-dir "/usr/local/Cellar/tesseract-lang/4.0.0/sh
 ##@@@-------------------------------------------------------------------------
 ##@@@ Basic Functions
 
+
+# def remove_neighbor(arr):
+#     num = len(arr) // 2
+#     for _ in arr:
+
+
 def get_image(image=None, color='COLOR', show=False):
     """
     Brief: file path or screen area => image
@@ -189,7 +195,7 @@ def save_screenshot(box=[1, 1, _ENV['_MAX_X'], _ENV['_MAX_Y']], path=None):
 ##@@@-------------------------------------------------------------------------
 ##@@@ Match Image Functions(이미지 비교: 방향, 크기 고려)
 
-def get_center_match_image(template, offset=[0, 0], image=None, mask=None, precision=0.9, method=cv2.TM_CCOEFF_NORMED):
+def get_center_match_image(template, offset=[0, 0], image=None, mask=None, precision=0.95, method=cv2.TM_CCOEFF_NORMED):
     """
     Brief:
         - 매칭 되는 이미지(>precision) 중앙 좌표 반환, 없으면 False
@@ -213,8 +219,10 @@ def get_center_match_image(template, offset=[0, 0], image=None, mask=None, preci
         return False
 
 
-def match_image_box(template, image=None, mask=None, precision=0.9, method=cv2.TM_CCOEFF_NORMED, show=False, multi=0):
+#def match_image_box(template, image=None, mask=None, precision=0.9, method=cv2.TM_CCOEFF_NORMED, show=False, multi=0):
+def match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.TM_CCORR_NORMED, show=False, multi=0):
     img = get_image(image)
+    #tpl = get_image(template, color='GRAY')
     tpl = get_image(template)
 
     # cv2.imshow('image', img)
@@ -248,7 +256,8 @@ def match_image_box(template, image=None, mask=None, precision=0.9, method=cv2.T
     return find_match_image_box(tpl, img, mask, precision, method, show, multi)
 
 
-def find_match_image_box(template, image=None, mask=None, precision=0.9, method=cv2.TM_CCOEFF_NORMED, show=False, multi=0):
+#def find_match_image_box(template, image=None, mask=None, precision=0.3, method=cv2.TM_CCOEFF_NORMED, show=False, multi=0):
+def find_match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.TM_CCORR_NORMED, show=False, multi=0):
     """
     Brief: 매칭 되는 이미지(>precision) 중앙 좌표 반환, 없으면 False
     Args:
@@ -256,7 +265,9 @@ def find_match_image_box(template, image=None, mask=None, precision=0.9, method=
         image (cv2 image array):
     """
     img_original = image.copy()
-    #image = cv2.cvtColor(img_original, cv2.COLOR_BGR2GRAY)
+    image = cv2.cvtColor(img_original, cv2.COLOR_BGR2GRAY)
+    template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
+    #mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
 
     # cv2.imshow('template', template)
     # cv2.waitKey(0)
@@ -269,17 +280,27 @@ def find_match_image_box(template, image=None, mask=None, precision=0.9, method=
     # image.astype(np.float32)
     # template.astype(np.float32)
 
-    if type(mask) == list:
-        res = cv2.matchTemplate(image, template, method, mask)
-    else:
+    if mask is None:
+        print('mask not exist!!!')
         res = cv2.matchTemplate(image, template, method)
+    else:
+        print('mask exist!!!')
+        # cv2.imshow('mask', mask)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
+        res = cv2.matchTemplate(image, template, method, mask=mask)
+        #res = cv2.matchTemplate(image, template, method, mask)
 
-    w, h, _ = template.shape[::-1]
-    min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+    print('template.shape: {}, multi: {}'.format(template.shape, multi))
+    #w, h, _ = template.shape[::-1]
+    #w, h, _ = template.shape[::]
+    w, h = template.shape[:]
 
-    print(max_val)
 
     if multi == 0:
+        min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
+        print(max_val)
+
         if max_val < precision:
             return False
         else:
@@ -294,18 +315,62 @@ def find_match_image_box(template, image=None, mask=None, precision=0.9, method=
     else: #### search multiple matching
         loc = np.where(res >= precision)
         num = len(loc)
-        centers = [[0, 0] for _ in range(0, num)]
+        print('num: {}'.format(num))
+        #centers = [[0, 0] for _ in range(0, num)]
+        centers = []
 
-        i = 0
+        #i = 0
+        last = -10
         for pt in zip(*loc[::-1]):
-            centers[i] = [pt[0] + w//2, pt[1] + h//2]
-            i += 1
-            if show == True:
+            if abs(pt[0] - last) > 1:
+                #centers[i] = [pt[0] + w//2, pt[1] + h//2]
+                centers.append([pt[0] + w//2, pt[1] + h//2])
+                last = pt[0]
+                #i += 1
+                print('pt: {}'.format(pt))
+
                 cv2.rectangle(img_original, pt, (pt[0]+w, pt[1]+h), (0, 0, 255), 2)
-                cv2.imshow('find images', img_original)
-                cv2.waitKey(0)
-                cv2.destroyAllWindows()
-            return centers
+
+        if show == True:
+            cv2.imshow('find images', img_original)
+            cv2.waitKey(0)
+            cv2.destroyAllWindows()
+        print(centers)
+        return centers
+
+
+
+##def test_match_image_box(template, image, mask, precision=0.3, method=cv2.TM_CCOEFF_NORMED):
+def test_match_image_box(template, image, mask, precision=0.95, method=cv2.TM_CCORR_NORMED):
+    """
+    Brief: 매칭 되는 이미지(>precision) 중앙 좌표 반환, 없으면 False
+    Args:
+        template (cv2 image array):
+        image (cv2 image array):
+    """
+    img_ = cv2.imread(image, cv2.IMREAD_COLOR)
+    img_original = img_.copy()
+    #img = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
+    img = cv2.cvtColor(img_, cv2.COLOR_BGR2GRAY)
+    tpl = cv2.imread(template, cv2.IMREAD_GRAYSCALE)
+    msk = cv2.imread(mask, cv2.IMREAD_GRAYSCALE)
+    res = cv2.matchTemplate(img, tpl, method, mask=msk)
+
+    loc = np.where(res >= precision)
+    w, h = tpl.shape[:]
+    print('num: {}'.format(len(loc)))
+    print('shape: {}'.format(tpl.shape))
+
+    i = 0
+    for pt in zip(*loc[::-1]):
+        i += 1
+        cv2.rectangle(img_original, pt, (pt[0]+w, pt[1]+h), (0, 0, 255), 2)
+
+    print(i)
+    cv2.imshow('find images', img_original)
+    cv2.waitKey(0)
+    cv2.destroyAllWindows()
+
 
 
 ##@@@-------------------------------------------------------------------------
@@ -424,8 +489,12 @@ if __name__ == "__main__":
     #save_screenshot([1, 1, 500, 300])
     #print(doOcr([524, 214, 1096, 270], 'kor+eng'))
     #get_image('../images/btn_GoWorldView.png')
-    time.sleep(5)
-    get_center_match_image('../images/btn_GoWorldView.png')
+    #time.sleep(5)
+    #get_center_match_image('../images/btn_GoWorldView.png')
     #print(get_center_match_image(os.path.abspath('../images/btn_GoWorldView.png')))
     #print(match_image_box(os.path.abspath('../images/btn_GoWorldView.png')))
     #print(match_image_box('../images/btn_GoWorldView.png'))
+    template = '../images/target.png'
+    image = '../images/image.png'
+    mask = '../images/mask.png'
+    test_match_image_box(template, image, mask)

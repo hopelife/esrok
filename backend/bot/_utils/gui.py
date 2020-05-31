@@ -218,7 +218,7 @@ def get_image_path(name, category='_UIS'):
 
 
 def get_viewmode():
-    cityview = _ir.get_center_match_image(get_image_path('btn_GoWorldView'))
+    cityview = _ir.get_center_match_image(get_image_path('btn_GoWorldView'), precision=0.9)
     if cityview:
         return 'CITY_VIEW'
     else:
@@ -236,7 +236,7 @@ def zoom_out(nth=_ENV['_ZOOM_MAX']):
     for _ in range(0, nth):
         for key in keys:
             pag.keyDown(key)
-            time.sleep(0.5)
+            time.sleep(0.2)
         for key in keys:
             pag.keyUp(key)
             time.sleep(0.01)
@@ -253,6 +253,107 @@ def drag_in_map(relPoint=[0, 0], zeroPoint=[_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2
     """
     pag.moveTo(zeroPoint[0], zeroPoint[1], duration=0.0)
     pag.dragRel(relPoint[0], relPoint[1], duration=0.2, button='left')
+
+
+
+def get_coordinate():
+    """
+    Brief: 지도에서 x, y 좌표를 입력하여 이동
+    Args:
+        location (list): 좌표
+        viewmode (str): CITY_VIEW / WORLD_VIEW(min -> GLOBE)
+    """
+    if get_viewmode() is 'CITY_VIEW':
+        set_viewmode('WORLD_VIEW')
+
+    t = _ir.do_ocr([400, 16, 642, 46], 'eng', reverse=True)  # 전체
+    s = _ir.do_ocr([418, 16, 484, 46], 'digits', reverse=True)  # server
+    x = _ir.do_ocr([510, 16, 562, 46], 'digits', reverse=True)  # x
+    y = _ir.do_ocr([588, 16, 640, 46], 'digits', reverse=True)  # y
+    print('t: {}, s: {}, x: {}, y: {}'.format(t, s, x, y))
+
+    return t
+
+
+def find_verification_verify():
+    # return _ir.match_image_box(get_image_path('btn_VerificationVerify', '_UIS'), precision=0.9)
+    return _ir.match_image_box(get_image_path('btn_VerificationVerify', '_UIS'), [830, 470, 1738, 648], precision=0.9)
+
+
+def do_verification_reward(precision=0.4):
+    template = [946, 220, 1180, 272]
+    image = [730, 280, 1190, 740]
+    img_btn_OK = [1024, 754, 1190, 812]
+
+    center_btn_OK = [1100, 786]
+    center_btn_close = [756, 782]
+
+    boxes = _ir.extract_templates(template)
+    print('boxes at gui.py: {}'.format(boxes))
+
+    if len(boxes) > 4 or boxes is False:
+        print('too many templates')
+        click_mouse(center_btn_close)
+        return False
+
+    centers = []
+    for box in boxes:
+        center = _ir.feature_image_box(box, image, precision, inverse=True)
+        if center is False:
+            print('no match image')
+            click_mouse(center_btn_close)
+            return False
+        centers.append(center)
+    
+    print(centers)
+    for center in centers:
+        click_mouse(center)
+        delay(1)
+
+    click_mouse(center_btn_OK)
+
+    return centers
+
+
+def do_verification_rewards(precision=0.4, attempts=6):
+    btn_verify = find_verification_verify()
+    if btn_verify is False:
+        return 0
+    else:
+        click_mouse(btn_verify)
+        delay(5)
+
+    center_btn_OK = [1104, 784]
+    centers = do_verification_reward(precision)
+
+    tries = 0
+
+    if centers is False:
+        tries += 1
+        # print('no match image!')
+        # if tries > attempts:
+        #     do_verification_rewards()  ## 재시도@@@@@@@@@@
+
+        # click_mouse([800, 120])  ## 인증 팝업 바깥쪽을 누름@@@@@
+        delay(5)
+        do_verification_rewards(precision, attempts)
+
+    elif len(centers) > 4:
+        tries += 1
+        # print('too many templates!')
+        # if tries > attempts:
+        #     do_verification_rewards()  ## 재시도@@@@@@@@@@
+        # click_mouse([800, 120])  ## 인증 팝업 바깥쪽을 누름@@@@@
+        delay(5)
+        do_verification_rewards(precision)
+
+    delay(5)
+
+    if find_verification_verify() is False:
+        print(centers)
+        return centers
+    else:
+        do_verification_rewards(precision, attempts)
 
 
 def go_by_coordinate(location=[0,0]):
@@ -335,7 +436,7 @@ def save_whole_maps(searchMode='Explore', zoom=320, max_size=_MAP['ONE_MAX']):
     return 0
 
 
-def save_screenshot_map(location=[160, 120], searchMode='Explore', box=[], server=''):
+def save_screenshot_map(location=[0, 0], searchMode='Explore', box=[], server=''):
     go_by_coordinate(location)
     #set_searchMode()
     #set_zoomMode(zoom)
@@ -343,6 +444,33 @@ def save_screenshot_map(location=[160, 120], searchMode='Explore', box=[], serve
     delay(3)
     _ir.save_screenshot(box, path)
 
+
+
+def receive_village_gifts(location=[_MAP['ONE_MAX'][0]//2, _MAP['ONE_MAX'][1]//2], max_i=50):
+    zoom_out()
+    #go_by_coordinate(location)
+    template = '../images/uis/img_ExploreVillage.png'  ##@@@@@@@@@@@@
+    coord = get_coordinate()
+
+    for _ in range(0, max_i):
+        center = _ir.match_image_box(template, _MAP['EDGE'], precision=0.97)
+        
+        #if not center or coord == get_coordinate():
+        if not center:
+            coord = get_coordinate()
+            drag_in_map([-100, 0])
+            #receive_village_gifts()
+            continue
+
+        click_mouse(center)
+        print(center)
+        delay(3)
+        click_mouse2([_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
+        delay(1)
+        click_mouse([_ENV['_MAX_X']//2 - 200, _ENV['_MAX_Y']//2])
+        delay(0.1)
+        zoom_out()
+        delay(0.01)
 
 
 ##@@@@========================================================================
@@ -375,31 +503,54 @@ if __name__ == "__main__":
     # delay(0.3)
     # pag.mouseUp()
     #drag_in_map([_ENV['_MAX_X']//2, 0])
-    template = '../images/uis/img_ExploreVillage.png'
-    #image = '../images/maps/1621_Explore_125_89.png'
+    
+    
+    #template = '../images/uis/img_ExploreVillage.png'
+    #image = '../images/maps/1621_Explore_125_89_.png'
     #mask = '../images/uis/mask_ExploreVillage.png'
-    # template = '../images/uis/img_ExploreCave.png'
+    #template = '../images/uis/img_ExploreCave.png'
     # image = '../images/maps/1621_Explore_125_89.png'
     # mask = '../images/uis/mask_ExploreCave.png'
     # template = '../images/target.png'
     # image = '../images/image.png'
     # mask = '../images/mask.png'
-    #centers = _ir.match_image_box(template, image, mask, precision=0.9, show=True, multi=1)
+    #centers = _ir.match_image_box(template, image, mask, precision=0.9983, show=True, multi=1)
+    #centers = _ir.match_image_box(template, image, precision=0.99, show=True, multi=1)
     #centers = _ir.match_image_box(template, image, mask, precision=0.9983, show=True, multi=1)
     #centers = _ir.match_image_box(template, image, precision=0.998, show=True, multi=1)
 
-    for _ in range(0, 5):
-        center = _ir.match_image_box(template, precision=0.997)
-        delay(1)
-        click_mouse(center)
-        print(center)
-        delay(5)
-        click_mouse([-_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
-        delay(1)
-        click_mouse([-_ENV['_MAX_X']//2 - 200, _ENV['_MAX_Y']//2])
-        for _ in range(0, 40):
-            pag.hotkey('ctrl', 'down')
-            delay(0.1)
-        delay(3)
+    # for _ in range(0, 5):
+    #     center = _ir.match_image_box(template, precision=0.997)
+    #     delay(1)
+    #     click_mouse(center)
+    #     print(center)
+    #     delay(5)
+    #     click_mouse([-_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
+    #     delay(1)
+    #     click_mouse([-_ENV['_MAX_X']//2 - 200, _ENV['_MAX_Y']//2])
+    #     for _ in range(0, 40):
+    #         pag.hotkey('ctrl', 'down')
+    #         delay(0.1)
+    #     delay(3)
 
+    #centers = _ir.match_image_box(template, _MAP['EDGE'], precision=0.97, show=True, multi=1)
+    # for _ in range(0, 100):
+    #     center = _ir.match_image_box(template, _MAP['EDGE'], precision=0.97)
+    #     if not center:
+    #         continue 
+    #     click_mouse(center)
+    #     print(center)
+    #     delay(3)
+    #     click_mouse2([_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
+    #     delay(1)
+    #     click_mouse([_ENV['_MAX_X']//2 - 200, _ENV['_MAX_Y']//2])
+    #     delay(0.1)
+    #     zoom_out()
+    #     delay(0.01)
 
+    # click_mouse(find_verification_verify())
+    # delay(7)
+    #do_verification_reward(0.7)
+    #do_verification_rewards(0.7)
+    receive_village_gifts([924, 212])
+    #get_coordinate()

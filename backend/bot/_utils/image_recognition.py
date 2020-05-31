@@ -65,6 +65,7 @@ from _settings import _ENV, _PATH, _TESSERACT
 pytesseract.pytesseract.tesseract_cmd = '/usr/local/Cellar/tesseract/4.1.1/bin/tesseract'
 tessdata_dir_config = '--tessdata-dir "/usr/local/Cellar/tesseract-lang/4.0.0/share/tessdata/"'
 
+# sudo cp digits.traineddata /usr/local/Cellar/tesseract-lang/4.0.0/share/tessdata/digits.traineddata
 
 # pytesseract.pytesseract.tesseract_cmd = _TESSERACT['_EXE']
 # tessdata_dir_config = _TESSERACT['_DATA']
@@ -79,6 +80,11 @@ tessdata_dir_config = '--tessdata-dir "/usr/local/Cellar/tesseract-lang/4.0.0/sh
 # def remove_neighbor(arr):
 #     num = len(arr) // 2
 #     for _ in arr:
+
+
+def sort_coords_by_x(coords):
+    ss = sorted(coords, key=lambda coord: coord[0])
+    return ss
 
 
 def get_image(image=None, color='COLOR', show=False):
@@ -96,6 +102,7 @@ def get_image(image=None, color='COLOR', show=False):
             img = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
         print('local image')
     elif type(image) is list: ## scren selected box
+        time.sleep(3)  ##@@@@@@@@@@ delay
         img = snap_screenshot(image)
         print('screen area image')
     else: ## image data are none or wrong
@@ -168,8 +175,10 @@ def extract_templates(image):
 
     if boxes == []:
         return False
+    else:
+        boxes = sorted(boxes, key=lambda box: box[0])
 
-    #print(boxes)
+    print('boxes at image_recognition.py: {}',format(boxes))
     return boxes
 
 
@@ -221,6 +230,10 @@ def get_center_match_image(template, offset=[0, 0], image=None, mask=None, preci
 
 #def match_image_box(template, image=None, mask=None, precision=0.9, method=cv2.TM_CCOEFF_NORMED, show=False, multi=0):
 def match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.TM_CCORR_NORMED, show=False, multi=0):
+    offset = [0, 0]
+    if type(image) is list:
+        offset = [image[0], image[1]]
+
     img = get_image(image)
     #tpl = get_image(template, color='GRAY')
     tpl = get_image(template)
@@ -253,11 +266,11 @@ def match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.
     if mask != None:
         mask = cv2.imread(mask, 0)
 
-    return find_match_image_box(tpl, img, mask, precision, method, show, multi)
+    return find_match_image_box(tpl, img, mask, precision, method, offset, show, multi)
 
 
 #def find_match_image_box(template, image=None, mask=None, precision=0.3, method=cv2.TM_CCOEFF_NORMED, show=False, multi=0):
-def find_match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.TM_CCORR_NORMED, show=False, multi=0):
+def find_match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.TM_CCORR_NORMED, offset=[0,0], show=False, multi=0):
     """
     Brief: 매칭 되는 이미지(>precision) 중앙 좌표 반환, 없으면 False
     Args:
@@ -294,7 +307,8 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
     print('template.shape: {}, multi: {}'.format(template.shape, multi))
     #w, h, _ = template.shape[::-1]
     #w, h, _ = template.shape[::]
-    w, h = template.shape[:]
+    #w, h = template.shape[:]
+    h, w = template.shape[:]
 
 
     if multi == 0:
@@ -304,10 +318,11 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
         if max_val < precision:
             return False
         else:
-            center = [max_loc[0] + w//2, max_loc[1] + h//2]
+            center = [max_loc[0] + w//2 + offset[0], max_loc[1] + h//2 + offset[1]]
             print(center)
             if show == True:
-                cv2.rectangle(img_original, (max_loc[0], max_loc[1]), (max_loc[0]+w, max_loc[1]+h), (0, 0, 255), 2)
+                #cv2.rectangle(img_original, (max_loc[0], max_loc[1]), (max_loc[0]+w, max_loc[1]+h), (0, 0, 255), 2)
+                cv2.rectangle(img_original, (max_loc[0], max_loc[1]), (max_loc[0]+w + offset[0], max_loc[1]+h + offset[1]), (0, 0, 255), 2)
                 cv2.imshow('find image', img_original)
                 cv2.waitKey(0)
                 cv2.destroyAllWindows()
@@ -324,7 +339,7 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
         for pt in zip(*loc[::-1]):
             if abs(pt[0] - last) > 1:
                 #centers[i] = [pt[0] + w//2, pt[1] + h//2]
-                centers.append([pt[0] + w//2, pt[1] + h//2])
+                centers.append([pt[0] + w//2 + offset[0], pt[1] + h//2 + offset[1]])
                 last = pt[0]
                 #i += 1
                 print('pt: {}'.format(pt))
@@ -434,16 +449,20 @@ def find_feature_image_box(template, image=None, origin=[0, 0], precision=0.7, i
     index_params = dict(algorithm = FLANN_INDEX_KDTREE, trees = 5)
     search_params = dict(checks=50)     # or pass empty dictionary
     flann = cv2.FlannBasedMatcher(index_params,search_params)
-    matches = flann.knnMatch(des1,des2,k=2)
+    matches = flann.knnMatch(des1, des2, k=2)
 
     points_x = []
     points_y = []
+    print('matches size: {}'.format(len(matches)))
+
     # ratio test as per Lowe's paper
     for i, (m, n) in enumerate(matches):
+
         if m.distance < precision*n.distance:
 
             points_x.append(kp2[m.trainIdx].pt[0] + origin[0])
             points_y.append(kp2[m.trainIdx].pt[1] + origin[1])
+            print('orign_x: {}, orign_y: {}'.format(origin[0], origin[1]))
             print('matching points: {}'.format(kp2[m.trainIdx].pt))    ###### matching points
 
     # Not Found Feature
@@ -464,8 +483,10 @@ def find_feature_image_box(template, image=None, origin=[0, 0], precision=0.7, i
 
 ## @@brief:: 이미지(screen box 좌표 or file path 값) 문자인식
 ## @@note::
-def doOcr(image, lang='eng'):
+def do_ocr(image, lang='eng', reverse=False):
     img = get_image(image, 'GRAY')
+    if reverse:
+        img = ~img
     if img is []:
         return False
     return pytesseract.image_to_string(img, lang, config = tessdata_dir_config)
@@ -473,7 +494,7 @@ def doOcr(image, lang='eng'):
 
 ## @@brief:: 이미지(screen box 좌표 or file path 값) 문자인식
 ## @@note::
-def rectifyOcr(text, lang='digit'):
+def rectify_ocr(text, lang='digit'):
     if lang is 'digit':
         s = ['i', 'I', 'l', 'o', 'O', ',']
         d = ['1', '1', '1', '0', '0', '']
@@ -487,14 +508,17 @@ def rectifyOcr(text, lang='digit'):
 ##@@@@ Execute Test
 if __name__ == "__main__":
     #save_screenshot([1, 1, 500, 300])
-    #print(doOcr([524, 214, 1096, 270], 'kor+eng'))
+    #print(do_ocr([524, 214, 1096, 270], 'kor+eng'))
     #get_image('../images/btn_GoWorldView.png')
     #time.sleep(5)
     #get_center_match_image('../images/btn_GoWorldView.png')
     #print(get_center_match_image(os.path.abspath('../images/btn_GoWorldView.png')))
     #print(match_image_box(os.path.abspath('../images/btn_GoWorldView.png')))
     #print(match_image_box('../images/btn_GoWorldView.png'))
-    template = '../images/target.png'
-    image = '../images/image.png'
-    mask = '../images/mask.png'
-    test_match_image_box(template, image, mask)
+
+    # template = '../images/target.png'
+    # image = '../images/image.png'
+    # mask = '../images/mask.png'
+    # test_match_image_box(template, image, mask)
+    coords = [[123, 56], [234, 1], [56, 890], [1, 789], [678, 123], [35, 98]]
+    sort_coords_by_x(coords)

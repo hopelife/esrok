@@ -12,8 +12,8 @@ Usage: from config._settings import *
 """
 
 _ENV = {
-    '_OS': 'WIN',
-    #'_OS': 'OSX',
+    #'_OS': 'WIN',
+    '_OS': 'OSX',
     '_MAX_X': 1920,
     '_MAX_Y': 1080,
     '_ZOOM_MAX': 20,
@@ -55,5 +55,6 @@ _MAP = {
     'WHOLE': [1200, 1200],
     'ONE_MIN': [8, 6],
     'ONE_MAX': [320, 240],
-    'EDGE': [210, 150, 1610, 940]
+    'EDGE': [230, 170, 1600, 900]
+    #'EDGE': [210, 150, 1610, 940]
 }

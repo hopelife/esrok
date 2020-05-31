@@ -42,6 +42,8 @@ LOCATION_ROK_FULL = {
 IMAGE_ROK_FULL = {
     'btn_GoCityView':'btn_GoCityView',
     'btn_GoWorldView':'btn_GoWorldView',
+    'img_ExploreVillage': 'img_ExploreVillage',
+    'btn_VerificationVerify': 'btn_VerificationVerify'
 }
 
 # _ENV = {

@@ -38,16 +38,48 @@ Usage: import
 
 
 
-def who_am_i():
-  pass
+def who_am_i(prop=['id', 'nick']):
+    """
+    Brief: Find out Character's properties. id, nick, civilization, age, cityhall level, etc
+    Args:
+    Returns:
+    """
+    pass
+
+
+def Findout_buildings(prop=['id', 'nick']):
+    """
+    Brief: Find(Figure) out buildings properties by scanning screen. level, coordinate, etc
+    Args:
+    Returns:
+    """
+    pass
+
+
+def Findout_Special_Object(prop=['caves', 'villages']):
+    """
+    Brief: 
+    Args:
+    Returns:
+    """
+    pass
+
+
+def Findout_commanders(prop=['id', 'nick']):
+    """
+    Brief: Find(Figure) out buildings properties by scanning screen. level, coordinate, etc
+    Args:
+    Returns:
+    """
+    pass
 
 
 def find_records_alliance():
-  pass
+    pass
 
 
 def find_records_alliances():
-  pass
+    pass
 
 
 def find_member_record():

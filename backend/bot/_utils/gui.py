@@ -96,11 +96,75 @@ def delay(interval=_ENV['_CLICK_INTERVAL'], rand=False):
     return 0
 
 
+def get_screen_max():
+    pass
+
+
 def get_screen_center():
+    pass
+
+
+def get_window_max():
+    pass
+
+
+def get_window_center():
+    pass
+
+
+def compute_pixel_coord_ratio():
+    pass
+
+
+def compute_coord_unit_size():
+    pass
+
+
+def track_mouse():
     """
-    Brief: get screen center
+    Brief: Mouse Tracker for Unit Test@@@@
+    Args:
+
     """
-    return [_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2]
+    pass
+
+
+def drag_by_coord():
+    """
+    Brief: possible to move out of screen
+    Args:
+
+    """
+    pass
+
+
+def drag_by_object():
+    pass
+
+
+def move_by_object():
+    pass
+
+
+def move_direction(start=[0,0], callback=None, direction=[1,0]):
+    pass
+
+
+def move_rotation(start=[0,0], step=1, count=1, callback=None, rotation='clockwise', angle=1):
+    """
+    Brief: 
+    Args:
+        step (int): size of coordinate when troops rotates
+        count (int): 
+        angle (int): 1 -> rotate 90 degree, 2 -> rotate 180 degree, 4 -> rotate 360 degree
+    """
+    pass
+
+# def get_screen_center():
+#     """
+#     Brief: get screen center
+#     """
+#     return [_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2]
 
 
 def get_box_from_wh(wh):

@@ -59,11 +59,11 @@ from _settings import _ENV, _PATH, _TESSERACT
 #     #'_EXE': 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe',
 #     #'_DATA': '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"', 
 # }
-# pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files/Tesseract-OCR/tesseract.exe'
-# tessdata_dir_config = '--tessdata-dir "C:\\Program Files\\Tesseract-OCR\\tessdata"'
+pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe'
+tessdata_dir_config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"'
 
-pytesseract.pytesseract.tesseract_cmd = '/usr/local/Cellar/tesseract/4.1.1/bin/tesseract'
-tessdata_dir_config = '--tessdata-dir "/usr/local/Cellar/tesseract-lang/4.0.0/share/tessdata/"'
+# pytesseract.pytesseract.tesseract_cmd = '/usr/local/Cellar/tesseract/4.1.1/bin/tesseract'
+# tessdata_dir_config = '--tessdata-dir "/usr/local/Cellar/tesseract-lang/4.0.0/share/tessdata/"'
 
 # sudo cp digits.traineddata /usr/local/Cellar/tesseract-lang/4.0.0/share/tessdata/digits.traineddata
 
@@ -520,5 +520,8 @@ if __name__ == "__main__":
     # image = '../images/image.png'
     # mask = '../images/mask.png'
     # test_match_image_box(template, image, mask)
-    coords = [[123, 56], [234, 1], [56, 890], [1, 789], [678, 123], [35, 98]]
-    sort_coords_by_x(coords)
+    # coords = [[123, 56], [234, 1], [56, 890], [1, 789], [678, 123], [35, 98]]
+    # sort_coords_by_x(coords)
+
+    ocr = do_ocr('../images/test/coordinate2.png')
+    print(ocr)

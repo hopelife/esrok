@@ -82,10 +82,36 @@ def find_newRowNum(worksheet, col=1):
     str_list = list(filter(None, worksheet.col_values(1)))
     print(str_list)
     return len(str_list)+1
-    #return str(len(str_list)+1)
 
 
-## @@brief:: 값으로 collum 번호 찾기
+## @@brief:: 빈값이 아닌 첫 행/열
+## @@note:: col = 1 (기준 열 번호 1 => A) / 기준열은 비어있는 값이 있으면 안됨!!!
+def find_first_filled(worksheet):
+    values = worksheet.get_all_values()
+    first_filled_row = 1
+    findit = False
+    for i, row in enumerate(values):
+        for cell in row:
+            if cell != '':
+                first_filled_row = i + 1
+                findit = True
+                break
+        if findit = True:
+            break
+
+    max_col = len(values[0])
+    for i, row in enumerate(values):
+        for cell in row:
+            if cell != '':
+                first_filled_row = i + 1
+                findit = True
+                break
+        if findit = True:
+            break
+
+
+
+## @@brief:: 값으로 column 번호 찾기
 ## @@note:: col = 1 (기준 열 번호 1 => A) / 기준열은 비어있는 값이 있으면 안됨!!!
 def find_colbyValue(value, sheet=_SHEET, file=_FILE, row=None):
     worksheet = _FILE.worksheet(sheet)
@@ -250,24 +276,43 @@ if __name__ == "__main__":
     spreadsheet = gc.open_by_url(_GOOGLE['_URLS']['TEST'])
     worksheet = spreadsheet.worksheet(sheetName)
 
-    sheet_data = [{
-        "timestamp": "09-04-2019",
-        "value": "10.0",
-        "company_name": "Xbox",
-        "product": "Buy"
-    }, {
-        "timestamp": "09-03-2019",
-        "value": "2.0",
-        "company_name": "something",
-        "product": "Sell"
-    }]
+    print(len(worksheet.row_values(1)))
 
-    header_to_key = {
-        'Date': 'timestamp',
-        'Company_Name': 'company_name',
-        'Traffic': 'value',
-        'Product': 'product'
-    }
+
+
+    print ('total rows in worksheet', worksheet.row_count)   # worksheet rows including empty rows
+    print ('total cols in worksheet', worksheet.col_count)   # worksheet cols including empty cols
+    max_cols = 0
+    for non_empty_row_num in range(1,worksheet.row_count): # step thru non-empty rows
+        cols_in_row = len(worksheet.row_values(non_empty_row_num)) # number of cols in this non-empty row
+        # print (non_empty_row_num,cols_in_row)
+        if cols_in_row > max_cols: max_cols = cols_in_row
+        if cols_in_row == 0:  # only process if not empty
+            print (non_empty_row_num, max_cols)
+            break # stop getting new rows at first empty row
+    print (len(worksheet.get_all_values()))  # just the non-empty row count
+    print (worksheet.get_all_values()) 
+
+
+
+    # sheet_data = [{
+    #     "timestamp": "09-04-2019",
+    #     "value": "10.0",
+    #     "company_name": "Xbox",
+    #     "product": "Buy"
+    # }, {
+    #     "timestamp": "09-03-2019",
+    #     "value": "2.0",
+    #     "company_name": "something",
+    #     "product": "Sell"
+    # }]
+
+    # header_to_key = {
+    #     'Date': 'timestamp',
+    #     'Company_Name': 'company_name',
+    #     'Traffic': 'value',
+    #     'Product': 'product'
+    # }
 
   # client = gspread.authorize(credentials)
   # spreadsheet = client.open_by_key(spreadsheetId)
@@ -296,53 +341,53 @@ if __name__ == "__main__":
 
 
 
-    table = [['one', 'two', 'three'], [1, 2, 3]]
+#     table = [['one', 'two', 'three'], [1, 2, 3]]
 
-    # you may need to resize your worksheet so it have the neccessary cells
-    # ws.resize(len(table),len(table[0]))
+#     # you may need to resize your worksheet so it have the neccessary cells
+#     # ws.resize(len(table),len(table[0]))
 
-    update_sheet(worksheet, table, 3, 3)
-
-
-def complete_quest():
-	pass
+#     update_sheet(worksheet, table, 3, 3)
 
 
-def do_event():
-	pass
+# def complete_quest():
+# 	pass
 
 
-def record_event_schedule(unit='DAY, WEEK'):
-	pass
+# def do_event():
+# 	pass
 
 
+# def record_event_schedule(unit='DAY, WEEK'):
+# 	pass
 
 
 
-def write_villages_caves()
-	pass
-
-def find_villages_caves(center='', viewMode='', type=''):
-	pass
 
 
-def record_alliance_members(alliance='name/ranking', grade):
-	pass
+# def write_villages_caves()
+# 	pass
+
+# def find_villages_caves(center='', viewMode='', type=''):
+# 	pass
+
+
+# def record_alliance_members(alliance='name/ranking', grade):
+# 	pass
 	
 	
-def record_alliance_members_by_ranking(ranking, grade):
-	go_alliance_record()
-	go_members_grade()
-	count_members()
-	get_members_info()
-	fill_sheet_cells()
-	pass		
+# def record_alliance_members_by_ranking(ranking, grade):
+# 	go_alliance_record()
+# 	go_members_grade()
+# 	count_members()
+# 	get_members_info()
+# 	fill_sheet_cells()
+# 	pass		
 
-def record_alliance_members_by_name(name, grade):
-	pass
-
-
+# def record_alliance_members_by_name(name, grade):
+# 	pass
 
 
 
-Date	Company_Name      Traffic      Product
+
+
+# Date	Company_Name      Traffic      Product

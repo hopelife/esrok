@@ -112,6 +112,10 @@ def get_window_center():
     pass
 
 
+def set_perspective_matrix():
+    pass
+
+
 def compute_pixel_coord_ratio():
     pass
 

@@ -201,6 +201,24 @@ def save_screenshot(box=[1, 1, _ENV['_MAX_X'], _ENV['_MAX_Y']], path=None):
     return 0
 
 
+
+
+## @@brief:: 이미지 파일 crop -> save
+## @@note:: 
+def save_file_crop(file, box, path=None):
+    """
+    Brief: save screenshot
+    Args:
+        file
+        box (list): 스크린샷 지정 영역(default: 전체 화면)
+        path (str): 저장 위치
+    Returns:
+        opencv image array
+    """
+
+    image = cv2.imread(file, cv2.IMREAD_COLOR)[box[1]:box[3], box[0]:box[2]]
+    cv2.imwrite(path, image)
+    return 0
 ##@@@-------------------------------------------------------------------------
 ##@@@ Match Image Functions(이미지 비교: 방향, 크기 고려)
 

@@ -1,0 +1,992 @@
+[
+  {
+    "btn_WallpaperEmulROKMid": [
+      410,
+      216
+    ]
+  },
+  {
+    "btn_QuickloanchOsxROK": [
+      1751,
+      1053
+    ]
+  },
+  {
+    "btn_Profile": [
+      73,
+      62
+    ]
+  },
+  {
+    "btn_VIPStatusImage": [
+      169,
+      95
+    ]
+  },
+  {
+    "btn_VIPStatusText": [
+      237,
+      95
+    ]
+  },
+  {
+    "btn_PowerStatusText": [
+      282,
+      34
+    ]
+  },
+  {
+    "btn_PowerStatusImage": [
+      157,
+      34
+    ]
+  },
+  {
+    "btn_FoodStatusImage": [
+      1012,
+      33
+    ]
+  },
+  {
+    "btn_FoodStatusText": [
+      1098,
+      33
+    ]
+  },
+  {
+    "btn_WoodStatusImage": [
+      1210,
+      33
+    ]
+  },
+  {
+    "btn_WoodStatusText": [
+      1286,
+      33
+    ]
+  },
+  {
+    "btn_StoneStatusImage": [
+      1396,
+      33
+    ]
+  },
+  {
+    "btn_StoneStatusText": [
+      1472,
+      33
+    ]
+  },
+  {
+    "btn_GoldStatusImage": [
+      1578,
+      33
+    ]
+  },
+  {
+    "btn_GoldStatusText": [
+      1654,
+      33
+    ]
+  },
+  {
+    "btn_GemStatusImage": [
+      1762,
+      33
+    ]
+  },
+  {
+    "btn_GemStatusText": [
+      1821,
+      33
+    ]
+  },
+  {
+    "btn_GemStatusPlus": [
+      1889,
+      33
+    ]
+  },
+  {
+    "val_AgeStatus": [
+      1835,
+      127
+    ]
+  },
+  {
+    "val_TimeStatus": [
+      1835,
+      113
+    ]
+  },
+  {
+    "btn_Events1": [
+      1856,
+      179
+    ]
+  },
+  {
+    "btn_Events2": [
+      1728,
+      179
+    ]
+  },
+  {
+    "btn_Events3": [
+      1600,
+      179
+    ]
+  },
+  {
+    "btn_ArmiesExpand": [
+      1770,
+      258
+    ]
+  },
+  {
+    "btn_AmiesStatusText": [
+      1839,
+      255
+    ]
+  },
+  {
+    "btn_AmiesImage1": [
+      1839,
+      329
+    ]
+  },
+  {
+    "btn_AmiesImage2": [
+      1839,
+      443
+    ]
+  },
+  {
+    "btn_AmiesImage3": [
+      1839,
+      557
+    ]
+  },
+  {
+    "btn_Mails": [
+      1845,
+      853
+    ]
+  },
+  {
+    "btn_Menu": [
+      1844,
+      1004
+    ]
+  },
+  {
+    "btn_Chats": [
+      218,
+      1010
+    ]
+  },
+  {
+    "btn_Quests": [
+      72,
+      254
+    ]
+  },
+  {
+    "btn_GoCityView": [
+      92,
+      983
+    ]
+  },
+  {
+    "btn_GoWorldView": [
+      92,
+      983
+    ]
+  },
+  {
+    "btn_ToolEditor": [
+      90,
+      811
+    ]
+  },
+  {
+    "btn_ToolSearch": [
+      90,
+      811
+    ]
+  },
+  {
+    "btn_MenuChampaign": [
+      1242,
+      1014
+    ]
+  },
+  {
+    "btn_MenuItems": [
+      1396,
+      1014
+    ]
+  },
+  {
+    "btn_MenuAlliance": [
+      1546,
+      1014
+    ]
+  },
+  {
+    "btn_MenuCommander": [
+      1694,
+      1014
+    ]
+  },
+  {
+    "btn_Mod_Profile_Close": [
+      1638,
+      124
+    ]
+  },
+  {
+    "btn_Mod_Profile_MoreInfo": [
+      465,
+      820
+    ]
+  },
+  {
+    "btn_Mod_Profile_Rankings": [
+      666,
+      820
+    ]
+  },
+  {
+    "btn_Mod_Profile_Commander": [
+      867,
+      820
+    ]
+  },
+  {
+    "btn_Mod_Profile_Troops": [
+      1068,
+      820
+    ]
+  },
+  {
+    "btn_Mod_Profile_Achievements": [
+      1271,
+      820
+    ]
+  },
+  {
+    "btn_Mod_Profile_Settings": [
+      1473,
+      820
+    ]
+  },
+  {
+    "btn_Mod_Profile_ActionPointsPlus": [
+      676,
+      612
+    ]
+  },
+  {
+    "btn_Mod_Profile_Kills": [
+      1342,
+      424
+    ]
+  },
+  {
+    "btn_Mod_Profile_NickEditText": [
+      988,
+      337
+    ]
+  },
+  {
+    "btn_Mod_Profile_NickEditImage": [
+      1227,
+      337
+    ]
+  },
+  {
+    "val_Mod_GovernorID": [
+      1001,
+      293
+    ]
+  },
+  {
+    "btn_Mod_AvatarSelection": [
+      345,
+      357
+    ]
+  },
+  {
+    "val_Mod_ActionPointsStatus": [
+      981,
+      222
+    ]
+  },
+  {
+    "btn_Mod_ActionPoints_Close": [
+      1638,
+      124
+    ]
+  },
+  {
+    "btn_Mod_ActionPoints0050": [
+      394,
+      382
+    ]
+  },
+  {
+    "btn_Mod_ActionPoints0100": [
+      394,
+      572
+    ]
+  },
+  {
+    "btn_Mod_ActionPoints0500": [
+      394,
+      762
+    ]
+  },
+  {
+    "btn_Mod_ActionPointsUse": [
+      1469,
+      384
+    ]
+  },
+  {
+    "btn_Mod_ActionPoints0050Text": [
+      395,
+      334
+    ]
+  },
+  {
+    "btn_Mod_ActionPoints0100Text": [
+      395,
+      524
+    ]
+  },
+  {
+    "btn_Mod_ActionPoints0500Text": [
+      395,
+      714
+    ]
+  },
+  {
+    "btn_Mod_ActionPoints1000Text": [
+      395,
+      904
+    ]
+  },
+  {
+    "val_Mod_ActionPointsOwn": [
+      672,
+      433
+    ]
+  },
+  {
+    "val_Mod_Profile_MoreInfo_Nick": [
+      680,
+      185
+    ]
+  },
+  {
+    "val_Mod_Profile_MoreInfo_Power": [
+      1128,
+      185
+    ]
+  },
+  {
+    "val_Mod_Profile_MoreInfo_Kills": [
+      1533,
+      185
+    ]
+  },
+  {
+    "btn_Mod_Profile_MoreInfo_Kills": [
+      1295,
+      186
+    ]
+  },
+  {
+    "lbl_Mod_Profile_MoreInfo_Power-BuildingPower": [
+      550,
+      338
+    ]
+  },
+  {
+    "lbl_Mod_Profile_MoreInfo_Power-TechnologyPower": [
+      550,
+      410
+    ]
+  },
+  {
+    "lbl_Mod_Profile_MoreInfo_Power-TroopsPower": [
+      550,
+      482
+    ]
+  },
+  {
+    "lbl_Mod_Profile_MoreInfo_Power-CommanderPower": [
+      550,
+      554
+    ]
+  },
+  {
+    "val_Mod_Profile_MoreInfo_Power-BuildingPower": [
+      1390,
+      338
+    ]
+  },
+  {
+    "val_Mod_Profile_MoreInfo_Power-TechnologyPower": [
+      1390,
+      410
+    ]
+  },
+  {
+    "val_Mod_Profile_MoreInfo_Power-TroopsPower": [
+      1390,
+      482
+    ]
+  },
+  {
+    "val_Mod_Profile_MoreInfo_Power-CommanderPower": [
+      1390,
+      554
+    ]
+  },
+  {
+    "btn_WallpaperEmulROKMax": [
+      272,
+      113
+    ]
+  },
+  {
+    "img_Building역참1": [
+      951,
+      134
+    ]
+  },
+  {
+    "img_Building주점1": [
+      782,
+      498
+    ]
+  },
+  {
+    "bdg_Building_Castle1": [
+      1599,
+      521
+    ]
+  },
+  {
+    "bdg_Amies_Camp1": [
+      1840,
+      329
+    ]
+  },
+  {
+    "btn_Mod_MenuAlliance_Gifts_Close": [
+      1672,
+      65
+    ]
+  },
+  {
+    "tab_Mod_MenuAlliance_Gifts_Normal": [
+      1002,
+      307
+    ]
+  },
+  {
+    "tab_Mod_MenuAlliance_Gifts_Rare": [
+      1002,
+      307
+    ]
+  },
+  {
+    "tab_Mod_MenuAlliance_Gifts_Claim": [
+      1388,
+      307
+    ]
+  },
+  {
+    "btn_Mod_MenuAlliance_Gifts_Treasure": [
+      528,
+      625
+    ]
+  },
+  {
+    "btn_Mod_MenuAlliance_Gifts_ClaimAll": [
+      1666,
+      299
+    ]
+  },
+  {
+    "btn_Pop_DefeatBarbarians_Attack": [
+      1197,
+      571
+    ]
+  },
+  {
+    "btn_Pop_DefeatBarbarians_Share": [
+      1461,
+      152
+    ]
+  },
+  {
+    "chk_Pop_DefeatBarbarians_HoldPosition": [
+      1036,
+      658
+    ]
+  },
+  {
+    "lbl_Pop_DefeatBarbarians_HoldPosition": [
+      1224,
+      658
+    ]
+  },
+  {
+    "btn_Pop_Amies_NewTroops": [
+      1517,
+      214
+    ]
+  },
+  {
+    "btn_Mod_Amies_NewTroops_Close": [
+      1676,
+      67
+    ]
+  },
+  {
+    "btn_Mod_Amies_NewTroops_March": [
+      1398,
+      942
+    ]
+  },
+  {
+    "btn_Mod_Amies_NewTroops_Save": [
+      1656,
+      248
+    ]
+  },
+  {
+    "btn_Mod_Amies_NewTroops_Call": [
+      1656,
+      325
+    ]
+  },
+  {
+    "btn_Mod_Amies_NewTroops_1": [
+      1654,
+      401
+    ]
+  },
+  {
+    "btn_Mod_Amies_NewTroops_2": [
+      1654,
+      486
+    ]
+  },
+  {
+    "btn_Mod_Amies_NewTroops_3": [
+      1654,
+      571
+    ]
+  },
+  {
+    "btn_Mod_Amies_NewTroops_4": [
+      1654,
+      656
+    ]
+  },
+  {
+    "btn_Mod_Amies_NewTroops_5": [
+      1654,
+      741
+    ]
+  },
+  {
+    "lbl_Mod_Amies_NewTroops_TotalPower": [
+      932,
+      185
+    ]
+  },
+  {
+    "lbl_Mod_Amies_NewTroops_CommanderPower": [
+      1334,
+      185
+    ]
+  },
+  {
+    "lbl_Mod_Amies_NewTroops_Units": [
+      942,
+      801
+    ]
+  },
+  {
+    "lbl_Mod_Amies_NewTroops_ActionPointCost": [
+      1364,
+      801
+    ]
+  },
+  {
+    "val_Mod_Amies_NewTroops_TotalPower": [
+      1104,
+      185
+    ]
+  },
+  {
+    "val_Mod_Amies_NewTroops_CommanderPower": [
+      1606,
+      185
+    ]
+  },
+  {
+    "val_Mod_Amies_NewTroops_Units": [
+      1108,
+      801
+    ]
+  },
+  {
+    "val_Mod_Amies_NewTroops_ActionPointCost": [
+      1555,
+      801
+    ]
+  },
+  {
+    "val_Mod_Amies_NewTroops_Predict": [
+      1399,
+      871
+    ]
+  },
+  {
+    "btn_Mod_Amies_NewTroops_Clear": [
+      1023,
+      942
+    ]
+  },
+  {
+    "val_Mod_Amies_NewTroops_MarchTime": [
+      1423,
+      968
+    ]
+  },
+  {
+    "btn_Mod_Events1_Close": [
+      1666,
+      63
+    ]
+  },
+  {
+    "btn_Mod_Events1_EventCalendar": [
+      433,
+      161
+    ]
+  },
+  {
+    "btn_Mod_Events1_Hot-ArkOfOsiris": [
+      433,
+      601
+    ]
+  },
+  {
+    "btn_Mod_Events1_Hot-TheMightiestGovernor": [
+      433,
+      781
+    ]
+  },
+  {
+    "btn_Mod_Events1_Hot-CeroliCrisis": [
+      433,
+      165
+    ]
+  },
+  {
+    "btn_Mod_Events1_RegularEvents-VastTerritory": [
+      433,
+      779
+    ]
+  },
+  {
+    "btn_Mod_Events1_RegularEvents-OttomanEmpire": [
+      433,
+      433
+    ]
+  },
+  {
+    "btn_Mod_Events1_RegularEvents-NowOrNever": [
+      433,
+      611
+    ]
+  },
+  {
+    "btn_Mod_Events1_RegularEvents-HolyConqueror": [
+      433,
+      790
+    ]
+  },
+  {
+    "btn_Mod_Events1_RegularEvents-StrategicReserve": [
+      433,
+      543
+    ]
+  },
+  {
+    "btn_Mod_Events1_RegularEvents-EraBreakthrough": [
+      433,
+      722
+    ]
+  },
+  {
+    "btn_Mod_Events1_RegularEvents-Community": [
+      433,
+      900
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_Expedition_Close": [
+      61,
+      55
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_Expedition_Shop": [
+      192,
+      176
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_Expedition_Gifts": [
+      189,
+      351
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_Expedition_Challenge": [
+      1547,
+      988
+    ]
+  },
+  {
+    "val_Mod_MenuChampaign_Expedition_Medal": [
+      1647,
+      37
+    ]
+  },
+  {
+    "val_Mod_MenuChampaign_Expedition_Gem": [
+      1844,
+      37
+    ]
+  },
+  {
+    "val_Mod_MenuChampaign_Expedition_Completion": [
+      316,
+      947
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_SunsetCanyon1_Back": [
+      61,
+      55
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_SunsetCanyon1_History": [
+      96,
+      666
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_SunsetCanyon1_Defense": [
+      96,
+      472
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_SunsetCanyon1_Challenge": [
+      961,
+      978
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_SunsetCanyon_Challenge_Close": [
+      1668,
+      59
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_SunsetCanyon_Challenge_Refresh": [
+      390,
+      166
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_SunsetCanyon_Challenge_Challenge": [
+      1422,
+      291
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_SunsetCanyon_Battle_Back": [
+      61,
+      55
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_SunsetCanyon_Battle_OK": [
+      961,
+      974
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_SunsetCanyon_Battle_FastForward": [
+      1779,
+      999
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_LostCanyon1_Back": [
+      61,
+      55
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_LostCanyon1_History": [
+      87,
+      753
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_LostCanyon1_Defense": [
+      87,
+      937
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_LostCanyon1_Challenge": [
+      961,
+      956
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_LostCanyon1_GiftsBucket": [
+      1555,
+      83
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_LostCanyon_Challenge_Close": [
+      1538,
+      61
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_LostCanyon_Challenge_Refresh": [
+      473,
+      156
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_LostCanyon_Challenge_Challange": [
+      1351,
+      291
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_LostCanyon_Battle_Back": [
+      61,
+      55
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_LostCanyon_Battle_OK": [
+      961,
+      974
+    ]
+  },
+  {
+    "btn_Mod_MenuChampaign_LostCanyon_Battle_FastForward": [
+      1779,
+      999
+    ]
+  },
+  {
+    "btn_Mod_Quests_DailyObjectives_Close": [
+      1638,
+      123
+    ]
+  },
+  {
+    "val_Mod_Profile_Settings_CharacterManagement_Nick_1": [
+      709,
+      274
+    ]
+  },
+  {
+    "val_Mod_Profile_Settings_CharacterManagement_Nick_2": [
+      1413,
+      274
+    ]
+  },
+  {
+    "val_Mod_Profile_Settings_CharacterManagement_Nick_3": [
+      709,
+      486
+    ]
+  },
+  {
+    "val_Mod_Profile_Settings_CharacterManagement_Nick_4": [
+      1413,
+      486
+    ]
+  },
+  {
+    "val_Mod_Profile_Settings_CharacterManagement_Server_3": [
+      521,
+      533
+    ]
+  },
+  {
+    "val_Mod_Profile_Settings_CharacterManagement_Server_4": [
+      1242,
+      533
+    ]
+  },
+  {
+    "val_Mod_Profile_Settings_CharacterManagement_Power_3": [
+      684,
+      569
+    ]
+  },
+  {
+    "val_Mod_Profile_Settings_CharacterManagement_Power_4": [
+      1302,
+      569
+    ]
+  },
+  {
+    "lbl_Mod_Profile_Settings_CharacterManagement_Power_3": [
+      538,
+      569
+    ]
+  },
+  {
+    "lbl_Mod_Profile_Settings_CharacterManagement_Power_4": [
+      1242,
+      569
+    ]
+  },
+  {
+    "btn_Mod_Profile_Settings_CharacterManagement_CharacterLogin_Yes": [
+      1220,
+      767
+    ]
+  },
+  {
+    "btn_Mod_Profile_Settings_CharacterManagement_CharacterLogin_No": [
+      714,
+      767
+    ]
+  }
+]

@@ -194,6 +194,20 @@ def get_wh_from_box(box):
     """
     return [box[0], box[1], box[2] - box[0], box[3] - box[1]]
 
+
+
+def get_center_from_box(box):
+    """
+    Brief: get box from wh
+        - box coordinate([x1:left, y1:top, x2:right, y2:bottom])
+        - wh coordinate([x1, y1, w, h])
+    Args:
+        box (list): box coordinate
+    Returns:
+        wh (list): wh coordinate([x1, y1, w, h])
+    """
+    return [(box[0] + box[2])//2, (box[1] + box[3])//2]
+
 ##@@@-------------------------------------------------------------------------
 ##@@@ simple GUI Functions(pyautogui:: mouse/keyboard) 
 

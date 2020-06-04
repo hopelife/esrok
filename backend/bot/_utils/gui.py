@@ -555,6 +555,11 @@ def receive_village_gifts(location=[_MAP['ONE_MAX'][0]//2, _MAP['ONE_MAX'][1]//2
         delay(0.01)
 
 
+
+def explore_caves():
+    pass
+
+
 ##@@@@========================================================================
 ##@@@@ Execute Test
 if __name__ == "__main__":

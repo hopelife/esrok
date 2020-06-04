@@ -535,7 +535,7 @@ def receive_village_gifts(location=[_MAP['ONE_MAX'][0]//2, _MAP['ONE_MAX'][1]//2
     coord = get_coordinate()
 
     for _ in range(0, max_i):
-        center = _ir.match_image_box(template, _MAP['EDGE'], precision=0.97)
+        center = _ir.match_image_box(template, _MAP['EDGE'], precision=0.978)
         
         #if not center or coord == get_coordinate():
         if not center:

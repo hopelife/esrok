@@ -240,7 +240,7 @@ def get_center_match_image(template, offset=[0, 0], image=None, mask=None, preci
     center = match_image_box(template, image, mask, precision, method)
     if center:
         point = [center[0] + offset[0], center[1] + offset[1]]
-        click_mouse(point)
+        #click_mouse(point)  ##@@@@@@@@@@@@@
         return point
     else:
         return False
@@ -373,37 +373,20 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
 
 
 
-##def test_match_image_box(template, image, mask, precision=0.3, method=cv2.TM_CCOEFF_NORMED):
-def test_match_image_box(template, image, mask, precision=0.95, method=cv2.TM_CCORR_NORMED):
-    """
-    Brief: 매칭 되는 이미지(>precision) 중앙 좌표 반환, 없으면 False
-    Args:
-        template (cv2 image array):
-        image (cv2 image array):
-    """
-    img_ = cv2.imread(image, cv2.IMREAD_COLOR)
-    img_original = img_.copy()
-    #img = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
-    img = cv2.cvtColor(img_, cv2.COLOR_BGR2GRAY)
-    tpl = cv2.imread(template, cv2.IMREAD_GRAYSCALE)
-    msk = cv2.imread(mask, cv2.IMREAD_GRAYSCALE)
-    res = cv2.matchTemplate(img, tpl, method, mask=msk)
-
-    loc = np.where(res >= precision)
-    w, h = tpl.shape[:]
-    print('num: {}'.format(len(loc)))
-    print('shape: {}'.format(tpl.shape))
-
-    i = 0
-    for pt in zip(*loc[::-1]):
-        i += 1
-        cv2.rectangle(img_original, pt, (pt[0]+w, pt[1]+h), (0, 0, 255), 2)
-
-    print(i)
-    cv2.imshow('find images', img_original)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
-
+def wait_match_image(template, image=None, precision=0.978, duration=15):
+    center = get_center_match_image(template, image, precision)
+    _ITV_MATCH_IMAGE = 0.1
+    if duration == 0:
+        return center
+    else:
+        #n = duration // _ITV_MATCH_IMAGE
+        for _ in range(0, duration):
+            center = get_center_match_image(template, image, precision)
+            if center == False:
+                delay(_ITV_MATCH_IMAGE)
+            else:
+                return center
+    return False
 
 
 ##@@@-------------------------------------------------------------------------

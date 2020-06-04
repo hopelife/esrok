@@ -532,23 +532,25 @@ def receive_village_gifts(location=[_MAP['ONE_MAX'][0]//2, _MAP['ONE_MAX'][1]//2
     zoom_out()
     #go_by_coordinate(location)
     template = '../images/uis/img_ExploreVillage.png'  ##@@@@@@@@@@@@
-    coord = get_coordinate()
+    #coord = get_coordinate()
 
     for _ in range(0, max_i):
-        center = _ir.match_image_box(template, _MAP['EDGE'], precision=0.978)
+        center = _ir.wait_match_image(template, _MAP['EDGE'], precision=0.978, duration=15)
+        #center = _ir.match_image_box(template, _MAP['EDGE'], precision=0.978)
         
         #if not center or coord == get_coordinate():
-        if not center:
-            coord = get_coordinate()
-            drag_in_map([-100, 0])
-            #receive_village_gifts()
-            continue
+
+        # if not center:
+        #     #coord = get_coordinate()
+        #     drag_in_map([-100, 0])
+        #     #receive_village_gifts()
+        #     continue
 
         click_mouse(center)
         print(center)
-        delay(3)
-        click_mouse2([_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
         delay(1)
+        click_mouse2([_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
+        delay(0.1)
         click_mouse([_ENV['_MAX_X']//2 - 200, _ENV['_MAX_Y']//2])
         delay(0.1)
         zoom_out()

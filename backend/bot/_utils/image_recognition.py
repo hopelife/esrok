@@ -248,22 +248,6 @@ def get_center_match_image(template, offset=[0, 0], image=None, mask=None, preci
 
 #def match_image_box(template, image=None, mask=None, precision=0.9, method=cv2.TM_CCOEFF_NORMED, show=False, multi=0):
 def match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.TM_CCORR_NORMED, show=False, multi=0):
-    offset = [0, 0]
-    if type(image) is list:
-        offset = [image[0], image[1]]
-
-    img = get_image(image)
-    #tpl = get_image(template, color='GRAY')
-    tpl = get_image(template)
-
-    # cv2.imshow('image', img)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
-    # cv2.imshow('tpl', tpl)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
     """
     Brief:
         - 매칭 되는 이미지(>precision) 중앙 좌표 반환, 없으면 False
@@ -280,6 +264,13 @@ def match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.
     Returns:
         center (list) : center of box[x1, y1]
     """
+    offset = [0, 0]
+    if type(image) is list:
+        offset = [image[0], image[1]]
+
+    img = get_image(image)
+    #tpl = get_image(template, color='GRAY')
+    tpl = get_image(template)
 
     if mask != None:
         mask = cv2.imread(mask, 0)
@@ -298,18 +289,6 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
     img_original = image.copy()
     image = cv2.cvtColor(img_original, cv2.COLOR_BGR2GRAY)
     template = cv2.cvtColor(template, cv2.COLOR_BGR2GRAY)
-    #mask = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
-
-    # cv2.imshow('template', template)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
-    # cv2.imshow('image', image)
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
-    # image.astype(np.float32)
-    # template.astype(np.float32)
 
     if mask is None:
         print('mask not exist!!!')
@@ -327,7 +306,6 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
     #w, h, _ = template.shape[::]
     #w, h = template.shape[:]
     h, w = template.shape[:]
-
 
     if multi == 0:
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
@@ -374,14 +352,14 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
 
 
 def wait_match_image(template, image=None, precision=0.978, duration=15):
-    center = get_center_match_image(template, image, precision)
+    center = match_image_box(template, image, precision)
     _ITV_MATCH_IMAGE = 0.1
     if duration == 0:
         return center
     else:
         #n = duration // _ITV_MATCH_IMAGE
         for _ in range(0, duration):
-            center = get_center_match_image(template, image, precision)
+            center = match_image_box(template, image, precision)
             if center == False:
                 delay(_ITV_MATCH_IMAGE)
             else:

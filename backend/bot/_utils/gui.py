@@ -31,11 +31,14 @@ import os
 import time
 import random
 import math
+import re
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ Installed(conda/pip) Libraries
 import pyautogui as pag
 import pyperclip
+import numpy as np
+#import cv2
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ User Libraries
@@ -150,11 +153,53 @@ def move_by_object():
     pass
 
 
-def move_direction(start=[0,0], callback=None, direction=[1,0]):
-    pass
+# def transform_perspective(points, trans='inverse'):
+#     if trans == 'inverse':
+#         M = np.matrix(_MAP['M_R2P'])
+#     else:
+#         M = np.matrix(_MAP['M_P2R'])
+
+#     if type(points) is list:  ## 1 point
+#         X = M.dot(np.array([points[0], points[1], 1]))
+#         X = np.asarray(X).reshape(-1)
+#         R = [round(X[0]/X[2]), round(X[1]/X[2])]
+#         print('R From One Point: {}'.format(R))
+#     elif type(points) is tuple:  ## multi points ((75, 148), (112, 100), (150, 75))
+#         R = cv2.perspectiveTransform(np.array([points], dtype=np.float32), M)
+#         print('R From Multi Points: {}'.format(R))
+#     return R
 
 
-def move_rotation(start=[0,0], step=1, count=1, callback=None, rotation='clockwise', angle=1):
+def move_direction(zeroPoint=[_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2], callback=None, direction=[1,0]):
+    #relPoint = [direction[0], direction[1]]
+    pag.moveTo(zeroPoint[0], zeroPoint[1], duration=0.0)
+    pag.mouseDown()
+    time.sleep(0.1)
+    pag.moveTo(zeroPoint[0] + direction[0], zeroPoint[1] + direction[1], duration=0.5)
+    time.sleep(0.1)
+    pag.mouseUp()
+    #pag.dragRel(relPoint[0], relPoint[1], duration=0.02, button='left')
+    time.sleep(1)
+    return direction
+    # # x_ratio = 6
+    # # y_ratio = 4.5
+    # x_ratio = 4.985
+    # y_ratio = 2.992
+    # print('x_ratio: {}, y_ratio: {}'.format(x_ratio, y_ratio))
+    # relPoint = [direction[0]*x_ratio, direction[1]*y_ratio]
+    # pag.moveTo(zeroPoint[0], zeroPoint[1], duration=0.0)
+    # pag.mouseDown()
+    # time.sleep(0.1)
+    # pag.moveTo(zeroPoint[0] + relPoint[0], zeroPoint[1] + relPoint[1], duration=0.5)
+    # time.sleep(0.1)
+    # pag.mouseUp()
+    # #pag.dragRel(relPoint[0], relPoint[1], duration=0.02, button='left')
+    # time.sleep(1)
+    # return relPoint
+
+
+
+def move_rotation(zeroPoint=[_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2], step=1, count=1, callback=None, rotation='clockwise', angle=1):
     """
     Brief: 
     Args:
@@ -162,13 +207,57 @@ def move_rotation(start=[0,0], step=1, count=1, callback=None, rotation='clockwi
         count (int): 
         angle (int): 1 -> rotate 90 degree, 2 -> rotate 180 degree, 4 -> rotate 360 degree
     """
-    pass
+    # x_ratio = 4.985
+    # y_ratio = 2.992
+    x_ratio = 5/0.73
+    y_ratio = 3/0.95
+    # clockwise = [
+    #     [0,0],
+    #     [-1,0],
+    #     [0,-1],
+    #     [1,0],
+    #     [1,0],
+    #     [0,1],
+    #     [0,1],
+    #     [-1,0],
+    #     [-1,0],
+    #     [0,-1],
+    # ]
+    clockwise = [
+        [0,0],
+        [-0.725, 0],
+        [0, -0.95],
+        [0.73, 0],
+        [0.73, 0],
+        [0, 1.353],
+        [0, 1.353],
+        [-0.726, 0],
+        [-0.726, 0],
+        [0, -0.942],
+    ]
+    box = get_box_from_center(zeroPoint, [step*3*x_ratio, step*3*y_ratio])
+    _ir.save_screenshot(box=box, path='../images/test/04/whole.png')
 
-# def get_screen_center():
-#     """
-#     Brief: get screen center
-#     """
-#     return [_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2]
+    for i, unit in enumerate(clockwise):
+        direction = [unit[0]*step*x_ratio, unit[1]*step*y_ratio]
+
+        w = 0.73*step*x_ratio
+        h = 0.95*step*y_ratio
+        # if i > 5 and i < 9:
+        #     h = 1.353*step*y_ratio
+        box = get_box_from_center(zeroPoint, [w, h])
+
+        if i > 0:
+            move_direction(zeroPoint=zeroPoint, direction=direction)
+        time.sleep(2)
+        print(get_coordinate())
+        #_ir.save_screenshot(path='../images/test/04/' + str(i) + '.png')
+        if i < 9:
+            ### callback@@@@@@@@
+            ## callback
+            path='../images/test/04/' + str(i) + '.png'
+            callback(box, path)
+            #_ir.save_screenshot(box=box, path='../images/test/04/' + str(i) + '.png')
 
 
 def get_box_from_wh(wh):
@@ -207,6 +296,19 @@ def get_center_from_box(box):
         wh (list): wh coordinate([x1, y1, w, h])
     """
     return [(box[0] + box[2])//2, (box[1] + box[3])//2]
+
+
+def get_box_from_center(center, wh):
+    """
+    Brief: get box from wh
+        - box coordinate([x1:left, y1:top, x2:right, y2:bottom])
+        - wh coordinate([x1, y1, w, h])
+    Args:
+        box (list): box coordinate
+    Returns:
+        wh (list): wh coordinate([x1, y1, w, h])
+    """
+    return [center[0] - wh[0]//2, center[1] - wh[1]//2, center[0] + wh[0]//2, center[1] + wh[1]//2]
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ simple GUI Functions(pyautogui:: mouse/keyboard) 
@@ -300,8 +402,10 @@ def get_image_path(name, category='_UIS'):
 
 
 def get_viewmode():
-    cityview = _ir.get_center_match_image(get_image_path('btn_GoWorldView'), precision=0.9)
-    if cityview:
+    #cityview = _ir.get_center_match_image(get_image_path('btn_GoWorldView'), precision=0.9)
+    cityview = _ir.match_image_box(template=get_image_path('btn_GoWorldView'), image=[10, 902, 174, 1070], precision=0.95)
+    print('cityview: {}'.format(cityview))
+    if type(cityview) is list:
         return 'CITY_VIEW'
     else:
         return 'WORLD_VIEW'
@@ -312,13 +416,34 @@ def set_viewmode(mode='CITY_VIEW'):
         click_mouse(ui_xy['btn_GoWorldView'])
 
 
+def set_mode_explore():
+    chk_explore = _ir.match_image_box('../images/uis/chk_Explore.png', [10, 238, 60, 288], precision=0.99)
+    if type(chk_explore) is list:
+        print('already explore mode')
+    elif not chk_explore: 
+        click_mouse([36, 260])
+        print('click explore mode')
+
+
+def shot_zoom_out():
+    keys = ui_key[_ENV['_OS']]['ZOOM_OUT']
+    pag.moveTo(_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2)
+    for i in range(0, 34):
+        pag.keyDown(keys[0])
+        time.sleep(0.1)
+        pag.keyUp(keys[0])
+        time.sleep(1)
+        _ir.save_screenshot(path='../images/test/02/zoom_' + str(i) + '.png')
+        time.sleep(0.2)
+
+
 def zoom_out(nth=_ENV['_ZOOM_MAX']):
     pag.moveTo(_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2)
     keys = ui_key[_ENV['_OS']]['ZOOM_OUT']
     for _ in range(0, nth):
         for key in keys:
             pag.keyDown(key)
-            time.sleep(0.2)
+            time.sleep(0.02)
         for key in keys:
             pag.keyUp(key)
             time.sleep(0.01)
@@ -345,16 +470,46 @@ def get_coordinate():
         location (list): 좌표
         viewmode (str): CITY_VIEW / WORLD_VIEW(min -> GLOBE)
     """
+    # @@@@@@@@@@@@@@@@@
     if get_viewmode() is 'CITY_VIEW':
         set_viewmode('WORLD_VIEW')
 
+    #_ir.filter_color(image, color='WHITE')
     t = _ir.do_ocr([400, 16, 642, 46], 'eng', reverse=True)  # 전체
-    s = _ir.do_ocr([418, 16, 484, 46], 'digits', reverse=True)  # server
-    x = _ir.do_ocr([510, 16, 562, 46], 'digits', reverse=True)  # x
-    y = _ir.do_ocr([588, 16, 640, 46], 'digits', reverse=True)  # y
-    print('t: {}, s: {}, x: {}, y: {}'.format(t, s, x, y))
+    
+    #t = '#10 2 175   X:2 97Y:104'
+    print(t)
+    ##@@@@@@@@@
+    s = ['i', 'I', 'l', 'o', 'O', ',', '/']
+    d = ['1', '1', '1', '0', '0', '', '7']
+    for i, v in enumerate(s):
+        #print('s: {}, d: {}'.format(s[i], d[i]))
+        t = t.replace(s[i], d[i])
+    t = re.sub(r'(\d) +(\d)', r'\1\2', t)
+    t = re.sub(r'(\d) +(\d)', r'\1\2', t)
 
-    return t
+    t = re.sub(r'[a-zA-Z]', ' ', t)
+    t = re.sub(r'[^0-9,\. ]+', '', t)
+    t = re.sub(r' {2,}', ' ', t)
+
+    t = " ".join(t.strip().split())
+
+    arr = t.split(' ')
+
+    for i, a in enumerate(arr):
+        if len(a) > 4:
+            print(a)
+            arr[i] = a[len(a)-4:]
+
+    if len(arr) == 3:
+        return (int(arr[0]), int(arr[1]), int(arr[2]))
+    else:
+        return False
+    # s = _ir.do_ocr([418, 16, 484, 46], 'digits', reverse=True)  # server
+    # x = _ir.do_ocr([510, 16, 562, 46], 'digits', reverse=True)  # x
+    # y = _ir.do_ocr([588, 16, 640, 46], 'digits', reverse=True)  # y
+    #print('t: {}, s: {}, x: {}, y: {}'.format(t, s, x, y))
+
 
 
 def find_verification_verify():
@@ -464,21 +619,66 @@ def go_by_coordinate(location=[0,0]):
 
 
 
+# def save_whole_maps(searchMode='Explore', zoom=320, max_size=_MAP['ONE_MAX']):
+#     """
+#     Brief: 지도 스크린샷 저장
+#     Args:
+#         searchMode (str): Alliance, Explore, Resources, Markers, Barbarian Stronghold
+#     """
+#     #set_fullscreen()
+#     #get_server_num()
+#     #set_searchmode()
+#     # _MAP : {
+#     #     'WHOLE': [1200, 1200],
+#     #     'ONE_MIN': [8, 6],
+#     #     'ONE_MAX': [320, 240],
+#     #     'EDGE': [210, 210, 1160, 940]
+#     # }
+#     server = '1621'
+
+#     ## edge 고려 안함
+#     # w = shotsize[0]
+#     # h = shotsize[1]
+#     # start = [w//2, h//2]
+#     box = _MAP['EDGE']
+#     ratio_x = _ENV['_MAX_X'] / _MAP['ONE_MAX'][0]
+#     ratio_y = _ENV['_MAX_Y'] / _MAP['ONE_MAX'][1]
+#     x1_ = math.floor(_MAP['EDGE'][0]/ratio_x)
+#     y1_ = math.floor(_MAP['EDGE'][1]/ratio_y)
+#     x2_ = math.floor((_ENV['_MAX_X'] - _MAP['EDGE'][2])/ratio_x)
+#     y2_ = math.floor((_ENV['_MAX_Y'] - _MAP['EDGE'][3])/ratio_y)
+#     w = _MAP['ONE_MAX'][0] - x2_ + x1_
+#     h = _MAP['ONE_MAX'][1] - y1_ + y2_
+#     # w = _MAP['ONE_MAX'][0] - x1_ - x2_
+#     # h = _MAP['ONE_MAX'][1] - y1_ - y2_
+#     start = [_MAP['ONE_MAX'][0]//2 - x1_, _MAP['ONE_MAX'][1]//2 - y2_]
+
+#     # w = (_MAP['EDGE'][2] - _MAP['EDGE'][0]) / ratio_x
+#     # h = (_MAP['EDGE'][3] - _MAP['EDGE'][1]) / ratio_y
+
+#     x_no = _MAP['WHOLE'][0]//w - 1
+#     y_no = _MAP['WHOLE'][1]//h - 3
+
+#     print('ratio_x: {}, ratio_y: {}'.format(ratio_x, ratio_y))
+#     print('w: {}, h: {}, x1_: {}, _x2: {}, _y1: {}, y2_: {}, start: {}'.format(w, h, x1_, x2_, y1_, y2_, start))
+#     print('x_no: {}, y_no: {}'.format(x_no, y_no))
+
+#     for j in range(0, y_no):
+#         for i in range(0, x_no):
+#             location = [start[0] + i*w, start[1] + j*h]
+#             #print(location)
+#             save_screenshot_map(location, searchMode, box, server)
+#             delay(1)
+
+#     return 0
+
+
 def save_whole_maps(searchMode='Explore', zoom=320, max_size=_MAP['ONE_MAX']):
     """
     Brief: 지도 스크린샷 저장
     Args:
         searchMode (str): Alliance, Explore, Resources, Markers, Barbarian Stronghold
     """
-    #set_fullscreen()
-    #get_server_num()
-    #set_searchmode()
-    # _MAP : {
-    #     'WHOLE': [1200, 1200],
-    #     'ONE_MIN': [8, 6],
-    #     'ONE_MAX': [320, 240],
-    #     'EDGE': [210, 210, 1160, 940]
-    # }
     server = '1621'
 
     ## edge 고려 안함
@@ -488,34 +688,34 @@ def save_whole_maps(searchMode='Explore', zoom=320, max_size=_MAP['ONE_MAX']):
     box = _MAP['EDGE']
     ratio_x = _ENV['_MAX_X'] / _MAP['ONE_MAX'][0]
     ratio_y = _ENV['_MAX_Y'] / _MAP['ONE_MAX'][1]
-    x1_ = math.floor(_MAP['EDGE'][0]/ratio_x)
-    y1_ = math.floor(_MAP['EDGE'][1]/ratio_y)
-    x2_ = math.floor((_ENV['_MAX_X'] - _MAP['EDGE'][2])/ratio_x)
-    y2_ = math.floor((_ENV['_MAX_Y'] - _MAP['EDGE'][3])/ratio_y)
-    w = _MAP['ONE_MAX'][0] - x2_ + x1_
-    h = _MAP['ONE_MAX'][1] - y1_ + y2_
-    # w = _MAP['ONE_MAX'][0] - x1_ - x2_
-    # h = _MAP['ONE_MAX'][1] - y1_ - y2_
-    start = [_MAP['ONE_MAX'][0]//2 - x1_, _MAP['ONE_MAX'][1]//2 - y2_]
-
-    # w = (_MAP['EDGE'][2] - _MAP['EDGE'][0]) / ratio_x
-    # h = (_MAP['EDGE'][3] - _MAP['EDGE'][1]) / ratio_y
-
-    x_no = _MAP['WHOLE'][0]//w - 1
-    y_no = _MAP['WHOLE'][1]//h - 3
+    w = math.floor((_MAP['EDGE'][2] - _MAP['EDGE'][0])/ratio_x) + 37
+    h = math.floor((_MAP['EDGE'][3] - _MAP['EDGE'][1])/ratio_y)
+    start = [165, 131]
 
     print('ratio_x: {}, ratio_y: {}'.format(ratio_x, ratio_y))
-    print('w: {}, h: {}, x1_: {}, _x2: {}, _y1: {}, y2_: {}, start: {}'.format(w, h, x1_, x2_, y1_, y2_, start))
-    print('x_no: {}, y_no: {}'.format(x_no, y_no))
+    print('w: {}, h: {}, start: {}'.format(w, h, start))
 
-    for j in range(0, y_no):
-        for i in range(0, x_no):
+    for j in range(0, 2):
+        for i in range(0, 3):
             location = [start[0] + i*w, start[1] + j*h]
             #print(location)
             save_screenshot_map(location, searchMode, box, server)
             delay(1)
 
     return 0
+
+
+def save_move_direction(zeroPoint=[_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2], direction=[-10, 0]):
+    x_ = direction[0]
+    y_ = direction[1]
+    for i in range(1, 6):
+        path = _PATH['_MAPS'] + 'move_' + str(direction[0]) + '_' + str(direction[1]) + _ENV['_IMG_EXT']
+        delay(3)
+        _ir.save_screenshot(path=path)
+        direction[0] += x_
+        direction[1] += y_
+        move_direction(zeroPoint=zeroPoint, direction=[x_, y_])
+        time.sleep(1)
 
 
 def save_screenshot_map(location=[0, 0], searchMode='Explore', box=[], server=''):
@@ -528,27 +728,27 @@ def save_screenshot_map(location=[0, 0], searchMode='Explore', box=[], server=''
 
 
 
-def receive_village_gifts(location=[_MAP['ONE_MAX'][0]//2, _MAP['ONE_MAX'][1]//2], max_i=50):
+def receive_village_gifts(location=[_MAP['ONE_MAX'][0]//2, _MAP['ONE_MAX'][1]//2], max_i=2):
     zoom_out()
     #go_by_coordinate(location)
     template = '../images/uis/img_ExploreVillage.png'  ##@@@@@@@@@@@@
     #coord = get_coordinate()
+    set_mode_explore()
 
     for _ in range(0, max_i):
+        start = time.time()  # 시작 시간 저장
         center = _ir.wait_match_image(template, _MAP['EDGE'], precision=0.978, duration=15)
-        #center = _ir.match_image_box(template, _MAP['EDGE'], precision=0.978)
-        
-        #if not center or coord == get_coordinate():
+        print("time :", time.time() - start)  ## 실행 속도 측정
 
-        # if not center:
-        #     #coord = get_coordinate()
-        #     drag_in_map([-100, 0])
-        #     #receive_village_gifts()
-        #     continue
+        if not center:
+            #coord = get_coordinate()
+            drag_in_map([-100, 0])
+            #receive_village_gifts()
+            continue
 
         click_mouse(center)
         print(center)
-        delay(1)
+        delay(0.1)
         click_mouse2([_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
         delay(0.1)
         click_mouse([_ENV['_MAX_X']//2 - 200, _ENV['_MAX_Y']//2])
@@ -556,6 +756,13 @@ def receive_village_gifts(location=[_MAP['ONE_MAX'][0]//2, _MAP['ONE_MAX'][1]//2
         zoom_out()
         delay(0.01)
 
+
+
+def search_villages(location=[165, 131]):
+    #go_by_coordinate(location)
+    template = '../images/uis/img_ExploreVillage.png'  ##@@@@@@@@@@@@
+    #_ir.match_image_box(template, _MAP['EDGE'], precision=0.978, show=True, multi=1)
+    _ir.match_image_box(template, precision=0.97, show=True, multi=1)
 
 
 def explore_caves():
@@ -641,5 +848,21 @@ if __name__ == "__main__":
     # delay(7)
     #do_verification_reward(0.7)
     #do_verification_rewards(0.7)
-    receive_village_gifts([924, 212])
+    #receive_village_gifts([924, 212])
     #get_coordinate()
+    #set_mode_explore()
+
+    #shot_zoom_out()
+
+    #save_whole_maps()
+    #search_villages()
+    #move_direction(direction=[100,0])
+    #save_move_direction([_ENV['_MAX_X']-100, _ENV['_MAX_Y']//2], [-300,0])
+    #save_move_direction(zeroPoint=[_ENV['_MAX_X']//2, _ENV['_MAX_Y']-100], direction=[0, -300])
+    #save_move_direction(zeroPoint=[_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2], direction=[0, -100])
+
+    # move_rotation(step=100, callback=_ir.save_screenshot)
+
+    #move_direction(zeroPoint=[960, 540], direction=[-365.0, 0])
+    #transform_perspective([_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2], trans='inverse')
+    print(get_coordinate())

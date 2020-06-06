@@ -36,6 +36,8 @@ import numpy as np
 import pyautogui as pag
 import cv2
 import pytesseract
+import matplotlib.image as mpimg
+import matplotlib.pyplot as plt
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ User Libraries
@@ -49,7 +51,7 @@ import pytesseract
 ##@@@-------------------------------------------------------------------------
 ##@@@ External(.json/.py)
 sys.path.append(os.path.join(os.path.dirname(sys.path[0]), '_config'))
-from _settings import _ENV, _PATH, _TESSERACT
+from _settings import _ENV, _PATH, _MAP, _TESSERACT
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ internal
@@ -116,6 +118,28 @@ def get_image(image=None, color='COLOR', show=False):
         cv2.destroyAllWindows()
 
     return img
+
+
+def transform_perspective(points, trans='inverse'):
+    if trans == 'inverse':
+        M = np.matrix(_MAP['M_R2P'])
+    else:
+        M = np.matrix(_MAP['M_P2R'])
+
+    if type(points[0]) is list:  ## multi points [[960, 540], [1060, 540], [1060, 640], [960, 640]]
+        R = cv2.perspectiveTransform(np.array([tuple(tuple(point) for point in points)], dtype=np.float32), M)
+        #R = np.asarray(R).reshape(-1)
+        #R = np.asarray(R).flatten()
+        #R_ = [[] for in R]
+        R = np.reshape(R, (-1, 2))
+        print('R From Multi Points: {}'.format(R))
+    else:  ## 1 point
+        X = M.dot(np.array([points[0], points[1], 1]))
+        X = np.asarray(X).reshape(-1)
+        #R = [round(X[0]/X[2]), round(X[1]/X[2])]
+        R = [X[0]/X[2], X[1]/X[2]]
+        print('R From One Point: {}'.format(R))
+    return R
 
 
 def snap_screenshot(box=[1, 1, _ENV['_MAX_X'], _ENV['_MAX_Y']]):
@@ -201,8 +225,6 @@ def save_screenshot(box=[1, 1, _ENV['_MAX_X'], _ENV['_MAX_Y']], path=None):
     return 0
 
 
-
-
 ## @@brief:: 이미지 파일 crop -> save
 ## @@note:: 
 def save_file_crop(file, box, path=None):
@@ -269,11 +291,16 @@ def match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.
         offset = [image[0], image[1]]
 
     img = get_image(image)
+
+    # cv2.imshow('img', img)   #@@@@@@@@@@@@@@
+    # cv2.waitKey(0)
+    # cv2.destroyAllWindows()
+
     #tpl = get_image(template, color='GRAY')
     tpl = get_image(template)
 
     if mask != None:
-        mask = cv2.imread(mask, 0)
+        mask = cv2.imread(mask, cv2.IMREAD_GRAYSCALE)
 
     return find_match_image_box(tpl, img, mask, precision, method, offset, show, multi)
 
@@ -309,13 +336,10 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
 
     if multi == 0:
         min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(res)
-        print(max_val)
 
-        if max_val < precision:
-            return False
-        else:
+        if max_val > precision:
             center = [max_loc[0] + w//2 + offset[0], max_loc[1] + h//2 + offset[1]]
-            print(center)
+            print('matched!!!: {}, center: {}'.format(max_val, center))
             if show == True:
                 #cv2.rectangle(img_original, (max_loc[0], max_loc[1]), (max_loc[0]+w, max_loc[1]+h), (0, 0, 255), 2)
                 cv2.rectangle(img_original, (max_loc[0], max_loc[1]), (max_loc[0]+w + offset[0], max_loc[1]+h + offset[1]), (0, 0, 255), 2)
@@ -323,6 +347,10 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
                 cv2.waitKey(0)
                 cv2.destroyAllWindows()
             return center
+        else:
+            print('not matched: {}'.format(max_val))
+            return False
+
     else: #### search multiple matching
         loc = np.where(res >= precision)
         num = len(loc)
@@ -352,20 +380,36 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
 
 
 def wait_match_image(template, image=None, precision=0.978, duration=15):
-    center = match_image_box(template, image, precision)
-    _ITV_MATCH_IMAGE = 0.1
+    center = match_image_box(template, image=image, precision=precision)
+    _ITV_MATCH_IMAGE = 0.5
     if duration == 0:
         return center
     else:
         #n = duration // _ITV_MATCH_IMAGE
         for _ in range(0, duration):
-            center = match_image_box(template, image, precision)
+            center = match_image_box(template, image=image, precision=precision)
             if center == False:
-                delay(_ITV_MATCH_IMAGE)
+                time.sleep(_ITV_MATCH_IMAGE)
             else:
                 return center
     return False
 
+
+def filter_color(image, color='WHITE'):
+    if color == 'WHITE':
+        lower = np.array([0,0,168])
+        upper = np.array([172,111,255])
+
+    img = get_image(image)
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    # 색상 범위를 제한하여 mask 생성
+    img_mask = cv2.inRange(img_hsv, lower, upper)
+    # 원본 이미지를 가지고 Object 추출 이미지로 생성
+    img_result = cv2.bitwise_and(img, img, mask=img_mask)
+    # 결과 이미지 생성
+    #imgplot = plt.imshow(img_result)
+    #plt.show()
+    return img_result
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ Feature Image Functions(이미지 비교: 방향, 크기 무시)
@@ -464,10 +508,30 @@ def find_feature_image_box(template, image=None, origin=[0, 0], precision=0.7, i
 ## @@note::
 def do_ocr(image, lang='eng', reverse=False):
     img = get_image(image, 'GRAY')
+    retval, img = cv2.threshold(img,200,255, cv2.THRESH_BINARY)
+    img = cv2.resize(img,(0,0),fx=3,fy=3)
+    img = cv2.GaussianBlur(img,(11,11),0)
+    img = cv2.medianBlur(img,9)
     if reverse:
         img = ~img
     if img is []:
         return False
+    return pytesseract.image_to_string(img, lang, config = tessdata_dir_config)
+
+
+def do_ocr_filtered(image, color='WHITE', lang='eng', reverse=False):
+    img = filter_color(image, color)
+    #img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    retval, img = cv2.threshold(img,200,255, cv2.THRESH_BINARY)
+    img = cv2.resize(img,(0,0),fx=3,fy=3)
+    img = cv2.GaussianBlur(img,(11,11),0)
+    img = cv2.medianBlur(img,9)
+    if reverse:
+        img = ~img
+    if img is []:
+        return False
+    imgplot = plt.imshow(img)
+    plt.show()
     return pytesseract.image_to_string(img, lang, config = tessdata_dir_config)
 
 
@@ -489,7 +553,7 @@ if __name__ == "__main__":
     #save_screenshot([1, 1, 500, 300])
     #print(do_ocr([524, 214, 1096, 270], 'kor+eng'))
     #get_image('../images/btn_GoWorldView.png')
-    #time.sleep(5)
+    time.sleep(5)
     #get_center_match_image('../images/btn_GoWorldView.png')
     #print(get_center_match_image(os.path.abspath('../images/btn_GoWorldView.png')))
     #print(match_image_box(os.path.abspath('../images/btn_GoWorldView.png')))
@@ -502,5 +566,41 @@ if __name__ == "__main__":
     # coords = [[123, 56], [234, 1], [56, 890], [1, 789], [678, 123], [35, 98]]
     # sort_coords_by_x(coords)
 
-    ocr = do_ocr('../images/test/coordinate2.png')
-    print(ocr)
+    # ocr = do_ocr('../images/test/coordinate2.png')
+    # print(ocr)
+
+    #transform_perspective(points=[960, 540], trans='inverse')
+    #transform_perspective(points=((960, 540), (1060, 540), (1060, 640), (960, 640)), trans='inverse')
+    #center = [960, 540]
+    #step =         [-1,0],
+    #points = [center, [-1, 0], [0, -1], [1, 0], [0, 1]]
+    # points=[
+    #     [960, 540],  #center
+    #     [1060, 540],  # 우 right 
+    #     [960, 640],  # 하 bottom
+    #     [860, 540],  # 좌 left
+    #     [960, 440]  # 상 top
+    # ]
+    # #transform_perspective(points, trans='inverse')
+    # transform_perspective(points, trans='normal')
+
+    # inverse=[
+    #     [ 959.8659   395.19412]  # 
+    #     [1033.05     395.19412]  # [(1033-960:73)/(1060-960), ]
+    #     [ 959.8851   492.9006 ]  # [, (492-396:96)/()]
+    #     [ 886.6818   395.19412]  # [(960-886:74)/860, ]
+    #     [ 959.8486   306.7489]  # [, (396-308:88)/100]
+    # ]
+    # normal=[
+    #     [ 960.13403  684.7339 ]
+    #     [1086.9365   684.7339 ]
+    #     [ 960.104    773.09326]
+    #     [ 833.3314   684.7339 ]
+    #     [ 960.1672   587.1271 ]
+    # ]
+
+    #tu = tuple(ls)
+    #print(tu)
+
+
+    filter_color([400, 16, 642, 46], color='WHITE')

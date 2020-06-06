@@ -29,7 +29,8 @@ KEY_MAP = {
 
 
 LOCATION_ROK_FULL = {
-    'btn_GoWorldView': [], ## 월드뷰로 가기 버튼
+    'btn_GoWorldView': [96, 986], ## 월드뷰로 가기 버튼
+    'btn_GoCityView': [96, 986], ## 월드뷰로 가기 버튼
     'btn_LocationSearch': [670, 38], ## 좌표로 찾기 버튼
     'btn_Pop_LocationSearch_Server': [686, 216],  ## Server 필드
     'btn_Pop_LocationSearch_X': [924, 216],  ## X 좌표 필드

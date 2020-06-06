@@ -1,0 +1,33 @@
+## zoom out
+city view -(3)-> world view -(15)-> mini view -(3)-> globe view -(12)-> min view
+
+## screen / map coord x_ratio
+### min view
+    x_ratio_min = 4.985
+    y_ratio_min = 2.992
+### world view
+    x_ratio = x_ratio_min*55
+    y_ratio = y_ratio_min*60
+
+## perspective box(perspective -> floor plane 좌상->좌하->우상->우하)
+before: [[406, 0], [0, 1079], [1513, 0], [1919, 1079]]
+after: [[0, 0], [0, 1079], [1919, 0], [1919, 1079]]
+
+## perspective box(floor plane -> perspective 좌상->좌하->우상->우하)
+before: [[24, 0], [420, 1079], [895, 0], [1499, 1079]]
+after: [[0, 0], [0, 1079], [1919, 0], [1919, 1079]]
+
+## perspective transfomation matrix
+            [[ 1.73351400e+00,  6.52276816e-01, -7.03806685e+02],
+            [-1.11022302e-16,  1.73351400e+00, -1.70530257e-13],
+            [ 0.00000000e+00,  6.79809084e-04,  1.00000000e+00]]
+
+## inverse perspective transfomation matrix
+            [[ 5.76862949e-01, -3.76274328e-01,  4.06000000e+02],
+            [ 3.69449873e-17,  5.76862949e-01,  1.24374716e-13],
+            [-2.51155380e-20, -3.92156673e-04,  1.00000000e+00]]
+
+## perspective transfomation point
+p = [75, 148, 1]
+X = M.dot(np.array(p))
+print([round(X[0]/X[2]), round(X[1]/X[2])])

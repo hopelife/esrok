@@ -36,7 +36,26 @@ LOCATION_ROK_FULL = {
     'btn_Pop_LocationSearch_X': [924, 216],  ## X 좌표 필드
     'btn_Pop_LocationSearch_Y': [1168, 216],  ## Y 좌표 필드
     'npt_Pop_LocationSearch_Field':  [50, 988],  ## 텍스트 입력 필드
-    'btn_Pop_LocationSearch_Go': [1330, 214]  ## 좌표로 가기 버튼
+    'btn_Pop_LocationSearch_Go': [1330, 214],  ## 좌표로 가기 버튼
+}
+
+OBJECTS = {
+    'village_unvisited': {
+        'img_min': 'img_VillageUnvisited_min',
+        '_msk_min': 'msk_VillageUnvisited_min',
+    },
+    'village_visited': {
+        'img_min': 'img_VillageVisited_min',
+        'msk_min': 'msk_VillageVisited_min',
+    },
+    'cave_uninvestigated': {
+        'img_min': 'img_CaveUninvestigated_min',
+        'msk_min': 'msk_CaveUninvestigated_min',
+    },
+    'cave_investigated': {
+        'img_min': 'img_CaveInvestigated_min',
+        'msk_min': 'msk_CaveInvestigated_min',
+    }
 }
 
 

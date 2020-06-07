@@ -54,6 +54,7 @@ import image_recognition as _ir
 sys.path.append(os.path.join(os.path.dirname(sys.path[0]), '_config'))
 from _settings import _ENV, _PATH, _MAP
 from emulators import KEY_MAP as ui_key
+from emulators import OBJECTS as ui_obj
 from emulators import LOCATION_ROK_FULL as ui_xy
 from emulators import IMAGE_ROK_FULL as ui_img
 
@@ -198,6 +199,77 @@ def move_direction(zeroPoint=[_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2], callback=Non
     # return relPoint
 
 
+def get_coords_for_rotation(step=100, count=9, zeroPoint=[_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2]):
+    """
+    Brief: 시계방향 회전, 우측 이동 -> 
+    Args:
+        step (int): 이동 좌표 크기(minimum size map 기준)
+        count: 단위 이동 횟수(9 -> 360도)
+    Return:
+        coords : [coord1, coord2, ....]
+            coord: {'direction': 이동벡터(screen 기준), 'box': 작업 영역 사각형}
+    """
+
+    x_ratio = 5/0.73
+    y_ratio = 3/0.95
+
+    clockwise = [
+        [0, 0],
+        [-0.725, 0],
+        [0, -0.95],
+        [0.73, 0],
+        [0.73, 0],
+        [0, 1.353],
+        [0, 1.353],
+        [-0.726, 0],
+        [-0.726, 0],
+        #[0, -0.942],
+    ]
+
+    coords = []  # [{'direction':[,], 'box':[,,,]}, {'direction':[,], 'box':[,,,]}]
+    for i, unit in enumerate(clockwise):
+        direction = [int(unit[0]*step*x_ratio), int(unit[1]*step*y_ratio)]
+
+        w = int(0.73*step*x_ratio)
+        h = int(0.95*step*y_ratio)
+        box = get_box_from_center(zeroPoint, [w, h])
+        coord = {'direction':direction, 'box':box}
+        coords.append(coord)
+    
+    return coords
+
+
+def test_rotation(start=[200, 200], step=100, count=9, zeroPoint=[_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2]):
+    zoom_out()
+    coords = get_coords_for_rotation(step, count, zeroPoint)
+    go_by_coordinate(start)
+    i = 0
+
+    _ir.save_screenshot(path='../images/test/04/whole.png')
+
+    locations = []
+    for coord in coords:
+        center = get_coordinate()
+        if i > 0:
+            move_direction(zeroPoint, direction=coord['direction'])
+        
+        ## find villages @@@@
+        #search_villages(location=[165, 131], box)
+        #if i < 9:
+
+        ## callback @@@@@@@@@@@@@@
+        # path='../images/test/04/' + str(i) + '.png'
+        # _ir.save_screenshot(box=coord['box'], path='../images/test/04/' + str(i) + '.png')
+        
+        
+        locations.append({'center':[center[1], center[2]], 'box':coord['box']})
+        i += 1
+
+        #locations.append({'center':center, 'box':coord['box']})
+    
+    return locations
+
+
 
 def move_rotation(zeroPoint=[_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2], step=1, count=1, callback=None, rotation='clockwise', angle=1):
     """
@@ -207,22 +279,10 @@ def move_rotation(zeroPoint=[_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2], step=1, count
         count (int): 
         angle (int): 1 -> rotate 90 degree, 2 -> rotate 180 degree, 4 -> rotate 360 degree
     """
-    # x_ratio = 4.985
-    # y_ratio = 2.992
+
     x_ratio = 5/0.73
     y_ratio = 3/0.95
-    # clockwise = [
-    #     [0,0],
-    #     [-1,0],
-    #     [0,-1],
-    #     [1,0],
-    #     [1,0],
-    #     [0,1],
-    #     [0,1],
-    #     [-1,0],
-    #     [-1,0],
-    #     [0,-1],
-    # ]
+
     clockwise = [
         [0,0],
         [-0.725, 0],
@@ -237,6 +297,7 @@ def move_rotation(zeroPoint=[_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2], step=1, count
     ]
     box = get_box_from_center(zeroPoint, [step*3*x_ratio, step*3*y_ratio])
     _ir.save_screenshot(box=box, path='../images/test/04/whole.png')
+
 
     for i, unit in enumerate(clockwise):
         direction = [unit[0]*step*x_ratio, unit[1]*step*y_ratio]
@@ -447,6 +508,7 @@ def zoom_out(nth=_ENV['_ZOOM_MAX']):
         for key in keys:
             pag.keyUp(key)
             time.sleep(0.01)
+    time.sleep(2)
 
 
 def drag_in_map(relPoint=[0, 0], zeroPoint=[_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2], viewMode='_CASTLE', duration=_ENV['_MOUSE_DURATION']):
@@ -617,6 +679,8 @@ def go_by_coordinate(location=[0,0]):
 
     click_mouse2(ui_xy['btn_Pop_LocationSearch_Go'])
 
+    delay(3)  ## 지도 데어터 읽을 시간을 주장!!!
+
 
 
 # def save_whole_maps(searchMode='Explore', zoom=320, max_size=_MAP['ONE_MAX']):
@@ -757,12 +821,62 @@ def receive_village_gifts(location=[_MAP['ONE_MAX'][0]//2, _MAP['ONE_MAX'][1]//2
         delay(0.01)
 
 
+def visit_village(coord={'loc': [1166, 682], 'center': [250, 250]}):
+    go_by_coordinate(coord['center'])
+    click_mouse(coord['loc'])
+    delay(0.1)
+    click_mouse2([_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
+    delay(0.1)
 
-def search_villages(location=[165, 131]):
+    great = _ir.match_image_box()
+
+    if type(great) is list:
+        click_mouse(great)
+        _coord = get_coordinate()
+        click_mouse([_ENV['_MAX_X']//2 - 200, _ENV['_MAX_Y']//2])
+        delay(0.1)
+        zoom_out()
+        delay(0.01)
+        return _coord
+
+    return False
+
+
+
+def find_village_location(coord={'loc': [1166, 682], 'center': [250, 250]}):
+    go_by_coordinate(coord['center'])
+    click_mouse(coord['loc'])
+    delay(0.1)
+    click_mouse2([_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
+    delay(0.1)
+    _coord = get_coordinate()
+    return [_coord[1], _coord[2]]
+
+
+def search_objects_in_map(obj='village_unvisited', location=[500, 300], box=_MAP['SCAN_BOX'], precision=0.62, ms='min'):
     #go_by_coordinate(location)
+    #time.sleep(3)
+
+    #yellow filter: cvScalar(23,41,133), cvScalar(40,150,255)
+    # yellow_lower = [20, 100, 100]
+    # yellow_upper = [30, 255, 255]
+    yellow_lower = [15, 70, 70]
+    yellow_upper = [28, 255, 255]
+    #template = '../images/uis/img_ExploreVillage.png'  ##@@@@@@@@@@@@
+    template = _PATH['_OBJECTS'] + ui_obj[obj]['img_' + ms] + _ENV['_IMG_EXT']
+    mask = None
+    if 'msk_' + ms in ui_obj[obj]:
+        mask = _PATH['_OBJECTS'] + ui_obj[obj]['msk_' + ms] + _ENV['_IMG_EXT']
+
+    return _ir.match_image_box(template=template, image=box, mask=mask, precision=precision, show=True, multi=1, color=(yellow_lower, yellow_upper))
+
+
+def search_villages(location, box):
+    go_by_coordinate(location)
     template = '../images/uis/img_ExploreVillage.png'  ##@@@@@@@@@@@@
-    #_ir.match_image_box(template, _MAP['EDGE'], precision=0.978, show=True, multi=1)
-    _ir.match_image_box(template, precision=0.97, show=True, multi=1)
+
+    #return _ir.match_image_box(template=template, image=box, precision=0.97, show=True, multi=1)
+    return _ir.match_image_box(template=template, image=box, precision=0.97, multi=1)
 
 
 def explore_caves():
@@ -865,4 +979,52 @@ if __name__ == "__main__":
 
     #move_direction(zeroPoint=[960, 540], direction=[-365.0, 0])
     #transform_perspective([_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2], trans='inverse')
-    print(get_coordinate())
+    #print(get_coordinate())
+    #coords = get_coords_for_rotation()
+    #print(coords)
+
+    #locations = test_rotation(start=[150, 150], step=100, count=9)
+    # for location in locations:
+    #     villages = search_villages(location=location['center'], box=location['box'])
+    #     if villages is list:
+    #         location['villages'] = villages
+    
+    #search_villages(location=[250, 150], box=[710, 390, 1210, 690])
+    #print(locations)
+
+    # rotation_units = _MAP['R_UNITS']
+    # location = [150, 150]
+    # step = 100
+    # coords = []
+    # for unit in rotation_units:
+    #     location = [location[0] - step*unit[0], location[1] - step*unit[1]]
+    #     vs = search_villages(location=location, box=_MAP['SCAN_BOX'])
+    #     coord = {}
+    #     if type(vs) is list:
+    #         if len(vs) > 0:
+    #             print('founded  villages: {}'.format(vs))
+    #             coord['loc'] = vs
+    #             coord['center'] = location
+    #             coords.append(coord)
+    
+    # print('founded all villages: {}'.format(coords))
+
+
+
+    # v_coords = [{'villages': [[1166, 682]], 'center': [250, 250]}, {'villages': [[785, 409]], 'center': [50, 250]}]
+
+    # for v in v_coords:
+    #     go_by_coordinate(v['center'])
+    #     for village in v['villages']:
+    #         click_mouse(village)
+    #         time.sleep(5)
+
+
+    # vs = search_objects_in_map(obj='village_unvisited', location=[250, 250], box=_MAP['SCAN_BOX'], precision=0.97, ms='min')
+
+    # print(vs)
+
+    #coord = find_village_location(coord={'loc': [1166, 682], 'center': [250, 250]})
+    #print(coord)
+
+    search_objects_in_map()

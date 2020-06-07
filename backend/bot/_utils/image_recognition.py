@@ -89,6 +89,20 @@ def sort_coords_by_x(coords):
     return ss
 
 
+def remove_coupling_boxes(centers, wh):
+    centers = sorted(centers, key=lambda center: center[0])
+    _center = [-1000, -1000]
+    _centers = []
+    for center in centers:
+        dist_x = abs(center[0] - _center[0])
+        dist_y = abs(center[1] - _center[1])
+        if dist_x > wh[0] or dist_y > wh[1]:
+            _center = center
+            _centers.append(center)
+    
+    return _centers
+
+
 def get_image(image=None, color='COLOR', show=False):
     """
     Brief: file path or screen area => image
@@ -269,7 +283,7 @@ def get_center_match_image(template, offset=[0, 0], image=None, mask=None, preci
 
 
 #def match_image_box(template, image=None, mask=None, precision=0.9, method=cv2.TM_CCOEFF_NORMED, show=False, multi=0):
-def match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.TM_CCORR_NORMED, show=False, multi=0):
+def match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.TM_CCORR_NORMED, show=False, multi=0, color=None):
     """
     Brief:
         - 매칭 되는 이미지(>precision) 중앙 좌표 반환, 없으면 False
@@ -291,18 +305,21 @@ def match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.
         offset = [image[0], image[1]]
 
     img = get_image(image)
-
-    # cv2.imshow('img', img)   #@@@@@@@@@@@@@@
-    # cv2.waitKey(0)
-    # cv2.destroyAllWindows()
-
-    #tpl = get_image(template, color='GRAY')
     tpl = get_image(template)
 
     if mask != None:
         mask = cv2.imread(mask, cv2.IMREAD_GRAYSCALE)
 
-    return find_match_image_box(tpl, img, mask, precision, method, offset, show, multi)
+    if color != None:
+        ## color filter 적용
+        img = cv2.bitwise_and(img, img, mask=cv2.inRange(cv2.cvtColor(img, cv2.COLOR_BGR2HSV), np.array(color[0]), np.array(color[1])))
+        tpl = cv2.bitwise_and(tpl, tpl, mask=cv2.inRange(cv2.cvtColor(tpl, cv2.COLOR_BGR2HSV), np.array(color[0]), np.array(color[1])))
+
+        cv2.imshow('img', img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
+
+    #return find_match_image_box(template=tpl, image=img, mask=mask, precision=precision, method=method, offset=offset, show=show, multi=multi)
 
 
 #def find_match_image_box(template, image=None, mask=None, precision=0.3, method=cv2.TM_CCOEFF_NORMED, show=False, multi=0):
@@ -325,6 +342,8 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
         # cv2.imshow('mask', mask)
         # cv2.waitKey(0)
         # cv2.destroyAllWindows()
+        # msk = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
+        # method = cv2.TM_CCOEFF_NORMED
         res = cv2.matchTemplate(image, template, method, mask=mask)
         #res = cv2.matchTemplate(image, template, method, mask)
 
@@ -348,13 +367,13 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
                 cv2.destroyAllWindows()
             return center
         else:
-            print('not matched: {}'.format(max_val))
+            #print('not matched: {}'.format(max_val))
             return False
 
     else: #### search multiple matching
         loc = np.where(res >= precision)
         num = len(loc)
-        print('num: {}'.format(num))
+        print('num: {}, res: {}'.format(num, res))
         #centers = [[0, 0] for _ in range(0, num)]
         centers = []
 
@@ -366,15 +385,25 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
                 centers.append([pt[0] + w//2 + offset[0], pt[1] + h//2 + offset[1]])
                 last = pt[0]
                 #i += 1
-                print('pt: {}'.format(pt))
+                print('pt: {}, '.format(pt))
 
-                cv2.rectangle(img_original, pt, (pt[0]+w, pt[1]+h), (0, 0, 255), 2)
+##                cv2.rectangle(img_original, pt, (pt[0]+w, pt[1]+h), (0, 0, 255), 2)
+
+        ## 중첩(중복)된 box 제거!!!
+        centers = remove_coupling_boxes(centers, [w, h])
+        print('centers in imgae_recognition.py: {}'.format(centers))
+
+        for center in centers:
+            pt = (center[0] - offset[0] - w//2, center[1] - offset[1] - h//2)
+            cv2.rectangle(img_original, pt, (pt[0]+w, pt[1]+h), (0, 0, 255), 2)
 
         if show == True:
-            cv2.imshow('find images', img_original)
-            cv2.waitKey(0)
-            cv2.destroyAllWindows()
-        print(centers)
+            #cv2.imshow('find images', img_original)
+            #cv2.waitKey(0)
+            #cv2.destroyAllWindows()
+            imgplot = plt.imshow(img_original)
+            plt.show()
+
         return centers
 
 
@@ -497,7 +526,48 @@ def find_feature_image_box(template, image=None, origin=[0, 0], precision=0.7, i
     #print('-------------------------------')
     return center
 
+def test_color_filter(image=[710, 390, 1210, 690], color=[[16, 70, 70], [26, 255, 255]]):
+    img = get_image(image)
 
+    #color=[[20, 20, 20], [40, 255, 255]]
+
+    #### @@@@ filter_5_12_12_36_255_255 ~ filter_14_12_12_50_255_255
+
+    #color=[[5, 20, 20], [25, 255, 255]]
+    color=[[5, 12, 12], [35, 255, 255]]
+    #_color = color.copy()
+    #color=[[16, 70, 70], [26, 255, 255]]
+    ## color filter 적용(h변화)20_70_70_247_255_255
+    for i in range(0, 10):
+        for j in range(0, 10):
+            color[1][0] = color[1][0] + 1
+            img = cv2.bitwise_and(img, img, mask=cv2.inRange(cv2.cvtColor(img, cv2.COLOR_BGR2HSV), np.array(color[0]), np.array(color[1])))
+            path = '../images/test/filter_' + '_'.join(list(map(str, color[0])))+ '_' + '_'.join(list(map(str, color[1]))) + '.png'
+            cv2.imwrite(path, img)
+        color[0][0] = color[0][0] + 1
+        color[1][0] = 30
+
+    # color=[[15, 10, 10], [30, 255, 255]]
+    # ## color filter 적용(s변화)20_70_70_247_255_255
+    # for i in range(0, 20):
+    #     color[0][1] = color[0][1] + 5
+    #     # color[1][1] = 22
+    #     # for j in range(0, 10):
+    #     #color[1][1] = color[1][1] + 1
+    #     img = cv2.bitwise_and(img, img, mask=cv2.inRange(cv2.cvtColor(img, cv2.COLOR_BGR2HSV), np.array(color[0]), np.array(color[1])))
+    #     path = '../images/test/filter_' + '_'.join(list(map(str, color[0])))+ '_' + '_'.join(list(map(str, color[1]))) + '.png'
+    #     cv2.imwrite(path, img)
+
+    #color=[[15, 10, 10], [30, 255, 255]]
+    ## color filter 적용(s변화)20_70_70_247_255_255
+    # for i in range(0, 20):
+    #     color[0][2] = color[0][2] + 5
+    #     # color[1][1] = 22
+    #     # for j in range(0, 10):
+    #     #color[1][1] = color[1][1] + 1
+    #     img = cv2.bitwise_and(img, img, mask=cv2.inRange(cv2.cvtColor(img, cv2.COLOR_BGR2HSV), np.array(color[0]), np.array(color[1])))
+    #     path = '../images/test/filter_' + '_'.join(list(map(str, color[0])))+ '_' + '_'.join(list(map(str, color[1]))) + '.png'
+    #     cv2.imwrite(path, img)
 ##@@@-------------------------------------------------------------------------
 ##@@@ OCR Functions(tesseract-ocr:: Character Recognition)
 
@@ -603,4 +673,12 @@ if __name__ == "__main__":
     #print(tu)
 
 
-    filter_color([400, 16, 642, 46], color='WHITE')
+    #filter_color([400, 16, 642, 46], color='WHITE')
+    # centers = [[0, 100], [50, 30], [5, 95], [40, 40], [39, 41], [38, 42], [1, 93]]
+    # wh = [10, 10]
+
+    # _centers = remove_coupling_boxes(centers, wh)
+
+    # print(_centers)
+
+    test_color_filter()

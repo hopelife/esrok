@@ -16,7 +16,7 @@ _ENV = {
     '_OS': 'OSX',
     '_MAX_X': 1920,
     '_MAX_Y': 1080,
-    '_ZOOM_MAX': 20,
+    '_ZOOM_MAX': 50,
     '_IMG_EXT': '.png',
     '_EMULATOR': 'LDPLAYER',
     '_SCREENSHOT': 'shots/',
@@ -27,6 +27,7 @@ _ENV = {
 _PATH = {
     '_ROOT': '../images/',
     '_UIS': '../images/uis/',  ## UI images
+    '_OBJECTS': '../images/objects/',  ## UI images
     '_MAPS': '../images/maps/',  ## map images
     '_SCREENSHOT': '../images/screenshots/'  ## screenshot images
 }
@@ -80,6 +81,24 @@ _MAP = {
         [-0.726, 0],  # 우 right
         [-0.726, 0],  # 우 right
         [0, -0.942],  # 하 bottom
-    ]
+    ],
+    'R_UNITS' : [
+        [0, 0],
+        [-1, 0],  # 우 right
+        [0, -1],  # 하 bottom
+        [1, 0],  # 좌 left
+        [1, 0],  # 좌 left
+        [0, 1],  # 상 top
+        [0, 1],  # 상 top
+        [-1, 0],  # 우 right
+        [-1, 0],  # 우 right
+    ],
+    'SCAN_BOX': [710, 390, 1210, 690]  # 부족 마을, 동굴 탐험용 scan box (minimum size map, 좌표 100 이동 기준)
+
 }
 
+
+_FILTER : {
+    'yellow_lower': [20, 100, 100],
+    'yellow_upper': [30, 255, 255],
+}

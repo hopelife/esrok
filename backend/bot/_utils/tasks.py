@@ -55,6 +55,10 @@ def create_character(server='', civil='CHINA'):
   pass
 
 
+def scount(coord=[], scope='', direction=[1,0], angle=360):
+  pass
+
+
 def catch_errors():
   pass
 

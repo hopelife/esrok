@@ -91,8 +91,9 @@ def sort_coords_by_x(coords):
 
 def remove_coupling_boxes(centers, wh):
     centers = sorted(centers, key=lambda center: center[0])
+    #centers = sorted(centers, key=lambda center: center[0]+center[1])
     _center = [-1000, -1000]
-    _centers = []
+    partial = []
     for center in centers:
         dist_x = abs(center[0] - _center[0])
         dist_y = abs(center[1] - _center[1])
@@ -103,9 +104,48 @@ def remove_coupling_boxes(centers, wh):
     return _centers
 
 
-def get_image(image=None, color='COLOR', show=False):
+# def merge_overlapping_zones(zones,delta_overpap = 30):
+
+# index = 0
+
+# if zones is None: return zones
+# while index < len(zones):
+#     no_Over_Lap = False
+#     while no_Over_Lap == False and len(zones) > 1 and index < len(zones):
+#         zone1 = zones[index]
+#         tmpZones = np.delete(zones, index, 0)
+#         tmpZones = [tImageZone(*a) for a in tmpZones]
+
+#         for i in range(0, len(tmpZones)):
+#             zone2 = tmpZones[i]
+
+#             # check left side broken
+#             if zone2.x >= delta_overpap and zone2.y >= delta_overpap:
+#                 t = tImageZone(zone2.x - delta_overpap, zone2.y - delta_overpap, zone2.w + 2 * delta_overpap,
+#                                zone2.h + 2 * delta_overpap)
+#             elif zone2.x >= delta_overpap:
+#                 t = tImageZone(zone2.x - delta_overpap, zone2.y, zone2.w + 2 * delta_overpap,
+#                                zone2.h + 2 * delta_overpap)
+#             else:
+#                 t = tImageZone(zone2.x, zone2.y - delta_overpap, zone2.w + 2 * delta_overpap,
+#                                zone2.h + 2 * delta_overpap)
+
+#             if (is_zone_overlap(zone1, t) or is_zone_overlap(zone1, zone2)):
+#                 tmpZones[i] = merge_zone(zone1, zone2)
+#                 zones = tmpZones
+#                 no_Over_Lap = False
+#                 break
+
+#             no_Over_Lap = True
+#     index += 1
+
+# return zones
+
+
+
+def set_cv_image(image=None, color='COLOR', show=False):
     """
-    Brief: file path or screen area => image
+    Brief: file path or screen area or file/area=> image
     Args:
         image (str: image file path / list: screen image area)
     Returns:
@@ -121,6 +161,14 @@ def get_image(image=None, color='COLOR', show=False):
         time.sleep(3)  ##@@@@@@@@@@ delay
         img = snap_screenshot(image)
         print('screen area image')
+    elif type(image) is dict: ## image file path and crop box {'path':path, 'box':[,,,]}
+        if color == 'COLOR':
+            img = cv2.imread(image['path'], cv2.IMREAD_COLOR)
+        elif color == 'GRAY':
+            img = cv2.imread(image['path'], cv2.IMREAD_GRAYSCALE)
+        box = image['box']
+        img = img[box[1]:box[3], box[0]:box[2]]
+        print('local image')
     else: ## image data are none or wrong
         img = snap_screenshot()
         print('full screen image')
@@ -287,7 +335,7 @@ def match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.
     """
     Brief:
         - 매칭 되는 이미지(>precision) 중앙 좌표 반환, 없으면 False
-        -    match_image_box -> get_image(template/image) + find_match_image_box
+        -    match_image_box -> set_cv_image(template/image) + find_match_image_box
     Args:
         template (str: image file path / list: screen image area):
         offset (list) : 중앙 좌표 (이동)보정
@@ -304,8 +352,8 @@ def match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.
     if type(image) is list:
         offset = [image[0], image[1]]
 
-    img = get_image(image)
-    tpl = get_image(template)
+    img = set_cv_image(image)
+    tpl = set_cv_image(template)
 
     if mask != None:
         mask = cv2.imread(mask, cv2.IMREAD_GRAYSCALE)
@@ -319,7 +367,7 @@ def match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.
         cv2.waitKey(0)
         cv2.destroyAllWindows()
 
-    #return find_match_image_box(template=tpl, image=img, mask=mask, precision=precision, method=method, offset=offset, show=show, multi=multi)
+    return find_match_image_box(template=tpl, image=img, mask=mask, precision=precision, method=method, offset=offset, show=show, multi=multi)
 
 
 #def find_match_image_box(template, image=None, mask=None, precision=0.3, method=cv2.TM_CCOEFF_NORMED, show=False, multi=0):
@@ -377,25 +425,21 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
         #centers = [[0, 0] for _ in range(0, num)]
         centers = []
 
+
+        ### 중복(중첩) 영역 제거용
+        found = np.zeros(image.shape[:2], np.uint8)
         #i = 0
         last = -10
         for pt in zip(*loc[::-1]):
-            if abs(pt[0] - last) > 1:
+            #if abs(pt[0] - last) > 1:
+            if found[pt[1] + h//2, pt[0] + w//2] != 255: ##@@ 새로운 영역이라면
+                found[pt[1]:pt[1]+h, pt[0]:pt[0]+w] = 255  ##@@ 영역 등록
                 #centers[i] = [pt[0] + w//2, pt[1] + h//2]
                 centers.append([pt[0] + w//2 + offset[0], pt[1] + h//2 + offset[1]])
-                last = pt[0]
+                #last = pt[0]
                 #i += 1
                 print('pt: {}, '.format(pt))
-
-##                cv2.rectangle(img_original, pt, (pt[0]+w, pt[1]+h), (0, 0, 255), 2)
-
-        ## 중첩(중복)된 box 제거!!!
-        centers = remove_coupling_boxes(centers, [w, h])
-        print('centers in imgae_recognition.py: {}'.format(centers))
-
-        for center in centers:
-            pt = (center[0] - offset[0] - w//2, center[1] - offset[1] - h//2)
-            cv2.rectangle(img_original, pt, (pt[0]+w, pt[1]+h), (0, 0, 255), 2)
+                cv2.rectangle(img_original, pt, (pt[0]+w, pt[1]+h), (0, 0, 255), 2)
 
         if show == True:
             #cv2.imshow('find images', img_original)
@@ -406,6 +450,9 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
 
         return centers
 
+
+def click_match_image(template, image=None, precision=0.978, duration=15, offset=[0,0]):
+    pass
 
 
 def wait_match_image(template, image=None, precision=0.978, duration=15):
@@ -429,7 +476,7 @@ def filter_color(image, color='WHITE'):
         lower = np.array([0,0,168])
         upper = np.array([172,111,255])
 
-    img = get_image(image)
+    img = set_cv_image(image)
     img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
     # 색상 범위를 제한하여 mask 생성
     img_mask = cv2.inRange(img_hsv, lower, upper)
@@ -447,7 +494,7 @@ def feature_image_box(template, image, precision=0.7, inverse=True):
     """
     Brief:
         - 매칭 되는 이미지(>precision) 중앙 좌표 반환, 없으면 False
-        - feature_image_box -> find_feature_image_box + get_image
+        - feature_image_box -> find_feature_image_box + set_cv_image
     Args:
         template (str: image file path / list: screen image area):
         offset (list) : 중앙 좌표 (이동)보정
@@ -460,8 +507,8 @@ def feature_image_box(template, image, precision=0.7, inverse=True):
     """
     origin = [0, 0]    ## 기준 좌표
 
-    img = get_image(image)
-    tpl = get_image(template, 'GRAY')
+    img = set_cv_image(image)
+    tpl = set_cv_image(template, 'GRAY')
 
     if type(image) is list: ## scren selected box
         origin = [image[0], image[1]]    ## 기준 좌표
@@ -526,26 +573,42 @@ def find_feature_image_box(template, image=None, origin=[0, 0], precision=0.7, i
     #print('-------------------------------')
     return center
 
-def test_color_filter(image=[710, 390, 1210, 690], color=[[16, 70, 70], [26, 255, 255]]):
-    img = get_image(image)
 
-    #color=[[20, 20, 20], [40, 255, 255]]
+def test_color_filter(image=[710, 390, 1210, 690], color=[[5, 18, 18], [25, 255, 255]], loop=False):
+    img = set_cv_image(image)
+    path = '../images/test/_original.png'
+    cv2.imwrite(path, img)
+    # ..images/objects/img_VillageUnvisited_min.png
+    # cv2.imwrite('', img)
+    if not loop:
+        img = cv2.bitwise_and(img, img, mask=cv2.inRange(cv2.cvtColor(img, cv2.COLOR_BGR2HSV), np.array(color[0]), np.array(color[1])))
+        path = '../images/test/filter_' + '_'.join(list(map(str, color[0])))+ '_' + '_'.join(list(map(str, color[1]))) + '.png'
+        cv2.imwrite(path, img)
+    else:
 
-    #### @@@@ filter_5_12_12_36_255_255 ~ filter_14_12_12_50_255_255
+        #color=[[20, 20, 20], [40, 255, 255]]
 
-    #color=[[5, 20, 20], [25, 255, 255]]
-    color=[[5, 12, 12], [35, 255, 255]]
-    #_color = color.copy()
-    #color=[[16, 70, 70], [26, 255, 255]]
-    ## color filter 적용(h변화)20_70_70_247_255_255
-    for i in range(0, 10):
-        for j in range(0, 10):
-            color[1][0] = color[1][0] + 1
-            img = cv2.bitwise_and(img, img, mask=cv2.inRange(cv2.cvtColor(img, cv2.COLOR_BGR2HSV), np.array(color[0]), np.array(color[1])))
-            path = '../images/test/filter_' + '_'.join(list(map(str, color[0])))+ '_' + '_'.join(list(map(str, color[1]))) + '.png'
-            cv2.imwrite(path, img)
-        color[0][0] = color[0][0] + 1
-        color[1][0] = 30
+        #### @@@@ filter_5_12_12_36_255_255 ~ filter_14_12_12_50_255_255
+        #### not good [[5, 5, 5], [35, 255, 255]] ~ 3 for 1,000
+        #color=[[5, 20, 20], [25, 255, 255]]
+        #color=[[5, 60, 60], [26, 255, 255]]
+        _color = [color[0].copy(), color[1].copy()]
+        #_color = color.copy()
+        #color=[[16, 70, 70], [26, 255, 255]]
+        ## color filter 적용(h변화)20_70_70_247_255_255
+        for i in range(0, 10):
+            for j in range(0, 10):
+                for k in range(0, 10):
+                    img = cv2.bitwise_and(img, img, mask=cv2.inRange(cv2.cvtColor(img, cv2.COLOR_BGR2HSV), np.array(color[0]), np.array(color[1])))
+                    path = '../images/test/filter_' + '_'.join(list(map(str, color[0])))+ '_' + '_'.join(list(map(str, color[1]))) + '.png'
+                    cv2.imwrite(path, img)
+                    color[0][1] = color[0][1] + 2
+                    color[0][2] = color[0][2] + 2
+                color[1][0] = color[1][0] + 2
+                color[0][1] = _color[0][1]
+                color[0][2] = _color[0][2]
+            color[0][0] = color[0][0] + 2
+            color[1][0] = _color[1][0]
 
     # color=[[15, 10, 10], [30, 255, 255]]
     # ## color filter 적용(s변화)20_70_70_247_255_255
@@ -577,7 +640,7 @@ def test_color_filter(image=[710, 390, 1210, 690], color=[[16, 70, 70], [26, 255
 ## @@brief:: 이미지(screen box 좌표 or file path 값) 문자인식
 ## @@note::
 def do_ocr(image, lang='eng', reverse=False):
-    img = get_image(image, 'GRAY')
+    img = set_cv_image(image, 'GRAY')
     retval, img = cv2.threshold(img,200,255, cv2.THRESH_BINARY)
     img = cv2.resize(img,(0,0),fx=3,fy=3)
     img = cv2.GaussianBlur(img,(11,11),0)
@@ -622,7 +685,7 @@ def rectify_ocr(text, lang='digit'):
 if __name__ == "__main__":
     #save_screenshot([1, 1, 500, 300])
     #print(do_ocr([524, 214, 1096, 270], 'kor+eng'))
-    #get_image('../images/btn_GoWorldView.png')
+    #set_cv_image('../images/btn_GoWorldView.png')
     time.sleep(5)
     #get_center_match_image('../images/btn_GoWorldView.png')
     #print(get_center_match_image(os.path.abspath('../images/btn_GoWorldView.png')))
@@ -681,4 +744,14 @@ if __name__ == "__main__":
 
     # print(_centers)
 
-    test_color_filter()
+    #test_color_filter()
+
+
+    image = {'path':'C:/Users/ORM005/Downloads/screenshot/map_min01.png', 'box':[710, 390, 1210, 690]}
+    #cv2.imshow('image', image)
+    #set_cv_image(image, show=True)
+    # test_color_filter(image, color=[[20, 100, 100], [30, 255, 255]], loop=False)
+
+    tpl = '../images/objects/img_VillageUnvisited_min.png'
+    centers = match_image_box(tpl, image=image, mask=None, precision=0.9971, show=True, multi=1, color=None)
+    print(centers)

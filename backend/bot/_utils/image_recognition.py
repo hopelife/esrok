@@ -30,6 +30,7 @@ import os
 import sys
 import time
 import numpy as np
+import re
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ Installed(conda/pip) Libraries
@@ -300,7 +301,9 @@ def save_file_crop(file, box, path=None):
         opencv image array
     """
 
+    #image = cv2.imread(file.replace(" ", "\ "), cv2.IMREAD_COLOR)[box[1]:box[3], box[0]:box[2]]
     image = cv2.imread(file, cv2.IMREAD_COLOR)[box[1]:box[3], box[0]:box[2]]
+    #cv2.imshow('image', image)
     cv2.imwrite(path, image)
     return 0
 ##@@@-------------------------------------------------------------------------
@@ -747,11 +750,27 @@ if __name__ == "__main__":
     #test_color_filter()
 
 
-    image = {'path':'C:/Users/ORM005/Downloads/screenshot/map_min01.png', 'box':[710, 390, 1210, 690]}
-    #cv2.imshow('image', image)
-    #set_cv_image(image, show=True)
-    # test_color_filter(image, color=[[20, 100, 100], [30, 255, 255]], loop=False)
+    # image = {'path':'C:/Users/ORM005/Downloads/screenshot/map_min01.png', 'box':[710, 390, 1210, 690]}
+    # #cv2.imshow('image', image)
+    # #set_cv_image(image, show=True)
+    # # test_color_filter(image, color=[[20, 100, 100], [30, 255, 255]], loop=False)
 
-    tpl = '../images/objects/img_VillageUnvisited_min.png'
-    centers = match_image_box(tpl, image=image, mask=None, precision=0.9971, show=True, multi=1, color=None)
-    print(centers)
+    # tpl = '../images/objects/img_VillageUnvisited_min.png'
+    # centers = match_image_box(tpl, image=image, mask=None, precision=0.9971, show=True, multi=1, color=None)
+    # print(centers)
+
+    #file = 'D:/moon/dev/projects/esrok/backend/bot/images/test/_original.png'
+    #file = "D:\\moon\\dev\\projects\\rok\\_bot\\image_full\\스크린샷 2020-05-18 오후 11.18.04.png"
+    #file = 'D:/moon/dev/projects/rok/_bot/image_full/스크린샷_2020-05-17_23.59.42.png'
+    # file = 'D:/moon/dev/projects/rok/_bot/image_full/_original2.png'
+    # box = [1012, 634, 1060, 682]
+    # path = '../images/_uis/chk_Pop_DefeatBarbarians_HoldPosition.png'
+    # save_file_crop(file, box, path=None)
+
+
+
+    path = 'D:/moon/dev/projects/rok/_bot/done/'
+    for filename in os.listdir(path):
+        os.rename(path + filename, path + re.sub(r'\D', '', filename) + '.png')
+    # for filename in os.listdir(path):
+    #     os.rename(path + filename, path + filename + '.png')

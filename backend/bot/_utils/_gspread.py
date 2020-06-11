@@ -92,7 +92,7 @@ def flatten_list(ls):
     return np.array(ls).flatten()
 
 
-def remove_empty_array(ls):
+def remove_empty_list(ls):
     """
     Brief: flatten list
     Args: ls = [['c01', 'c02', 'c03', ...], ['', '', '', ....], ['c21', 'c22', 'c23', ....], ...]
@@ -133,7 +133,7 @@ def get_filled_dict(data, header=0):
     Returns: 2
     """
     #return list_to_dict([v[find_first_filled_col(data)-1:] for v in data[find_first_filled_row(data)-1:]][header:])
-    return list_to_dict([v[find_first_filled_col(data)-1:] for v in remove_empty_array(data)][header:])
+    return list_to_dict([v[find_first_filled_col(data)-1:] for v in remove_empty_list(data)][header:])
 
 
 

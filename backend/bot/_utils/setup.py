@@ -27,6 +27,7 @@ Usage: import
 ##@@@-------------------------------------------------------------------------
 ##@@@ Basic Libraries
 import os
+import re
 import sys
 import time
 import numpy as np
@@ -71,7 +72,8 @@ def setup_ui_images(file_='TEST', sheet_='crop'):
     Returns:
     """
     dicts = _gs.get_dict_from_sheet(_gs.fetch_sheet(file_, sheet_), 0)
-    jsons = []
+    #jsons = []
+    uis = {}
     for dic in dicts:
         for k, v in dic.items():
             if k == 'x_y_w_h' and v != '':
@@ -80,19 +82,22 @@ def setup_ui_images(file_='TEST', sheet_='crop'):
                 #shots = '/Volumes/data/dev/SynologyDrive/projects/_ROK/bot/_screenShots/'
                 #shots = 'D:\\moon\\dev\\projects\\rok\\_bot\\image_full\\'
                 shots = 'D:/moon/dev/projects/rok/_bot/image_full/'
-                file = shots + dic['original'] + _ENV['_IMG_EXT']
+                file = shots + re.sub(r'\D', '', dic['original']) + _ENV['_IMG_EXT']
                 box = _gu.get_box_from_wh(list(map(int, dic['x_y_w_h'].replace(' ','').split(','))))
                 path = '../images/_uis/' + dic['prefix'] + _ENV['_IMG_EXT']
-                #print('file: {}, box: {}, path: {}'.format(file, box, path))
+                print('file: {}, box: {}, path: {}'.format(file, box, path))
 
                 ### save ui images
-                #_ir.save_file_crop(file, box, path)
+                _ir.save_file_crop(file, box, path)
+
+                uis[dic['prefix']] = _gu.get_center_from_box(box)
 
                 ### save ui json
-                jsons.append({dic['prefix']:_gu.get_center_from_box(box)})
-                _bs.json_to_file(jsons, '../_config/uis.json')
-    print(jsons)
-    return jsons
+                #jsons.append({dic['prefix']:_gu.get_center_from_box(box)})
+                #_bs.json_to_file(jsons, '../_config/uis.json')
+                _bs.json_to_file(uis, '../_config/uis.json')
+    print(uis)
+    return uis
 
 
 ##@@@@========================================================================

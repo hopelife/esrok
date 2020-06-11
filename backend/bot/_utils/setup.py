@@ -40,10 +40,7 @@ import pytesseract
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ User Libraries
-import image_recognition as _ir
-import _gspread as _gs
-import gui as _gu
-import basics as _bs
+import _basics as _bs
 
 
 ##@@@@========================================================================
@@ -71,7 +68,7 @@ def setup_ui_images(file_='TEST', sheet_='crop'):
     Args:
     Returns:
     """
-    dicts = _gs.get_dict_from_sheet(_gs.fetch_sheet(file_, sheet_), 0)
+    dicts = _bs.get_dict_from_sheet(_bs.fetch_sheet(file_, sheet_), 0)
     #jsons = []
     uis = {}
     for dic in dicts:
@@ -82,9 +79,9 @@ def setup_ui_images(file_='TEST', sheet_='crop'):
                 #shots = '/Volumes/data/dev/SynologyDrive/projects/_ROK/bot/_screenShots/'
                 #shots = 'D:\\moon\\dev\\projects\\rok\\_bot\\image_full\\'
                 shots = 'D:/moon/dev/projects/rok/_bot/image_full/'
-                file = shots + re.sub(r'\D', '', dic['original']) + _ENV['_IMG_EXT']
-                box = _gu.get_box_from_wh(list(map(int, dic['x_y_w_h'].replace(' ','').split(','))))
-                path = '../images/_uis/' + dic['prefix'] + _ENV['_IMG_EXT']
+                file = shots + re.sub(r'\D', '', dic['original']) + _ENV['IMG_EXT']
+                box = _bs.compute_box_from_wh(list(map(int, dic['x_y_w_h'].replace(' ','').split(','))))
+                path = '../images/_uis/' + dic['prefix'] + _ENV['IMG_EXT']
                 print('file: {}, box: {}, path: {}'.format(file, box, path))
 
                 ### save ui images
@@ -100,8 +97,26 @@ def setup_ui_images(file_='TEST', sheet_='crop'):
     return uis
 
 
+
+def setup_ui_boxes(file_='TEST', sheet_='crop'):
+    """
+    Brief: 
+    Args:
+    Returns:
+    """
+    dicts = _bs.get_dict_from_sheet(_bs.fetch_sheet(file_, sheet_), 0)
+    #jsons = []
+    uis = {}
+    for dic in dicts:
+        for k, v in dic.items():
+            if k == 'use' and v == 'x':
+                uis[dic['prefix']] = _bs.compute_box_from_wh(list(map(int, dic['x_y_w_h'].replace(' ','').split(','))))
+                _bs.json_to_file(uis, '../_config/ui_boxes.json')
+    print(uis)
+    return uis
 ##@@@@========================================================================
 ##@@@@ Execute Test
 if __name__ == '__main__':
-    dic = setup_ui_images('TEST', 'crop')
+    #dic = setup_ui_images('TEST', 'crop')
+    dic = setup_ui_boxes('TEST', 'crop')
     #print(dic)

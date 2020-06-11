@@ -1,0 +1,680 @@
+{
+  "val_Mod_Amies_NewTroops_TotalPower": [
+    1014,
+    166,
+    1194,
+    204
+  ],
+  "val_Mod_Governor_Info_Power": [
+    1084,
+    438,
+    1314,
+    476
+  ],
+  "val_Mod_MenuChampaign_SunsetCanyon_Battle_Nick2": [
+    1102,
+    14,
+    1390,
+    46
+  ],
+  "val_Mod_MenuChampaign_SunsetCanyon_Battle_Power2": [
+    1102,
+    48,
+    1282,
+    84
+  ],
+  "val_Pop_VerificationRewards_Countdown": [
+    1114,
+    476,
+    1192,
+    502
+  ],
+  "val_Mod_MenuChampaign_SunsetCanyon_Challenge_Stars1": [
+    1124,
+    272,
+    1254,
+    312
+  ],
+  "val_Mod_MenuChampaign_SunsetCanyon_Challenge_Stars2": [
+    1124,
+    425,
+    1254,
+    465
+  ],
+  "val_Mod_MenuChampaign_SunsetCanyon_Challenge_Stars3": [
+    1124,
+    578,
+    1254,
+    618
+  ],
+  "val_Mod_MenuChampaign_SunsetCanyon_Challenge_Stars4": [
+    1124,
+    731,
+    1254,
+    771
+  ],
+  "val_Pop_Governor_Info_MoreInfo_Kills_1": [
+    1148,
+    326,
+    1290,
+    358
+  ],
+  "val_Pop_Governor_Info_MoreInfo_Kills_3": [
+    1148,
+    376,
+    1290,
+    408
+  ],
+  "val_Pop_Governor_Info_MoreInfo_Kills_5": [
+    1148,
+    424,
+    1290,
+    456
+  ],
+  "val_Mod_Alliance_Members_Leader_Kills": [
+    1152,
+    230,
+    1396,
+    268
+  ],
+  "val_Mod_Profile_Troops_TroopPower": [
+    1184,
+    168,
+    1402,
+    206
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Nick_2": [
+    1198,
+    250,
+    1628,
+    298
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Server_2": [
+    1198,
+    302,
+    1628,
+    340
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Power_2": [
+    1198,
+    340,
+    1406,
+    374
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Nick_4": [
+    1198,
+    462,
+    1628,
+    510
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Server_4": [
+    1198,
+    514,
+    1628,
+    552
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Power_4": [
+    1198,
+    552,
+    1406,
+    586
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Nick_6": [
+    1198,
+    674,
+    1628,
+    722
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Server_6": [
+    1198,
+    726,
+    1628,
+    764
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Power_6": [
+    1198,
+    764,
+    1406,
+    798
+  ],
+  "val_Mod_Profile_MoreInfo_Power-BuildingPower": [
+    1200,
+    318,
+    1580,
+    358
+  ],
+  "val_Mod_Profile_MoreInfo_Power-TechnologyPower": [
+    1200,
+    390,
+    1580,
+    430
+  ],
+  "val_Mod_Profile_MoreInfo_Power-TroopsPower": [
+    1200,
+    462,
+    1580,
+    502
+  ],
+  "val_Mod_Profile_MoreInfo_Power-CommanderPower": [
+    1200,
+    534,
+    1580,
+    574
+  ],
+  "val_Mod_Profile_MoreInfo_BattleStatistics-HighestPower": [
+    1200,
+    668,
+    1580,
+    708
+  ],
+  "val_Mod_Profile_MoreInfo_BattleStatistics-Victory": [
+    1200,
+    740,
+    1580,
+    780
+  ],
+  "val_Mod_Profile_MoreInfo_BattleStatistics-Defeat": [
+    1200,
+    813,
+    1580,
+    853
+  ],
+  "val_Mod_Profile_MoreInfo_BattleStatistics-Dead": [
+    1200,
+    886,
+    1580,
+    926
+  ],
+  "val_Mod_Profile_MoreInfo_BattleStatistics-ScoutTimes": [
+    1200,
+    959,
+    1580,
+    999
+  ],
+  "val_Pop_Governor_Info_MoreInfo_Kills_Total": [
+    1202,
+    224,
+    1382,
+    250
+  ],
+  "val_Mod_Amies_NewTroops_Predict": [
+    1222,
+    852,
+    1576,
+    890
+  ],
+  "val_Mod_MenuChampaign_SunsetCanyon_Challenge_ChallengeAttempts": [
+    1234,
+    150,
+    1300,
+    194
+  ],
+  "val_Mod_Profile_Troops_HospitalCapacity": [
+    1244,
+    218,
+    1454,
+    256
+  ],
+  "val_Pop_TheLostKingdom_SeasonPeriod": [
+    1252,
+    184,
+    1552,
+    216
+  ],
+  "val_Mod_Governor_Info_MoreInfo_HighestPower": [
+    1300,
+    314,
+    1576,
+    352
+  ],
+  "val_Mod_Governor_Info_MoreInfo_Victory": [
+    1300,
+    388,
+    1576,
+    426
+  ],
+  "val_Mod_Governor_Info_MoreInfo_Defeat": [
+    1300,
+    461,
+    1576,
+    499
+  ],
+  "val_Mod_Governor_Info_MoreInfo_Dead": [
+    1300,
+    534,
+    1576,
+    572
+  ],
+  "val_Mod_Governor_Info_MoreInfo_ScoutTimes": [
+    1300,
+    608,
+    1576,
+    646
+  ],
+  "val_Mod_Governor_Info_MoreInfo_ResourcesGathered": [
+    1300,
+    736,
+    1576,
+    774
+  ],
+  "val_Mod_Governor_Info_MoreInfo_ResourceAssistance": [
+    1300,
+    810,
+    1576,
+    848
+  ],
+  "val_Mod_Governor_Info_MoreInfo_AllianceHelpTimes": [
+    1300,
+    884,
+    1576,
+    922
+  ],
+  "val_Pop_TheLostKingdom_TimeRemaining": [
+    1310,
+    250,
+    1494,
+    276
+  ],
+  "val_Pop_Governor_Info_MoreInfo_Kills_2": [
+    1330,
+    326,
+    1472,
+    358
+  ],
+  "val_Pop_Governor_Info_MoreInfo_Kills_4": [
+    1330,
+    376,
+    1472,
+    408
+  ],
+  "val_Mod_Governor_Info_Kills": [
+    1356,
+    438,
+    1576,
+    476
+  ],
+  "val_Mod_Amies_NewTroops_MarchTime": [
+    1360,
+    952,
+    1486,
+    984
+  ],
+  "val_Mod_Profile_MoreInfo_Kills": [
+    1378,
+    164,
+    1688,
+    206
+  ],
+  "val_Mod_Governor_Info_MoreInfo_Kills": [
+    1378,
+    172,
+    1578,
+    204
+  ],
+  "val_Mod_Profile_Rankings_AlliancePower_1_Power": [
+    1406,
+    320,
+    1626,
+    358
+  ],
+  "val_Mod_Profile_Rankings_AlliancePower_2_Power": [
+    1406,
+    441,
+    1626,
+    479
+  ],
+  "val_Mod_Profile_Rankings_AlliancePower_3_Power": [
+    1406,
+    562,
+    1626,
+    600
+  ],
+  "val_Mod_Governor_Info_Civilization": [
+    1414,
+    322,
+    1594,
+    356
+  ],
+  "val_Mod_MenuChampaign_SunsetCanyon_Challenge_RemainedTickets": [
+    1458,
+    146,
+    1534,
+    190
+  ],
+  "val_Mod_Amies_NewTroops_ActionPointCost": [
+    1512,
+    782,
+    1598,
+    820
+  ],
+  "val_Mod_Amies_NewTroops_CommanderPower": [
+    1516,
+    166,
+    1696,
+    204
+  ],
+  "val_Mod_Markers_Count": [
+    1572,
+    196,
+    1682,
+    232
+  ],
+  "val_Mod_MenuChampaign_Expedition_Medal": [
+    1582,
+    18,
+    1712,
+    56
+  ],
+  "val_TimeStatus": [
+    1760,
+    100,
+    1910,
+    126
+  ],
+  "val_Mod_MenuChampaign_Expedition_Gem": [
+    1790,
+    18,
+    1898,
+    56
+  ],
+  "val_AgeStatus": [
+    1800,
+    110,
+    1870,
+    144
+  ],
+  "val_Mod_MenuChampaign_Expedition_Completion": [
+    222,
+    908,
+    410,
+    986
+  ],
+  "val_Mod_Alliance_Name": [
+    302,
+    666,
+    762,
+    712
+  ],
+  "val_Mod_Alliance_Power": [
+    302,
+    720,
+    762,
+    758
+  ],
+  "val_Mod_Alliance_Leader": [
+    302,
+    788,
+    762,
+    828
+  ],
+  "val_Mod_Alliance_Territory": [
+    302,
+    836,
+    762,
+    876
+  ],
+  "val_Mod_Alliance_AllianceGift": [
+    302,
+    884,
+    762,
+    924
+  ],
+  "val_Mod_Alliance_AllianceMembers": [
+    302,
+    932,
+    762,
+    972
+  ],
+  "val_Mod_Profile_Rankings_AlliancePower_1_Name": [
+    402,
+    316,
+    854,
+    350
+  ],
+  "val_Mod_Profile_Rankings_AlliancePower_1_Leader": [
+    402,
+    348,
+    854,
+    376
+  ],
+  "val_Mod_Profile_Rankings_AlliancePower_2_Name": [
+    402,
+    437,
+    854,
+    471
+  ],
+  "val_Mod_Profile_Rankings_AlliancePower_2_Leader": [
+    402,
+    469,
+    854,
+    497
+  ],
+  "val_Mod_Profile_Rankings_AlliancePower_3_Name": [
+    402,
+    558,
+    854,
+    592
+  ],
+  "val_Mod_Profile_Rankings_AlliancePower_3_Leader": [
+    402,
+    580,
+    854,
+    608
+  ],
+  "val_Mod_Markers_Name1": [
+    414,
+    300,
+    1114,
+    334
+  ],
+  "val_Mod_Markers_Name2": [
+    414,
+    430,
+    1114,
+    464
+  ],
+  "val_Mod_Profile_Rankings_AlliancePower_Ours": [
+    422,
+    154,
+    508,
+    194
+  ],
+  "val_Mod_MenuChampaign_SunsetCanyon_Challenge_Power1": [
+    432,
+    296,
+    580,
+    338
+  ],
+  "val_Mod_MenuChampaign_SunsetCanyon_Challenge_Power2": [
+    432,
+    449,
+    580,
+    491
+  ],
+  "val_Mod_MenuChampaign_SunsetCanyon_Challenge_Power3": [
+    432,
+    602,
+    580,
+    644
+  ],
+  "val_Mod_MenuChampaign_SunsetCanyon_Challenge_Power4": [
+    432,
+    755,
+    580,
+    797
+  ],
+  "val_Mod_Profile_MoreInfo_Nick": [
+    466,
+    164,
+    894,
+    206
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Nick_1": [
+    494,
+    250,
+    924,
+    298
+  ],
+  "val_Mod_Quests_Quests_QuestName0": [
+    494,
+    254,
+    1354,
+    326
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Server_1": [
+    494,
+    302,
+    924,
+    340
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Nick_3": [
+    494,
+    462,
+    924,
+    510
+  ],
+  "val_Mod_Quests_Quests_QuestName1": [
+    494,
+    498,
+    1354,
+    570
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Server_3": [
+    494,
+    514,
+    924,
+    552
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Nick_5": [
+    494,
+    674,
+    924,
+    722
+  ],
+  "val_Mod_Quests_Quests_QuestName2": [
+    494,
+    698,
+    1354,
+    770
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Server_5": [
+    494,
+    726,
+    924,
+    764
+  ],
+  "val_Pop_Search_Barbarinas_Coord": [
+    502,
+    272,
+    670,
+    298
+  ],
+  "val_Mod_MenuChampaign_SunsetCanyon_Battle_Nick1": [
+    530,
+    48,
+    818,
+    80
+  ],
+  "val_Mod_ActionPointsOwn": [
+    560,
+    416,
+    784,
+    450
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Power_1": [
+    580,
+    340,
+    788,
+    374
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Power_3": [
+    580,
+    552,
+    788,
+    586
+  ],
+  "val_Mod_Profile_Settings_CharacterManagement_Power_5": [
+    580,
+    764,
+    788,
+    798
+  ],
+  "val_Mod_Profile_Troops_MarchQueue": [
+    630,
+    218,
+    700,
+    256
+  ],
+  "val_Mod_MenuChampaign_SunsetCanyon_Battle_Power1": [
+    636,
+    48,
+    816,
+    84
+  ],
+  "val_Mod_Profile_Troops_TotalNumberOfUnits": [
+    740,
+    168,
+    958,
+    206
+  ],
+  "val_Mod_Governor_Info_Alliance": [
+    776,
+    438,
+    1086,
+    476
+  ],
+  "val_Mod_Alliance_Members_Leader_Name": [
+    800,
+    166,
+    1154,
+    210
+  ],
+  "val_Mod_Alliance_Members_Leader_Power": [
+    800,
+    230,
+    1040,
+    268
+  ],
+  "val_Mod_ActionPointsStatus": [
+    896,
+    206,
+    1066,
+    238
+  ],
+  "val_Mod_Governor_Info_GovernorID": [
+    932,
+    286,
+    1058,
+    316
+  ],
+  "val_Mod_GovernorID": [
+    940,
+    280,
+    1062,
+    306
+  ],
+  "val_Search_Barbarinas_Level": [
+    940,
+    558,
+    980,
+    582
+  ],
+  "val_Mod_Profile_MoreInfo_Power": [
+    978,
+    164,
+    1278,
+    206
+  ],
+  "val_Mod_Governor_Info_MoreInfo_Power": [
+    978,
+    172,
+    1178,
+    204
+  ],
+  "val_Mod_Amies_NewTroops_Units": [
+    980,
+    782,
+    1236,
+    820
+  ]
+}

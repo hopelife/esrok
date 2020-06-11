@@ -34,16 +34,19 @@ import time
 import random
 import math
 import re
+import json
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ Installed(conda/pip) Libraries
-import pyautogui as pag
 import pyperclip
 import numpy as np
 import cv2
 import pytesseract
 import matplotlib.image as mpimg
 import matplotlib.pyplot as plt
+
+import pyautogui as pag
+
 import gspread  ## google drive gspread
 from oauth2client.service_account import ServiceAccountCredentials  ## google drive gspread
 
@@ -59,15 +62,20 @@ from oauth2client.service_account import ServiceAccountCredentials  ## google dr
 ##@@@-------------------------------------------------------------------------
 ##@@@ External(.json/.py)
 sys.path.append(os.path.join(os.path.dirname(sys.path[0]), '_config'))
-from _settings import _ENV, _PATH, _MAP, _TESSERACT
+from _settings import _ENV, _PATH, _MAP, _TESSERACT, _GOOGLE
+from emulators import KEY_MAP as ui_key
+from emulators import OBJECTS as ui_obj
+from emulators import LOCATION_ROK_FULL as ui_xy
+from emulators import IMAGE_ROK_FULL as ui_img
+
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ internal
 # _TESSERACT = {
-#     '_EXE': 'C:/Program Files/Tesseract-OCR/tesseract.exe',
-#     '_DATA': '--tessdata-dir "C:\\Program Files\\Tesseract-OCR\\tessdata"',
-#     #'_EXE': 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe',
-#     #'_DATA': '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"', 
+#     'EXE': 'C:/Program Files/Tesseract-OCR/tesseract.exe',
+#     'DATA': '--tessdata-dir "C:\\Program Files\\Tesseract-OCR\\tessdata"',
+#     #'EXE': 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe',
+#     #'DATA': '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"', 
 # }
 # pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe'
 # tessdata_dir_config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"'
@@ -77,32 +85,26 @@ tessdata_dir_config = '--tessdata-dir "/usr/local/Cellar/tesseract-lang/4.0.0/sh
 
 # sudo cp digits.traineddata /usr/local/Cellar/tesseract-lang/4.0.0/share/tessdata/digits.traineddata
 
-# pytesseract.pytesseract.tesseract_cmd = _TESSERACT['_EXE']
-# tessdata_dir_config = _TESSERACT['_DATA']
-
-##@@@@========================================================================
-##@@@@ Constants
+# pytesseract.pytesseract.tesseract_cmd = _TESSERACT['EXE']
+# tessdata_dir_config = _TESSERACT['DATA']
 
 
-##@@@-------------------------------------------------------------------------
-##@@@ External(.json/.py)
-sys.path.append(os.path.join(os.path.dirname(sys.path[0]), '_config'))
-from _settings import _ENV, _PATH, _MAP
-from emulators import KEY_MAP as ui_key
-from emulators import OBJECTS as ui_obj
-from emulators import LOCATION_ROK_FULL as ui_xy
-from emulators import IMAGE_ROK_FULL as ui_img
+credentials = ServiceAccountCredentials.from_json_keyfile_name(_GOOGLE['JSON'], _GOOGLE['SCOPE'])
+gc = gspread.authorize(credentials)
 
-##@@@-------------------------------------------------------------------------
-##@@@ internal
+# 스프레스시트 문서 가져오기 
+_FILE = gc.open_by_url(_GOOGLE['URLS']['TEST'])
 
+# 시트 선택하기
+# _SHEET = doc.worksheet('crop')
+_SHEET = 'crop'
+_SHEET = 'test'
 
 ##@@@@========================================================================
 ##@@@@ Functions
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ Basic Functions
-
 
 ##@@-------------------------------------------------------------------------
 ##@@ Data Management(File/Json/list/dict/Clipboard/Time)
@@ -117,7 +119,7 @@ def json_to_file(data, path, encoding='UTF-8'):
         encoding (str): encoding encoding(default: UTF-8)
     Returns:
     """
-    with open(path, 'w', encoding) as file:
+    with open(path, 'w', encoding=encoding) as file:
         file.write(json.dumps(data, indent=2, ensure_ascii=False, default=str))
 
 
@@ -129,7 +131,7 @@ def file_to_json(path, encoding='UTF-8'):
         encoding (str): encoding encoding(default: UTF-8)
     Returns:
     """
-    with open(path, encoding) as f:
+    with open(path, encoding=encoding) as f:
         return json.load(f)
 
 
@@ -208,23 +210,21 @@ def click_copy(position=[1002, 346]):
 #         sys.exit()
 
 
-def delay_secs(interval=_ENV['_CLICK_INTERVAL'], rand=False):
-    """
-    Brief: delay intervals(sec)
-    Args:
-        interval (int): delay interval[sec].
-        rand (boolean): generate random time
-    Returns:
-    Note:
-        import time
-    """
-    if rand == True:
-        delay_secs(random.uniform(interval + 0.0101, interval+ 0.0299))
-    else:
-        delay_secs(interval)
-    return 0
-
-
+# def time.sleep(interval=_ENV['CLICK_INTERVAL'], rand=False):
+#     """
+#     Brief: delay intervals(sec)
+#     Args:
+#         interval (int): delay interval[sec].
+#         rand (boolean): generate random time
+#     Returns:
+#     Note:
+#         import time
+#     """
+#     if rand == True:
+#         time.sleep(random.uniform(interval + 0.0101, interval+ 0.0299))
+#     else:
+#         time.sleep(interval)
+#     return 0
 
 
 ##@@@-------------------------------------------------------------------------
@@ -245,7 +245,7 @@ def set_cv_image(image=None, color='COLOR', show=False):
             img = cv2.imread(image, cv2.IMREAD_GRAYSCALE)
         print('local image')
     elif type(image) is list: ## scren selected box
-        delay_secs(3)  ##@@@@@@@@@@ delay
+        time.sleep(3)  ##@@@@@@@@@@ delay
         img = snap_screenshot(image)
         print('screen area image')
     elif type(image) is dict: ## image file path and crop box {'path':path, 'box':[,,,]}
@@ -287,7 +287,7 @@ def transform_perspective(points, trans='inverse'):
     return R
 
 
-def snap_screenshot(box=[1, 1, _ENV['_MAX_X'], _ENV['_MAX_Y']]):
+def snap_screenshot(box=[1, 1, _ENV['MAX_X'], _ENV['MAX_Y']]):
     """
     Brief: snap screenshot
     Args:
@@ -349,7 +349,7 @@ def extract_templates(image):
     return boxes
 
 
-def save_screenshot(box=[1, 1, _ENV['_MAX_X'], _ENV['_MAX_Y']], path=None):
+def save_screenshot(box=[1, 1, _ENV['MAX_X'], _ENV['MAX_Y']], path=None):
     """
     Brief: save screenshot
     Args:
@@ -360,7 +360,7 @@ def save_screenshot(box=[1, 1, _ENV['_MAX_X'], _ENV['_MAX_Y']], path=None):
     """
     image = snap_screenshot(box)
     if path == None:
-        path = _PATH['_SCREENSHOT_FOLDER'] + str(box[0]) + '_' + str(box[1]) + '_' + str(box[2]) + '_' + str(box[3]) + '.png'
+        path = _PATH['SCREENSHOT_FOLDER'] + str(box[0]) + '_' + str(box[1]) + '_' + str(box[2]) + '_' + str(box[3]) + '.png'
     print(path)
     cv2.imwrite(path, image)
     return 0
@@ -384,8 +384,8 @@ def save_file_crop(file, box, path=None):
     return 0
 
 
-##@@@-------------------------------------------------------------------------
-##@@@ Match Image Functions(이미지 비교: 방향, 크기 고려)
+##@@-------------------------------------------------------------------------
+##@@ Match Image Functions(이미지 비교: 방향, 크기 고려)
 
 def match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.TM_CCORR_NORMED, show=False, multi=0, color=None):
     """
@@ -443,18 +443,9 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
         res = cv2.matchTemplate(image, template, method)
     else:
         print('mask exist!!!')
-        # cv2.imshow('mask', mask)
-        # cv2.waitKey(0)
-        # cv2.destroyAllWindows()
-        # msk = cv2.cvtColor(mask, cv2.COLOR_BGR2GRAY)
-        # method = cv2.TM_CCOEFF_NORMED
         res = cv2.matchTemplate(image, template, method, mask=mask)
-        #res = cv2.matchTemplate(image, template, method, mask)
 
     print('template.shape: {}, multi: {}'.format(template.shape, multi))
-    #w, h, _ = template.shape[::-1]
-    #w, h, _ = template.shape[::]
-    #w, h = template.shape[:]
     h, w = template.shape[:]
 
     if multi == 0:
@@ -507,9 +498,8 @@ def find_match_image_box(template, image=None, mask=None, precision=0.98, method
         return centers
 
 
-
-##@@@-------------------------------------------------------------------------
-##@@@ Feature Image Functions(이미지 비교: 방향, 크기 무시)
+##@@-------------------------------------------------------------------------
+##@@ Feature Image Functions(이미지 비교: 방향, 크기 무시)
 
 def feature_image_box(template, image, precision=0.7, inverse=True):
     """
@@ -598,12 +588,19 @@ def find_feature_image_box(template, image=None, origin=[0, 0], precision=0.7, i
 ##@@@-------------------------------------------------------------------------
 ##@@@ OCR Functions(tesseract-ocr:: Character Recognition)
 
-##@@@-------------------------------------------------------------------------
-##@@@ tesseract-ocr
+##@@-------------------------------------------------------------------------
+##@@ tesseract-ocr
 
-## @@brief:: 이미지(screen box 좌표 or file path 값) 문자인식
-## @@note::
 def do_ocr(image, lang='eng', reverse=False):
+    """
+    Brief:
+        - 이미지(screen box 좌표 or file path 값) 문자인식
+    Args:
+        image (str: image file path / list: screen image area):
+        lang: 
+        reverse: 
+        method: 
+    """
     img = set_cv_image(image, 'GRAY')
     retval, img = cv2.threshold(img,200,255, cv2.THRESH_BINARY)
     img = cv2.resize(img,(0,0),fx=3,fy=3)
@@ -616,25 +613,14 @@ def do_ocr(image, lang='eng', reverse=False):
     return pytesseract.image_to_string(img, lang, config = tessdata_dir_config)
 
 
-def do_ocr_filtered(image, color='WHITE', lang='eng', reverse=False):
-    img = filter_color(image, color)
-    #img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
-    retval, img = cv2.threshold(img,200,255, cv2.THRESH_BINARY)
-    img = cv2.resize(img,(0,0),fx=3,fy=3)
-    img = cv2.GaussianBlur(img,(11,11),0)
-    img = cv2.medianBlur(img,9)
-    if reverse:
-        img = ~img
-    if img is []:
-        return False
-    imgplot = plt.imshow(img)
-    plt.show()
-    return pytesseract.image_to_string(img, lang, config = tessdata_dir_config)
-
-
-## @@brief:: 이미지(screen box 좌표 or file path 값) 문자인식
-## @@note::
 def rectify_ocr(text, lang='digit'):
+    """
+    Brief:
+        - OCR 결과 보정
+    Args:
+        text:
+        lang: 
+    """
     if lang is 'digit':
         s = ['i', 'I', 'l', 'o', 'O', ',']
         d = ['1', '1', '1', '0', '0', '']
@@ -644,9 +630,8 @@ def rectify_ocr(text, lang='digit'):
     return text
 
 
-
 ##@@@-------------------------------------------------------------------------
-##@@@ get environment(screen, os, ...)
+##@@@ GUI Functions
 
 def get_screen_max():
     pass
@@ -726,8 +711,8 @@ def compute_box_from_center(center, wh):
     return [center[0] - wh[0]//2, center[1] - wh[1]//2, center[0] + wh[0]//2, center[1] + wh[1]//2]
 
 
-##@@@-------------------------------------------------------------------------
-##@@@ control mouse
+##@@-------------------------------------------------------------------------
+##@@ control mouse
 
 def track_mouse():
     """
@@ -754,22 +739,22 @@ def move_by_object():
     pass
 
 
-def move_direction(zeroPoint=[_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2], callback=None, direction=[1,0]):
+def move_direction(zeroPoint=[_ENV['MAX_X']//2,_ENV['MAX_Y']//2], callback=None, direction=[1,0]):
     pag.moveTo(zeroPoint[0], zeroPoint[1], duration=0.0)
     pag.mouseDown()
-    delay_secs(0.1)
+    time.sleep(0.1)
     pag.moveTo(zeroPoint[0] + direction[0], zeroPoint[1] + direction[1], duration=0.5)
-    delay_secs(0.1)
+    time.sleep(0.1)
     pag.mouseUp()
     #pag.dragRel(relPoint[0], relPoint[1], duration=0.02, button='left')
-    delay_secs(0.5)
+    time.sleep(0.5)
     return direction
 
 
-##@@@-------------------------------------------------------------------------
-##@@@ simple GUI Functions(pyautogui:: mouse/keyboard) 
+##@@-------------------------------------------------------------------------
+##@@ simple GUI Functions(pyautogui:: mouse/keyboard) 
 
-def click_mouse_series(positions, interval=_ENV['_CLICK_INTERVAL'], clicks=1):
+def click_mouse_series(positions, interval=_ENV['CLICK_INTERVAL'], clicks=1):
     """
     Brief: click Mouse Series(마우스 연속 클릭)
     Args:
@@ -780,10 +765,10 @@ def click_mouse_series(positions, interval=_ENV['_CLICK_INTERVAL'], clicks=1):
     for position in positions:
         for _ in range(0, clicks):
             click_mouse(position)
-            delay_secs(interval)
+            time.sleep(interval)
 
 
-def click_mouse(position=[0, 0], button='LEFT', duration=_ENV['_MOUSE_DURATION']):
+def click_mouse(position=[0, 0], button='LEFT', duration=_ENV['MOUSE_DURATION']):
     """
     Brief: click Mouse(마우스 클릭)
     Args:
@@ -792,13 +777,15 @@ def click_mouse(position=[0, 0], button='LEFT', duration=_ENV['_MOUSE_DURATION']
         duration (int):
     """
     pag.moveTo(position[0], position[1], duration)
-    delay_secs(random.uniform(0.0101, 0.0299))
+    time.sleep(0.05)
+    #time.sleep(random.uniform(0.0101, 0.0299))
     pag.mouseDown()
-    delay_secs(random.uniform(0.0101, 0.0299))
+    time.sleep(0.05)
+    #time.sleep(random.uniform(0.0101, 0.0299))
     pag.mouseUp()
 
 
-def click_mouse2(position=[0, 0], button='LEFT', duration=_ENV['_MOUSE_DURATION']):
+def click_mouse2(position=[0, 0], button='LEFT', duration=_ENV['MOUSE_DURATION']):
     """
     Brief: double click Mouse(마우스 더블 클릭)
     Args:
@@ -808,7 +795,7 @@ def click_mouse2(position=[0, 0], button='LEFT', duration=_ENV['_MOUSE_DURATION'
     """
     pag.moveTo(position[0], position[1], duration)
     pag.mouseDown()
-    delay_secs(random.uniform(0.0101, 0.0299))
+    time.sleep(random.uniform(0.0101, 0.0299))
     pag.mouseUp()
     pag.click(clicks=2)
 
@@ -836,6 +823,7 @@ def press_hotkey():
     """
     pass
 
+
 def down_mouse(callback, position=[0, 0], duration=1):
     """
     Brief: down Mouse(마우스 다운 - 액션 - 업)
@@ -846,61 +834,15 @@ def down_mouse(callback, position=[0, 0], duration=1):
     """
     pag.moveTo(position[0], position[1])
     pag.mouseDown()
-    delay_secs(duration)
+    time.sleep(duration)
     callback()
     pag.mouseUp()
 
-
-
-
-
-
-
-##@@@@========================================================================
-
-
 ##@@@-------------------------------------------------------------------------
-##@@@ Installed(conda/pip) Libraries
-import gspread
-from oauth2client.service_account import ServiceAccountCredentials
-
-##@@@-------------------------------------------------------------------------
-##@@@ User Libraries
-
-
-
-##@@@@========================================================================
-##@@@@ Constants
-
-
-##@@@-------------------------------------------------------------------------
-##@@@ External(.json/.py)
-sys.path.append(os.path.join(os.path.dirname(sys.path[0]), '_config'))
-from _settings import _GOOGLE
-
-##@@@-------------------------------------------------------------------------
-##@@@ internal
-
-credentials = ServiceAccountCredentials.from_json_keyfile_name(_GOOGLE['_JSON'], _GOOGLE['_SCOPE'])
-gc = gspread.authorize(credentials)
-
-# 스프레스시트 문서 가져오기 
-_FILE = gc.open_by_url(_GOOGLE['_URLS']['TEST'])
-
-# 시트 선택하기
-# _SHEET = doc.worksheet('crop')
-_SHEET = 'crop'
-_SHEET = 'test'
-
-##@@@@========================================================================
-##@@@@ Functions
-
-##@@@-------------------------------------------------------------------------
-##@@@ Basic Functions
-
+##@@@ Google Drive(gspread)
 
 def fetch_sheet(file_, sheet_):
-    return gc.open_by_url(_GOOGLE['_URLS'][file_]).worksheet(sheet_)
+    return gc.open_by_url(_GOOGLE['URLS'][file_]).worksheet(sheet_)
 
 
 def find_first_filled_row(data):
@@ -938,10 +880,6 @@ def get_filled_dict(data, header=0):
     return list_to_dict([v[find_first_filled_col(data)-1:] for v in remove_empty_list(data)][header:])
 
 
-
-##@@@-------------------------------------------------------------------------
-##@@@ Complex Functions
-
 def get_dict_from_sheet(ws, header=0):
     """
     Brief: find first filled col
@@ -955,22 +893,4 @@ def get_dict_from_sheet(ws, header=0):
 ##@@@@========================================================================
 ##@@@@ Execute Test
 if __name__ == "__main__":
-    delay_secs(5)
-
-    # v_coords = [{'villages': [[1166, 682]], 'center': [250, 250]}, {'villages': [[785, 409]], 'center': [50, 250]}]
-
-    # for v in v_coords:
-    #     go_by_coordinate(v['center'])
-    #     for village in v['villages']:
-    #         click_mouse(village)
-    #         delay_secs(5)
-
-
-    # vs = search_objects_in_map(obj='village_unvisited', location=[250, 250], box=_MAP['SCAN_BOX'], precision=0.97, ms='min')
-
-    # print(vs)
-
-    #coord = find_village_location(coord={'loc': [1166, 682], 'center': [250, 250]})
-    #print(coord)
-
-    search_objects_in_map()
+    time.sleep(5)

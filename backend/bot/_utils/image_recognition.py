@@ -57,10 +57,10 @@ from _settings import _ENV, _PATH, _MAP, _TESSERACT
 ##@@@-------------------------------------------------------------------------
 ##@@@ internal
 # _TESSERACT = {
-#     '_EXE': 'C:/Program Files/Tesseract-OCR/tesseract.exe',
-#     '_DATA': '--tessdata-dir "C:\\Program Files\\Tesseract-OCR\\tessdata"',
-#     #'_EXE': 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe',
-#     #'_DATA': '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"', 
+#     'EXE': 'C:/Program Files/Tesseract-OCR/tesseract.exe',
+#     'DATA': '--tessdata-dir "C:\\Program Files\\Tesseract-OCR\\tessdata"',
+#     #'EXE': 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe',
+#     #'DATA': '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"', 
 # }
 # pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe'
 # tessdata_dir_config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"'
@@ -70,8 +70,8 @@ tessdata_dir_config = '--tessdata-dir "/usr/local/Cellar/tesseract-lang/4.0.0/sh
 
 # sudo cp digits.traineddata /usr/local/Cellar/tesseract-lang/4.0.0/share/tessdata/digits.traineddata
 
-# pytesseract.pytesseract.tesseract_cmd = _TESSERACT['_EXE']
-# tessdata_dir_config = _TESSERACT['_DATA']
+# pytesseract.pytesseract.tesseract_cmd = _TESSERACT['EXE']
+# tessdata_dir_config = _TESSERACT['DATA']
 
 ##@@@@========================================================================
 ##@@@@ Functions
@@ -205,7 +205,7 @@ def transform_perspective(points, trans='inverse'):
     return R
 
 
-def snap_screenshot(box=[1, 1, _ENV['_MAX_X'], _ENV['_MAX_Y']]):
+def snap_screenshot(box=[1, 1, _ENV['MAX_X'], _ENV['MAX_Y']]):
     """
     Brief: snap screenshot
     Args:
@@ -271,7 +271,7 @@ def extract_templates(image):
 
 ## @@brief:: 스크린 샷 저장
 ## @@note:: box default: 전체 화면
-def save_screenshot(box=[1, 1, _ENV['_MAX_X'], _ENV['_MAX_Y']], path=None):
+def save_screenshot(box=[1, 1, _ENV['MAX_X'], _ENV['MAX_Y']], path=None):
     """
     Brief: save screenshot
     Args:
@@ -282,7 +282,7 @@ def save_screenshot(box=[1, 1, _ENV['_MAX_X'], _ENV['_MAX_Y']], path=None):
     """
     image = snap_screenshot(box)
     if path == None:
-        path = _PATH['_SCREENSHOT_FOLDER'] + str(box[0]) + '_' + str(box[1]) + '_' + str(box[2]) + '_' + str(box[3]) + '.png'
+        path = _PATH['SCREENSHOT_FOLDER'] + str(box[0]) + '_' + str(box[1]) + '_' + str(box[2]) + '_' + str(box[3]) + '.png'
     print(path)
     cv2.imwrite(path, image)
     return 0

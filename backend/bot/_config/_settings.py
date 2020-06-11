@@ -12,42 +12,46 @@ Usage: from config._settings import *
 """
 
 _ENV = {
-    #'_OS': 'WIN',
-    '_OS': 'OSX',
-    '_MAX_X': 1920,
-    '_MAX_Y': 1080,
-    '_ZOOM_MAX': 50,
-    '_IMG_EXT': '.png',
-    '_EMULATOR': 'LDPLAYER',
-    '_SCREENSHOT': 'shots/',
-    '_MOUSE_DURATION': 0.5,
-    '_CLICK_INTERVAL': 1,
+    #'OS': 'WIN',
+    'OS': 'OSX',
+    'MAX_X': 1920,
+    'MAX_Y': 1080,
+    'ZOOM_MAX': 50,
+    'IMG_EXT': '.png',
+    'EMULATOR': 'LDPLAYER',
+    'MOUSE_DURATION': 0.5,
+    'CLICK_INTERVAL': 1,
 }
 
 _PATH = {
-    '_ROOT': '../images/',
-    '_UIS': '../images/uis/',  ## UI images
-    '_OBJECTS': '../images/objects/',  ## UI images
-    '_MAPS': '../images/maps/',  ## map images
-    '_SCREENSHOT': '../images/screenshots/'  ## screenshot images
+    'ROOT': '../images/',
+    'UIS': '../images/uis/',  ## UI images
+    'OBJECTS': '../images/objects/',  ## UI images
+    'MAPS': '../images/maps/',  ## map images
+    'SCREENSHOT': '../images/screenshots/'  ## screenshot images
 }
 
-
 _TESSERACT = {
-    '_EXE': 'C:/Program Files/Tesseract-OCR/tesseract.exe',
-    '_DATA': '--tessdata-dir "C:\\Program Files\\Tesseract-OCR\\tessdata"',
-    #'_EXE': 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe',
-    #'_DATA': '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"', 
+    'WIN': {
+        'EXE': 'C:/Program Files/Tesseract-OCR/tesseract.exe',
+        'DATA': '--tessdata-dir "C:\\Program Files\\Tesseract-OCR\\tessdata"',
+    #'EXE': 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe',
+    #'DATA': '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"', 
+    },
+    'OSX': {
+        'EXE': '/usr/local/Cellar/tesseract/4.1.1/bin/tesseract',
+        'DATA': '--tessdata-dir "/usr/local/Cellar/tesseract-lang/4.0.0/share/tessdata/"',
+    }
 }
 
 
 _GOOGLE = {
-    '_JSON': '../_config/rok_service_account_googledrive.json',
-    '_SCOPE': [
+    'JSON': '../_config/rok_service_account_googledrive.json',
+    'SCOPE': [
         'https://spreadsheets.google.com/feeds',
         'https://www.googleapis.com/auth/drive',
     ],
-    '_URLS': {
+    'URLS': {
         'TEST': 'https://docs.google.com/spreadsheets/d/1zwHf6FEcqb_vyHC-3uSlzzE0ln8zoMsW5-YwNzTryLU/edit#gid=0'
     }
 }

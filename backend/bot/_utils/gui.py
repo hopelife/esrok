@@ -83,7 +83,7 @@ def get_clipboard(position=[1002, 346]):
     print(pyperclip.paste())
 
 
-def delay(interval=_ENV['_CLICK_INTERVAL'], rand=False):
+def delay(interval=_ENV['CLICK_INTERVAL'], rand=False):
     """
     Brief: delay intervals(sec)
     Args:
@@ -171,7 +171,7 @@ def move_by_object():
 #     return R
 
 
-def move_direction(zeroPoint=[_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2], callback=None, direction=[1,0]):
+def move_direction(zeroPoint=[_ENV['MAX_X']//2,_ENV['MAX_Y']//2], callback=None, direction=[1,0]):
     #relPoint = [direction[0], direction[1]]
     pag.moveTo(zeroPoint[0], zeroPoint[1], duration=0.0)
     pag.mouseDown()
@@ -199,7 +199,7 @@ def move_direction(zeroPoint=[_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2], callback=Non
     # return relPoint
 
 
-def get_coords_for_rotation(step=100, count=9, zeroPoint=[_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2]):
+def get_coords_for_rotation(step=100, count=9, zeroPoint=[_ENV['MAX_X']//2,_ENV['MAX_Y']//2]):
     """
     Brief: 시계방향 회전, 우측 이동 -> 
     Args:
@@ -239,7 +239,7 @@ def get_coords_for_rotation(step=100, count=9, zeroPoint=[_ENV['_MAX_X']//2,_ENV
     return coords
 
 
-def test_rotation(start=[200, 200], step=100, count=9, zeroPoint=[_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2]):
+def test_rotation(start=[200, 200], step=100, count=9, zeroPoint=[_ENV['MAX_X']//2,_ENV['MAX_Y']//2]):
     zoom_out()
     coords = get_coords_for_rotation(step, count, zeroPoint)
     go_by_coordinate(start)
@@ -271,7 +271,7 @@ def test_rotation(start=[200, 200], step=100, count=9, zeroPoint=[_ENV['_MAX_X']
 
 
 
-def move_rotation(zeroPoint=[_ENV['_MAX_X']//2,_ENV['_MAX_Y']//2], step=1, count=1, callback=None, rotation='clockwise', angle=1):
+def move_rotation(zeroPoint=[_ENV['MAX_X']//2,_ENV['MAX_Y']//2], step=1, count=1, callback=None, rotation='clockwise', angle=1):
     """
     Brief: 
     Args:
@@ -374,7 +374,7 @@ def get_box_from_center(center, wh):
 ##@@@-------------------------------------------------------------------------
 ##@@@ simple GUI Functions(pyautogui:: mouse/keyboard) 
 
-def click_mouse_series(positions, interval=_ENV['_CLICK_INTERVAL'], clicks=1):
+def click_mouse_series(positions, interval=_ENV['CLICK_INTERVAL'], clicks=1):
     """
     Brief: click Mouse Series(마우스 연속 클릭)
     Args:
@@ -388,7 +388,7 @@ def click_mouse_series(positions, interval=_ENV['_CLICK_INTERVAL'], clicks=1):
             time.sleep(interval)
 
 
-def click_mouse(position=[0, 0], button='LEFT', duration=_ENV['_MOUSE_DURATION']):
+def click_mouse(position=[0, 0], button='LEFT', duration=_ENV['MOUSE_DURATION']):
     """
     Brief: click Mouse(마우스 클릭)
     Args:
@@ -403,7 +403,7 @@ def click_mouse(position=[0, 0], button='LEFT', duration=_ENV['_MOUSE_DURATION']
     pag.mouseUp()
 
 
-def click_mouse2(position=[0, 0], button='LEFT', duration=_ENV['_MOUSE_DURATION']):
+def click_mouse2(position=[0, 0], button='LEFT', duration=_ENV['MOUSE_DURATION']):
     """
     Brief: double click Mouse(마우스 더블 클릭)
     Args:
@@ -458,8 +458,8 @@ def down_mouse(callback, position=[0, 0], duration=1):
 ##@@@-------------------------------------------------------------------------
 ##@@@ complex GUI Functions(pyautogui:: mouse/keyboard)
 
-def get_image_path(name, category='_UIS'):
-    return _PATH[category] + ui_img[name] + _ENV['_IMG_EXT']
+def get_image_path(name, category='UIS'):
+    return _PATH[category] + ui_img[name] + _ENV['IMG_EXT']
 
 
 def get_viewmode():
@@ -487,8 +487,8 @@ def set_mode_explore():
 
 
 def shot_zoom_out():
-    keys = ui_key[_ENV['_OS']]['ZOOM_OUT']
-    pag.moveTo(_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2)
+    keys = ui_key[_ENV['OS']]['ZOOM_OUT']
+    pag.moveTo(_ENV['MAX_X']//2, _ENV['MAX_Y']//2)
     for i in range(0, 34):
         pag.keyDown(keys[0])
         time.sleep(0.1)
@@ -498,9 +498,9 @@ def shot_zoom_out():
         time.sleep(0.2)
 
 
-def zoom_out(nth=_ENV['_ZOOM_MAX']):
-    pag.moveTo(_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2)
-    keys = ui_key[_ENV['_OS']]['ZOOM_OUT']
+def zoom_out(nth=_ENV['ZOOM_MAX']):
+    pag.moveTo(_ENV['MAX_X']//2, _ENV['MAX_Y']//2)
+    keys = ui_key[_ENV['OS']]['ZOOM_OUT']
     for _ in range(0, nth):
         for key in keys:
             pag.keyDown(key)
@@ -511,7 +511,7 @@ def zoom_out(nth=_ENV['_ZOOM_MAX']):
     time.sleep(2)
 
 
-def drag_in_map(relPoint=[0, 0], zeroPoint=[_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2], viewMode='_CASTLE', duration=_ENV['_MOUSE_DURATION']):
+def drag_in_map(relPoint=[0, 0], zeroPoint=[_ENV['MAX_X']//2, _ENV['MAX_Y']//2], viewMode='CASTLE', duration=_ENV['MOUSE_DURATION']):
     """
     Brief: dragInMap(게임 내에서 마우스 드래그)
     Args:
@@ -575,8 +575,8 @@ def get_coordinate():
 
 
 def find_verification_verify():
-    # return _ir.match_image_box(get_image_path('btn_VerificationVerify', '_UIS'), precision=0.9)
-    return _ir.match_image_box(get_image_path('btn_VerificationVerify', '_UIS'), [830, 470, 1738, 648], precision=0.9)
+    # return _ir.match_image_box(get_image_path('btn_VerificationVerify', 'UIS'), precision=0.9)
+    return _ir.match_image_box(get_image_path('btn_VerificationVerify', 'UIS'), [830, 470, 1738, 648], precision=0.9)
 
 
 def do_verification_reward(precision=0.4):
@@ -705,12 +705,12 @@ def go_by_coordinate(location=[0,0]):
 #     # h = shotsize[1]
 #     # start = [w//2, h//2]
 #     box = _MAP['EDGE']
-#     ratio_x = _ENV['_MAX_X'] / _MAP['ONE_MAX'][0]
-#     ratio_y = _ENV['_MAX_Y'] / _MAP['ONE_MAX'][1]
+#     ratio_x = _ENV['MAX_X'] / _MAP['ONE_MAX'][0]
+#     ratio_y = _ENV['MAX_Y'] / _MAP['ONE_MAX'][1]
 #     x1_ = math.floor(_MAP['EDGE'][0]/ratio_x)
 #     y1_ = math.floor(_MAP['EDGE'][1]/ratio_y)
-#     x2_ = math.floor((_ENV['_MAX_X'] - _MAP['EDGE'][2])/ratio_x)
-#     y2_ = math.floor((_ENV['_MAX_Y'] - _MAP['EDGE'][3])/ratio_y)
+#     x2_ = math.floor((_ENV['MAX_X'] - _MAP['EDGE'][2])/ratio_x)
+#     y2_ = math.floor((_ENV['MAX_Y'] - _MAP['EDGE'][3])/ratio_y)
 #     w = _MAP['ONE_MAX'][0] - x2_ + x1_
 #     h = _MAP['ONE_MAX'][1] - y1_ + y2_
 #     # w = _MAP['ONE_MAX'][0] - x1_ - x2_
@@ -750,8 +750,8 @@ def save_whole_maps(searchMode='Explore', zoom=320, max_size=_MAP['ONE_MAX']):
     # h = shotsize[1]
     # start = [w//2, h//2]
     box = _MAP['EDGE']
-    ratio_x = _ENV['_MAX_X'] / _MAP['ONE_MAX'][0]
-    ratio_y = _ENV['_MAX_Y'] / _MAP['ONE_MAX'][1]
+    ratio_x = _ENV['MAX_X'] / _MAP['ONE_MAX'][0]
+    ratio_y = _ENV['MAX_Y'] / _MAP['ONE_MAX'][1]
     w = math.floor((_MAP['EDGE'][2] - _MAP['EDGE'][0])/ratio_x) + 37
     h = math.floor((_MAP['EDGE'][3] - _MAP['EDGE'][1])/ratio_y)
     start = [165, 131]
@@ -769,11 +769,11 @@ def save_whole_maps(searchMode='Explore', zoom=320, max_size=_MAP['ONE_MAX']):
     return 0
 
 
-def save_move_direction(zeroPoint=[_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2], direction=[-10, 0]):
+def save_move_direction(zeroPoint=[_ENV['MAX_X']//2, _ENV['MAX_Y']//2], direction=[-10, 0]):
     x_ = direction[0]
     y_ = direction[1]
     for i in range(1, 6):
-        path = _PATH['_MAPS'] + 'move_' + str(direction[0]) + '_' + str(direction[1]) + _ENV['_IMG_EXT']
+        path = _PATH['MAPS'] + 'move_' + str(direction[0]) + '_' + str(direction[1]) + _ENV['IMG_EXT']
         delay(3)
         _ir.save_screenshot(path=path)
         direction[0] += x_
@@ -786,7 +786,7 @@ def save_screenshot_map(location=[0, 0], searchMode='Explore', box=[], server=''
     go_by_coordinate(location)
     #set_searchMode()
     #set_zoomMode(zoom)
-    path = _PATH['_MAPS'] + server + '_' + searchMode + '_' + str(location[0]) + '_' + str(location[1]) + _ENV['_IMG_EXT']
+    path = _PATH['MAPS'] + server + '_' + searchMode + '_' + str(location[0]) + '_' + str(location[1]) + _ENV['IMG_EXT']
     delay(3)
     _ir.save_screenshot(box, path)
 
@@ -813,9 +813,9 @@ def receive_village_gifts(location=[_MAP['ONE_MAX'][0]//2, _MAP['ONE_MAX'][1]//2
         click_mouse(center)
         print(center)
         delay(0.1)
-        click_mouse2([_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
+        click_mouse2([_ENV['MAX_X']//2, _ENV['MAX_Y']//2])
         delay(0.1)
-        click_mouse([_ENV['_MAX_X']//2 - 200, _ENV['_MAX_Y']//2])
+        click_mouse([_ENV['MAX_X']//2 - 200, _ENV['MAX_Y']//2])
         delay(0.1)
         zoom_out()
         delay(0.01)
@@ -825,7 +825,7 @@ def visit_village(coord={'loc': [1166, 682], 'center': [250, 250]}):
     go_by_coordinate(coord['center'])
     click_mouse(coord['loc'])
     delay(0.1)
-    click_mouse2([_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
+    click_mouse2([_ENV['MAX_X']//2, _ENV['MAX_Y']//2])
     delay(0.1)
 
     great = _ir.match_image_box()
@@ -833,7 +833,7 @@ def visit_village(coord={'loc': [1166, 682], 'center': [250, 250]}):
     if type(great) is list:
         click_mouse(great)
         _coord = get_coordinate()
-        click_mouse([_ENV['_MAX_X']//2 - 200, _ENV['_MAX_Y']//2])
+        click_mouse([_ENV['MAX_X']//2 - 200, _ENV['MAX_Y']//2])
         delay(0.1)
         zoom_out()
         delay(0.01)
@@ -847,7 +847,7 @@ def find_village_location(coord={'loc': [1166, 682], 'center': [250, 250]}):
     go_by_coordinate(coord['center'])
     click_mouse(coord['loc'])
     delay(0.1)
-    click_mouse2([_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
+    click_mouse2([_ENV['MAX_X']//2, _ENV['MAX_Y']//2])
     delay(0.1)
     _coord = get_coordinate()
     return [_coord[1], _coord[2]]
@@ -863,10 +863,10 @@ def search_objects_in_map(obj='village_unvisited', location=[500, 300], box=_MAP
     yellow_lower = [15, 70, 70]
     yellow_upper = [28, 255, 255]
     #template = '../images/uis/img_ExploreVillage.png'  ##@@@@@@@@@@@@
-    template = _PATH['_OBJECTS'] + ui_obj[obj]['img_' + ms] + _ENV['_IMG_EXT']
+    template = _PATH['OBJECTS'] + ui_obj[obj]['img_' + ms] + _ENV['IMG_EXT']
     mask = None
     if 'msk_' + ms in ui_obj[obj]:
-        mask = _PATH['_OBJECTS'] + ui_obj[obj]['msk_' + ms] + _ENV['_IMG_EXT']
+        mask = _PATH['OBJECTS'] + ui_obj[obj]['msk_' + ms] + _ENV['IMG_EXT']
 
     return _ir.match_image_box(template=template, image=box, mask=mask, precision=precision, show=True, multi=1, color=(yellow_lower, yellow_upper))
 
@@ -889,10 +889,10 @@ if __name__ == "__main__":
     delay(5)
     #go_by_coordinate([500, 500])
     #get_clipboard()
-    #drag_in_map([-_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
-    #drag_in_map([_ENV['_MAX_X']//2, 0])
-    # print(_ENV['_MAX_X']//2)
-    # pag.moveTo(_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2, duration=0.0)
+    #drag_in_map([-_ENV['MAX_X']//2, _ENV['MAX_Y']//2])
+    #drag_in_map([_ENV['MAX_X']//2, 0])
+    # print(_ENV['MAX_X']//2)
+    # pag.moveTo(_ENV['MAX_X']//2, _ENV['MAX_Y']//2, duration=0.0)
     # pag.dragRel(500, 400, duration=0.2, button='left')
     # pass
     #get_image_path('btn_GoWorldView')
@@ -900,19 +900,19 @@ if __name__ == "__main__":
     #zoom_out()
     #save_screenshot_map()
     #save_whole_maps()
-    #print(_ENV['_MAX_X'] / _MAP['ONE_MAX'][0])
-    #print(_ENV['_MAX_Y'] / _MAP['ONE_MAX'][1])
+    #print(_ENV['MAX_X'] / _MAP['ONE_MAX'][0])
+    #print(_ENV['MAX_Y'] / _MAP['ONE_MAX'][1])
     #'EDGE': [210, 150, 1610, 940]
     #go_by_coordinate([125,89])
     # delay(3)
-    # pag.moveTo(_MAP['EDGE'][2], _ENV['_MAX_Y']//2)
+    # pag.moveTo(_MAP['EDGE'][2], _ENV['MAX_Y']//2)
     # delay(0.1)
     # pag.mouseDown()
     # delay(0.3)
-    # pag.moveTo(_MAP['EDGE'][0], _ENV['_MAX_Y']//2, duration=4.5)
+    # pag.moveTo(_MAP['EDGE'][0], _ENV['MAX_Y']//2, duration=4.5)
     # delay(0.3)
     # pag.mouseUp()
-    #drag_in_map([_ENV['_MAX_X']//2, 0])
+    #drag_in_map([_ENV['MAX_X']//2, 0])
     
     
     #template = '../images/uis/img_ExploreVillage.png'
@@ -935,9 +935,9 @@ if __name__ == "__main__":
     #     click_mouse(center)
     #     print(center)
     #     delay(5)
-    #     click_mouse([-_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
+    #     click_mouse([-_ENV['MAX_X']//2, _ENV['MAX_Y']//2])
     #     delay(1)
-    #     click_mouse([-_ENV['_MAX_X']//2 - 200, _ENV['_MAX_Y']//2])
+    #     click_mouse([-_ENV['MAX_X']//2 - 200, _ENV['MAX_Y']//2])
     #     for _ in range(0, 40):
     #         pag.hotkey('ctrl', 'down')
     #         delay(0.1)
@@ -951,9 +951,9 @@ if __name__ == "__main__":
     #     click_mouse(center)
     #     print(center)
     #     delay(3)
-    #     click_mouse2([_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2])
+    #     click_mouse2([_ENV['MAX_X']//2, _ENV['MAX_Y']//2])
     #     delay(1)
-    #     click_mouse([_ENV['_MAX_X']//2 - 200, _ENV['_MAX_Y']//2])
+    #     click_mouse([_ENV['MAX_X']//2 - 200, _ENV['MAX_Y']//2])
     #     delay(0.1)
     #     zoom_out()
     #     delay(0.01)
@@ -971,14 +971,14 @@ if __name__ == "__main__":
     #save_whole_maps()
     #search_villages()
     #move_direction(direction=[100,0])
-    #save_move_direction([_ENV['_MAX_X']-100, _ENV['_MAX_Y']//2], [-300,0])
-    #save_move_direction(zeroPoint=[_ENV['_MAX_X']//2, _ENV['_MAX_Y']-100], direction=[0, -300])
-    #save_move_direction(zeroPoint=[_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2], direction=[0, -100])
+    #save_move_direction([_ENV['MAX_X']-100, _ENV['MAX_Y']//2], [-300,0])
+    #save_move_direction(zeroPoint=[_ENV['MAX_X']//2, _ENV['MAX_Y']-100], direction=[0, -300])
+    #save_move_direction(zeroPoint=[_ENV['MAX_X']//2, _ENV['MAX_Y']//2], direction=[0, -100])
 
     # move_rotation(step=100, callback=_ir.save_screenshot)
 
     #move_direction(zeroPoint=[960, 540], direction=[-365.0, 0])
-    #transform_perspective([_ENV['_MAX_X']//2, _ENV['_MAX_Y']//2], trans='inverse')
+    #transform_perspective([_ENV['MAX_X']//2, _ENV['MAX_Y']//2], trans='inverse')
     #print(get_coordinate())
     #coords = get_coords_for_rotation()
     #print(coords)

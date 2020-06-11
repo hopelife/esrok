@@ -52,11 +52,11 @@ from _settings import _GOOGLE
 ##@@@-------------------------------------------------------------------------
 ##@@@ internal
 
-credentials = ServiceAccountCredentials.from_json_keyfile_name(_GOOGLE['_JSON'], _GOOGLE['_SCOPE'])
+credentials = ServiceAccountCredentials.from_json_keyfile_name(_GOOGLE['JSON'], _GOOGLE['SCOPE'])
 gc = gspread.authorize(credentials)
 
 # 스프레스시트 문서 가져오기 
-_FILE = gc.open_by_url(_GOOGLE['_URLS']['TEST'])
+_FILE = gc.open_by_url(_GOOGLE['URLS']['TEST'])
 
 # 시트 선택하기
 # _SHEET = doc.worksheet('crop')
@@ -71,7 +71,7 @@ _SHEET = 'test'
 
 
 def fetch_sheet(file_, sheet_):
-    return gc.open_by_url(_GOOGLE['_URLS'][file_]).worksheet(sheet_)
+    return gc.open_by_url(_GOOGLE['URLS'][file_]).worksheet(sheet_)
 
 
 def list_to_dict(ls=[]):
@@ -166,7 +166,7 @@ if __name__ == '__main__':
     # print(d)
 
     sheetName = 'crop'
-    spreadsheet = gc.open_by_url(_GOOGLE['_URLS']['TEST'])
+    spreadsheet = gc.open_by_url(_GOOGLE['URLS']['TEST'])
     ws = spreadsheet.worksheet(sheetName)
 
     dic = get_dict_from_sheet(ws, header=0)

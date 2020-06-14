@@ -100,6 +100,9 @@ _FILE = gc.open_by_url(_GOOGLE['URLS']['TEST'])
 _SHEET = 'crop'
 _SHEET = 'test'
 
+
+
+
 ##@@@@========================================================================
 ##@@@@ Functions
 
@@ -267,6 +270,31 @@ def set_cv_image(image=None, color='COLOR', show=False):
         cv2.destroyAllWindows()
 
     return img
+
+
+def filter_color(image, color='WHITE'):
+    """
+    Brief: color filter for image recognition or OCR
+    Args:
+        image (str: image file path / list: screen image area)
+        color: 'WHITE', 'YELLOW', 'GREEN' @@@@@@@@
+    Returns:
+        opencv image array
+    """
+    if color == 'WHITE':
+        lower = np.array([0,0,168])
+        upper = np.array([172,111,255])
+
+    img = set_cv_image(image)
+    img_hsv = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)
+    # 색상 범위를 제한하여 mask 생성
+    img_mask = cv2.inRange(img_hsv, lower, upper)
+    # 원본 이미지를 가지고 Object 추출 이미지로 생성
+    img_result = cv2.bitwise_and(img, img, mask=img_mask)
+    # 결과 이미지 생성
+    #imgplot = plt.imshow(img_result)
+    #plt.show()
+    return img_result
 
 
 def transform_perspective(points, trans='inverse'):
@@ -591,25 +619,43 @@ def find_feature_image_box(template, image=None, origin=[0, 0], precision=0.7, i
 ##@@-------------------------------------------------------------------------
 ##@@ tesseract-ocr
 
-def do_ocr(image, lang='eng', reverse=False):
+def do_ocr(image, color=None, lang='eng', path=None, reverse=True, gauss=1):
     """
     Brief:
         - 이미지(screen box 좌표 or file path 값) 문자인식
     Args:
+        color : color filter
         image (str: image file path / list: screen image area):
         lang: 
+        path: 문자인식 이미지 저장 위치.이름
         reverse: 
-        method: 
     """
-    img = set_cv_image(image, 'GRAY')
-    retval, img = cv2.threshold(img,200,255, cv2.THRESH_BINARY)
-    img = cv2.resize(img,(0,0),fx=3,fy=3)
-    img = cv2.GaussianBlur(img,(11,11),0)
-    img = cv2.medianBlur(img,9)
+    if color is not None:
+        img = filter_color(image, color)
+        print('image will be filtered!!')
+        img = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
+    else:
+        img = set_cv_image(image, 'GRAY')
+
+#    retval, img = cv2.threshold(img, 200, 255, cv2.THRESH_BINARY)
+#    img = cv2.resize(img, (0, 0), fx=3, fy=3)
+#    img = cv2.GaussianBlur(img, (11, 11),0)
+#    img = cv2.medianBlur(img, 9)
+    if reverse is True:
+        img = ~img
+    img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+    # img = cv2.GaussianBlur(img, (1, 1), 0)  ## More Info
+    img = cv2.GaussianBlur(img, (gauss, gauss), 0)  ## More Info Kill Details
+#    img = cv2.medianBlur(img, 1)
+
     if reverse:
         img = ~img
     if img is []:
         return False
+    
+    if not path is None:
+        cv2.imwrite(path, img)
+
     return pytesseract.image_to_string(img, lang, config = tessdata_dir_config)
 
 
@@ -890,7 +936,30 @@ def get_dict_from_sheet(ws, header=0):
     """
     return get_filled_dict(ws.get_all_values(), header)
 
+
+def fill_sheet_from_dict(file, sheet, sheet_data, new=False):
+    #ws = file.worksheet(sheet)
+    headers = [key for key, val in sheet_data[0].items()]
+
+    put_values = []
+
+    if new is True:
+        put_values.append(headers)
+
+    for v in sheet_data:
+        temp = []
+        for h in headers:
+            temp.append(v[h])
+        put_values.append(temp)
+    print(put_values)
+    file.values_append(sheet, {'valueInputOption': 'USER_ENTERED'}, {'values': put_values})
+
 ##@@@@========================================================================
 ##@@@@ Execute Test
 if __name__ == "__main__":
-    time.sleep(5)
+    #time.sleep(5)
+    sheet_data = [
+        {'nick': 'test1', 'Power': '5', 'Kills': '207.662', 'HighestPower': '4174465', 'Victory': '562', 'Defeat': '1', 'Dead': '127074', 'ScoutTimes': '849', 'ResourcesGathered': '443.776.184', 'ResourceAssistance': '45596538', 'AllianceHelpTimes': '16', 'Kills_1': '', 'Kills_2': '', 'Kills_3': '', 'Kills_4': '25009', 'Kills_5': ''},
+        {'nick': 'test2', 'Power': '6', 'Kills': '207662', 'HighestPower': '4465', 'Victory': '56', 'Defeat': '123', 'Dead': '124', 'ScoutTimes': '849', 'ResourcesGathered': '443.776.184', 'ResourceAssistance': '45596538', 'AllianceHelpTimes': '16', 'Kills_1': '5', 'Kills_2': '8', 'Kills_3': '92', 'Kills_4': '25009', 'Kills_5': '0'}
+    ]
+    fill_sheet_from_dict(_FILE, 'test', sheet_data, new=False)

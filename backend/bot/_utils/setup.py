@@ -76,21 +76,23 @@ def setup_ui_images(file_='TEST', sheet_='crop'):
             if k == 'x_y_w_h' and v != '':
                 # dicts.remove(dic)
 
-                #shots = '/Volumes/data/dev/SynologyDrive/projects/_ROK/bot/_screenShots/'
-                #shots = 'D:\\moon\\dev\\projects\\rok\\_bot\\image_full\\'
-                shots = 'D:/moon/dev/projects/rok/_bot/image_full/'
+                shots = '/Volumes/data/dev/SynologyDrive/projects/_ROK/bot/_screenShots/'
+                #shots = 'D:/moon/dev/projects/rok/_bot/image_full/'
+                #file = shots + re.sub(r'\D', '', dic['original']) + _ENV['IMG_EXT']
                 file = shots + re.sub(r'\D', '', dic['original']) + _ENV['IMG_EXT']
                 box = _bs.compute_box_from_wh(list(map(int, dic['x_y_w_h'].replace(' ','').split(','))))
+                #box = _bs.compute_box_from_wh(list(map(int, dic['x_y_w_h'].replace(' ','').split(','))))
                 path = '../images/_uis/' + dic['prefix'] + _ENV['IMG_EXT']
                 print('file: {}, box: {}, path: {}'.format(file, box, path))
 
                 ### save ui images
-                _ir.save_file_crop(file, box, path)
-
-                uis[dic['prefix']] = _gu.get_center_from_box(box)
+                if dic['use'] == 'i' or dic['use'] == 'b':
+                    _bs.save_file_crop(file, box, path)
+                if dic['use'] == 'x' or dic['use'] == 'b':
+                    uis[dic['prefix']] = _bs.compute_center_from_box(box)
 
                 ### save ui json
-                #jsons.append({dic['prefix']:_gu.get_center_from_box(box)})
+                #jsons.append({dic['prefix']:_gu.compute_center_from_box(box)})
                 #_bs.json_to_file(jsons, '../_config/uis.json')
                 _bs.json_to_file(uis, '../_config/uis.json')
     print(uis)
@@ -114,9 +116,22 @@ def setup_ui_boxes(file_='TEST', sheet_='crop'):
                 _bs.json_to_file(uis, '../_config/ui_boxes.json')
     print(uis)
     return uis
+
+
 ##@@@@========================================================================
 ##@@@@ Execute Test
 if __name__ == '__main__':
     #dic = setup_ui_images('TEST', 'crop')
-    dic = setup_ui_boxes('TEST', 'crop')
+    #dic = setup_ui_boxes('TEST', 'crop')
     #print(dic)
+
+
+    #path = '/Volumes/data/dev/SynologyDrive/projects/_ROK/bot/_screenShots/'
+    path = '/Users/macmini/Downloads/screenshot2/'
+    #_bs.rename_all(path, lambda filename : re.sub(r'\D', '', filename) + '.png')
+    #setup_ui_images(file_='TEST', sheet_='crop')
+
+    file = path + '20200615110330.png'
+    box = _bs.compute_box_from_wh([46, 778, 88, 66])
+    name = 'btn_ToolSearch.png'
+    _bs.save_file_crop(file, box, path + name)

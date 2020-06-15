@@ -757,6 +757,45 @@ def compute_box_from_center(center, wh):
     return [center[0] - wh[0]//2, center[1] - wh[1]//2, center[0] + wh[0]//2, center[1] + wh[1]//2]
 
 
+
+def expand_box(box, offset=[0, 0, 0, 0]):
+    """
+        left, top, right, bottom
+    """
+    if len(box) == 2:
+        box.append(box[0])
+        box.append(box[1])
+
+    if len(offset) == 1:
+        for i in range(1, 4):
+            offset.append(offset[0])
+    if len(offset) == 2:
+        offset.append(offset[0])
+        offset.append(offset[1])
+
+    for i, b in enumerate(box):
+        if i < 2:
+            box[i] = b - offset[i]
+        else:
+            box[i] = b + offset[i]
+
+    box = fit_box_to_screen(box)
+    print('box: {}'.format(box))
+    return box
+
+
+def fit_box_to_screen(box):
+    if box[0] < 1:
+        box[0] = 1
+    if box[1] < 1:
+        box[1] = 1
+    if box[2] > _ENV['MAX_X']:
+        box[2] = _ENV['MAX_X']
+    if box[3] > _ENV['MAX_Y']:
+        box[3] = _ENV['MAX_Y']
+    return box
+
+
 ##@@-------------------------------------------------------------------------
 ##@@ control mouse
 
@@ -958,8 +997,11 @@ def fill_sheet_from_dict(file, sheet, sheet_data, new=False):
 ##@@@@ Execute Test
 if __name__ == "__main__":
     #time.sleep(5)
-    sheet_data = [
-        {'nick': 'test1', 'Power': '5', 'Kills': '207.662', 'HighestPower': '4174465', 'Victory': '562', 'Defeat': '1', 'Dead': '127074', 'ScoutTimes': '849', 'ResourcesGathered': '443.776.184', 'ResourceAssistance': '45596538', 'AllianceHelpTimes': '16', 'Kills_1': '', 'Kills_2': '', 'Kills_3': '', 'Kills_4': '25009', 'Kills_5': ''},
-        {'nick': 'test2', 'Power': '6', 'Kills': '207662', 'HighestPower': '4465', 'Victory': '56', 'Defeat': '123', 'Dead': '124', 'ScoutTimes': '849', 'ResourcesGathered': '443.776.184', 'ResourceAssistance': '45596538', 'AllianceHelpTimes': '16', 'Kills_1': '5', 'Kills_2': '8', 'Kills_3': '92', 'Kills_4': '25009', 'Kills_5': '0'}
-    ]
-    fill_sheet_from_dict(_FILE, 'test', sheet_data, new=False)
+    # sheet_data = [
+    #     {'nick': 'test1', 'Power': '5', 'Kills': '207.662', 'HighestPower': '4174465', 'Victory': '562', 'Defeat': '1', 'Dead': '127074', 'ScoutTimes': '849', 'ResourcesGathered': '443.776.184', 'ResourceAssistance': '45596538', 'AllianceHelpTimes': '16', 'Kills_1': '', 'Kills_2': '', 'Kills_3': '', 'Kills_4': '25009', 'Kills_5': ''},
+    #     {'nick': 'test2', 'Power': '6', 'Kills': '207662', 'HighestPower': '4465', 'Victory': '56', 'Defeat': '123', 'Dead': '124', 'ScoutTimes': '849', 'ResourcesGathered': '443.776.184', 'ResourceAssistance': '45596538', 'AllianceHelpTimes': '16', 'Kills_1': '5', 'Kills_2': '8', 'Kills_3': '92', 'Kills_4': '25009', 'Kills_5': '0'}
+    # ]
+    # fill_sheet_from_dict(_FILE, 'test', sheet_data, new=False)
+
+    b = expand_box([100, 200, 10000, 20000], [10])
+    print(b)

@@ -35,6 +35,7 @@ import random
 import math
 import re
 import json
+from datetime import date, timedelta, datetime
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ Installed(conda/pip) Libraries
@@ -228,6 +229,41 @@ def click_copy(position=[1002, 346]):
 #     else:
 #         time.sleep(interval)
 #     return 0
+
+
+
+##@@@-------------------------------------------------------------------------
+##@@@ Datetime : default format['%Y%m%d%H%M']
+
+##@@ brief:: 
+##@@ note:: bgn=start time, gap=int, unit=[sec]) / time formate '%Y%m%d%H%M'
+def add_datetime(bgn='', gap=300, f='%Y%m%d%H%M'):
+  base = datetime.strptime(bgn, f) if type(bgn) is str else bgn
+  return base + timedelta(seconds=gap)
+
+
+##@@ brief:: 
+##@@ note:: 
+def gap_datetime(end='', bgn='', f='%Y%m%d%H%M'):
+  _bgn = datetime.strptime(bgn, f) if type(bgn) is str else bgn
+  _end = datetime.strptime(end, f) if type(end) is str else end
+  return int((_end - _bgn).total_seconds())
+
+
+def convert_time_to_sec(t='', f='%H:%M:%S'):
+  base = datetime.strptime(bgn, f) if type(bgn) is str else bgn
+  return base + timedelta(seconds=gap)
+
+
+# nowDatetime = now.strftime('%Y-%m-%d %H:%M:%S')
+# print(nowDatetime)  # 2015-04-19 12:11:32
+# datetime.utcnow()
+
+
+##@@ brief:: 
+##@@ note:: string: default format ['%Y%m%d%H%M'] -> datetime
+def string_to_time(s, f='%Y%m%d%H%M'):
+  return datetime.strptime(s, f)
 
 
 ##@@@-------------------------------------------------------------------------
@@ -1003,5 +1039,16 @@ if __name__ == "__main__":
     # ]
     # fill_sheet_from_dict(_FILE, 'test', sheet_data, new=False)
 
-    b = expand_box([100, 200, 10000, 20000], [10])
-    print(b)
+    # b = expand_box([100, 200, 10000, 20000], [10])
+    # print(b)
+
+    now = datetime.utcnow()
+    nowDatetime = now.strftime('%Y-%m-%d %H:%M:%S')
+    nowTuple = now.timetuple()
+    print(nowDatetime)  # 2020-06-16 06:10:56
+    print(nowTuple)  # time.struct_time(tm_year=2020, tm_mon=6, tm_mday=16, tm_hour=6, tm_min=10, tm_sec=56, tm_wday=1, tm_yday=168, tm_isdst=-1)
+    print(nowTuple.tm_hour*3600)
+
+    time_gap_str = '13:34:27'
+    gap_tuple = datetime.strptime(time_gap_str, '%H:%M:%S').timetuple()
+    print(gap_tuple.tm_hour*3600)

@@ -26,6 +26,7 @@ _ENV = {
 _PATH = {
     'ROOT': '../images/',
     'UIS': '../images/uis/',  ## UI images
+    '_UIS': '../images/_uis/',  ## UI images
     'OBJECTS': '../images/objects/',  ## UI images
     'MAPS': '../images/maps/',  ## map images
     'SCREENSHOT': '../images/screenshots/'  ## screenshot images

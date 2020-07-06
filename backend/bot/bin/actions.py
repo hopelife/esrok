@@ -81,10 +81,10 @@ def create_new_character():
     print(btn_create)
     btn = match_image_box(template=btn_create, precision=0.99)
 
-    for _ in range(0, 3):
+    for _ in range(0, 5):
         if btn is False:
             move_mouse_direction(direction=[0, -300])
-            time.sleep(4)
+            time.sleep(5)
             print('not Founded create(+) button')
             btn = match_image_box(template=btn_create, precision=0.99)
         else:
@@ -99,9 +99,10 @@ def create_new_character():
 def do_scenario():
     """
     """
-    #kingdom = [600, 424] # 서버(왕국) 선택 버튼(last open)!!!
+    kingdom = [600, 424] # 서버(왕국) 선택 버튼(last open)!!!
     #kingdom = [1280, 424] # 서버(왕국) 선택 버튼(second last open)!!!
-    kingdom = [600, 560] # 서버(왕국) 선택 버튼(second last open)!!!
+    #kingdom = [600, 560] # 서버(왕국) 선택 버튼(3rd last open)!!!
+    # kingdom = [1280, 560] # 서버(왕국) 선택 버튼(4th last open)!!!
     btn_skip = [1770, 50] # SKIP 버튼
     skip = [10, 540]
     btn_tool = [94, 810]
@@ -111,63 +112,63 @@ def do_scenario():
     btn_quests = [72, 250]
     btn_go = [1510, 364] # go, claim toggle button
 
-    # btns0 = [
-    #     kingdom, # 서버(왕국) 선택 버튼
-    #     [1220, 768], # YES button
-    # ]
-    # click_mouse_series(btns0, interval=2, clicks=1)
+    btns0 = [
+        kingdom, # 서버(왕국) 선택 버튼
+        [1220, 768], # YES button
+    ]
+    click_mouse_series(btns0, interval=2, clicks=1)
 
-    # btn_china = _imgs + 'btn_civilization_china.png'
-    # pos_china = wait_match_image(template=btn_china, pause=3)
-    # print('pos_china: {}'.format(pos_china))
+    btn_china = _imgs + 'btn_civilization_china.png'
+    pos_china = wait_match_image(template=btn_china, pause=3)
+    print('pos_china: {}'.format(pos_china))
 
-    # if pos_china is not False:
-    #     print('matched: {}'.format(pos_china))
-    #     click_mouse(pos_china)
-    # else:
-    #     return False
+    if pos_china is not False:
+        print('matched: {}'.format(pos_china))
+        click_mouse(pos_china)
+    else:
+        return False
 
-    # btns1 = [
-    #     pos_china, # 문명 선택 china
-    #     [968, 768], # 약관 동의 accept btn
-    #     pos_china, # 문명 선택 china
-    #     [1624, 760], # confirm
-    #     btn_skip,
-    # ]
+    btns1 = [
+        pos_china, # 문명 선택 china
+        [968, 768], # 약관 동의 accept btn
+        pos_china, # 문명 선택 china
+        [1624, 760], # confirm
+        btn_skip,
+    ]
 
-    # click_mouse_series(btns1, interval=2, clicks=1)
-    # time.sleep(3)
+    click_mouse_series(btns1, interval=2, clicks=1)
+    time.sleep(3)
 
-    # btn_cityhall = _imgs + 'img_CityHall_01.png'
-    # pos_cityhall = wait_match_image(template=btn_cityhall, pause=3)
+    btn_cityhall = _imgs + 'img_CityHall_01.png'
+    pos_cityhall = wait_match_image(template=btn_cityhall, pause=3)
     
-    # if pos_cityhall is False:
-    #     print('ROK is not loaded, YET.')
-    #     return False
-    # else:
-    #     print('ROK is loaded!!!')
+    if pos_cityhall is False:
+        print('ROK is not loaded, YET.')
+        return False
+    else:
+        print('ROK is loaded!!!')
 
-    # btns2 = [
-    #     skip,
-    #     skip,
-    #     skip,
-    #     skip,
-    #     skip,
-    #     btn_tool,
-    #     btn_build,
-    #     [1100, 550], # upgrage building button
-    #     # skip,
-    #     [988, 690], # collect button
-    #     skip,
-    #     skip,
-    #     skip,
-    #     btn_map,
-    #     skip,
-    #     skip,
-    # ]
+    btns2 = [
+        skip,
+        skip,
+        skip,
+        skip,
+        skip,
+        btn_tool,
+        btn_build,
+        [1100, 550], # upgrage building button
+        # skip,
+        [988, 690], # collect button
+        skip,
+        skip,
+        skip,
+        btn_map,
+        skip,
+        skip,
+    ]
 
-    # click_mouse_series(btns2, interval=2, clicks=1)
-    # time.sleep(30)
+    click_mouse_series(btns2, interval=2, clicks=1)
+    time.sleep(30)
 
     btns2 = [
         skip,
@@ -235,18 +236,33 @@ def do_scenario():
     ]
 
     click_mouse_series(btns4, interval=3, clicks=1)
-    time.sleep(30)
+    time.sleep(40)
 
     btns5 = [
         skip,
         skip,
         skip,
-        [922, 394], # select barbarian taget
-        [1332, 604], # attack
-        [1514, 290], # march
+        [868, 448], # barbarian target @@@@@
     ]
-
     click_mouse_series(btns5, interval=2, clicks=1)
+    time.sleep(2)
+
+    img_word =  _imgs + 'img_Scenario_SelectNewTarget.png'
+    offset = [114, -128]  ## select new target (620, 540, 248, 32) / click center [858, 428]
+    pos_word = wait_match_image(template=img_word, pause=3)
+    if pos_word is False:
+        return False
+    else:
+        pos_target = [pos_word[0] + offset[0], pos_word[1] + offset[1]]
+
+    click_mouse(pos_target)
+    time.sleep(2)
+
+    btn_img =  _imgs + 'btn_Scenario_BarbarianAttack.png'
+    #pos_btn = match_image_box(template=btn_img)
+    click_mouse(match_image_box(template=btn_img))
+    time.sleep(1)
+    click_mouse([1514, 290])  # march
     time.sleep(30)
 
     btns6 = [
@@ -318,19 +334,24 @@ def remove_trees():
         [732, 216],
         [949, 361],
         [903, 226],
-        [1057, 373],
+        # [1057, 373],  ##
+        [1070, 400],
         [1172, 468],
         [1194, 336],
-        [1324, 378],
+        # [1324, 378],  ##
+        [1332, 414],
         [1325, 383],
         [1448, 389],
-        [1688, 550],
+        # [1688, 550], ##
+        [1688, 578],
     ]
 
     trees2 = [
         [1718, 483],
         [1686, 419],
         [1562, 598],
+        [1804, 430],
+        [1444, 490],
     ]
 
     trees3 = [
@@ -1048,11 +1069,11 @@ if __name__ == "__main__":
 
     #doCallbackSeries(starter, [cb1, cb2, cb3], ender)
 
-    # if create_new_character():
-    #     time.sleep(10)
-    #     do_scenario()
+    if create_new_character():
+        time.sleep(10)
+        do_scenario()
 
     # do_scenario()
-    remove_trees()
+    # remove_trees()
     #remove_tree2(([558, 822], [688, 948]))
     # move_mouse_direction(direction=[0, -100])

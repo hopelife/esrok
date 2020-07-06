@@ -649,6 +649,22 @@ def find_feature_image_box(template, image=None, origin=[0, 0], precision=0.7, i
     return center
 
 
+def wait_match_image(template, image=None, precision=0.978, pause=3, duration=15):
+    time.sleep(pause)
+    center = match_image_box(template, image=image, precision=precision)
+    _ITV_MATCH_IMAGE = 0.5
+    if duration == 0:
+        return center
+    else:
+        #n = duration // _ITV_MATCH_IMAGE
+        for _ in range(0, duration):
+            center = match_image_box(template, image=image, precision=precision)
+            if center == False:
+                time.sleep(_ITV_MATCH_IMAGE)
+            else:
+                return center
+    return False
+
 ##@@@-------------------------------------------------------------------------
 ##@@@ OCR Functions(tesseract-ocr:: Character Recognition)
 
@@ -860,7 +876,7 @@ def move_by_object():
     pass
 
 
-def move_direction(zeroPoint=[_ENV['MAX_X']//2,_ENV['MAX_Y']//2], callback=None, direction=[1,0]):
+def move_mouse_direction(zeroPoint=[_ENV['MAX_X']//2,_ENV['MAX_Y']//2], callback=None, direction=[1,0]):
     pag.moveTo(zeroPoint[0], zeroPoint[1], duration=0.0)
     pag.mouseDown()
     time.sleep(0.1)
@@ -870,6 +886,19 @@ def move_direction(zeroPoint=[_ENV['MAX_X']//2,_ENV['MAX_Y']//2], callback=None,
     #pag.dragRel(relPoint[0], relPoint[1], duration=0.02, button='left')
     time.sleep(0.5)
     return direction
+
+
+# def drag_in_game(relPoint=[0, 0], zeroPoint=[_ENV['MAX_X']//2, _ENV['MAX_Y']//2], duration=_ENV['MOUSE_DURATION']):
+#     """
+#     Brief: dragInMap(게임 내에서 마우스 드래그)
+#     Args:
+#         relPoint (list): target point(relative)
+#         zeroPoint (list): starting point(relative)
+#         viewMode (str): _CASTLE / _ALLIANCE / _KINGDOM
+#         duration (int):
+#     """
+#     pag.moveTo(zeroPoint[0], zeroPoint[1], duration=0.1)
+#     pag.dragRel(relPoint[0], relPoint[1], duration=0.2, button='left')
 
 
 ##@@-------------------------------------------------------------------------

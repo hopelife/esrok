@@ -7,9 +7,11 @@
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ User Libraries
-from _config import _ENV, oss, emulators
+sys.path.append(os.path.join(os.path.dirname(sys.path[0]), '_config'))
+from _settings import _ENV, _PATH
+sys.path.append(os.path.join(os.path.dirname(sys.path[0]), '_utils'))
 from _basics import *
-from _actions import *
+
 
 ##@@@@========================================================================
 ##@@@@ Constants
@@ -22,37 +24,81 @@ from _actions import *
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ From:: here itself
-_OS = oss[_ENV['_OS']]
-_UI = emulators[_ENV['_EMULATOR']]
+# _OS = oss[_ENV['_OS']]
+# _UI = emulators[_ENV['_EMULATOR']]
 
 ##@@@@========================================================================
 ##@@@@ Functions
 
 ##@@@-------------------------------------------------------------------------
-##@@@ Account / Character
+##@@@ Search / Architecture / Research
 
-## @@brief:: 
-## @@note:: 
-
-
-def select_nation(nation='china'):
+def find_locations(obj='cave'):
+    """
+    obj: 'cave', 'village', 'fort', ...
+    """
     pass
 
 
-def receive_starting_commander():
-    pass
-
-
-def skip_blah_blah(nth=3):
-    pass
-
-
-def build_building(building='farm', age='STONE'):
+def build_building(building='economic'):
+    """
+    """
     pass
 
 
 def upgrade_building(building='farm', level=2):
+    """
+    """
     pass
+
+
+##@@@-------------------------------------------------------------------------
+##@@@ Dispatch Troop
+
+def gather_resources():
+    """
+    """
+    pass
+
+
+def hunt_barbarians(level=8):
+    """
+    """
+    pass
+
+
+def gather_barbarianFort():
+    """
+    """
+    pass
+
+
+def join_barbarianFort():
+    """
+    """
+    pass
+
+
+def recover_fog():
+    """
+    """
+    pass
+
+
+##@@@-------------------------------------------------------------------------
+##@@@ Daily 
+
+def tour_sunsetCanyon():
+    """
+    """
+    pass
+
+
+def tour_lostCanyon():
+    """
+    """
+    pass
+
 
 
 ## @@brief:: VIP Point / Gift 수령 (period: 1day)
@@ -201,30 +247,6 @@ def do_AllianceGifts():
 #     setViewMode(viewMode)
 #     findLocation()
 
-
-
-# select nation	로마 [, ] 중국[1428, 890]
-# starting commander	[1580, 730]
-# click skip	[1730, 78]
-# farm1	[150, 786]	[432, 712]	[1078, 542]	delay 5
-# collect food	click	[962, 674]	
-# skip	click		[60, 1020]	<5>
-# go out of the city	click	[138, 946]	
-# skip	click	[60, 1020]	<10>
-# return to the city	click	[138, 946]
-# skip	click	[60, 1020]	<5>
-# infantry training	click	[782, 652]
-# [964, 830] -> [1420, 862] -> (10) -> [780, 650] -> skip(2)
-# upgrade wall	[958, 470] -> [940, 700] -> [1428, 800] -> skip(2)
-# tavern	[130, 784]	[124, 752]	[420, 766]	[590, 340]
-# recruit	[666, 732]	[1330, 876]	delay 10	[324, 882]	[588, 892]	[106, 90]	-> skip(2)
-
-# defeat barbarian	[136, 952]	[130, 780]	[428, 708]	skip(2)	[940, 524]	[1325, 700]	[1464, 242]	[322, 668]	[152, 300]	[1345, 913]	delay 14	skip(3)
-# defeat barbarian2	[876, 460]	[1230, 612]	[1454, 304]	delay(20)	skip(5)	[318, 880]	[138, 946]	skip(3)
-# follow the quest	[118, 264]	[1444, 364]	[1036, 730]	[1422, 806]	delay(5)	[118, 264]	[1448, 366]	[1448, 366]	skip(2)	
-# build a scout camp	[130, 786]	[136, 742]	[412, 747]	[1240, 406]	delay(5)	[1302, 798]	[1450, 488]	[1174, 758]	[1454, 270]	skip(2)
-# quests	[136, 952]	[116, 270]	[1432, 	362]	[1432, 	362]	[134, 790]	
-# lumber mill	[130, 784]	[420, 766]	[1496, 236]	delay(5)	[1392, 648]	[1412, 800]	delay(20)
 
 
 # createNewCharacter

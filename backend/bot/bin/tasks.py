@@ -67,13 +67,19 @@ def hunt_barbarians(level=8):
     pass
 
 
-def gather_barbarianFort():
+def rally_barbarianFort():
     """
     """
     pass
 
 
 def join_barbarianFort():
+    """
+    """
+    pass
+
+
+def defeat_guardian():
     """
     """
     pass

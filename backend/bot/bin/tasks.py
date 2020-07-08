@@ -55,21 +55,125 @@ def upgrade_building(building='farm', level=2):
 ##@@@-------------------------------------------------------------------------
 ##@@@ Dispatch Troop
 
-def gather_resources():
+def click_tool_button(button='Search'):
     """
     """
-    pass
+    btn_img = _imgs + 'btn_Tool' + button + '.png'
+    btn = match_image_box(template=btn_img)
+    if not btn:
+        click_mouse(_uis['btn_GoCityView'])
+        time.sleep(2)
+        btn = match_image_box(template=btn_img)
+        if not btn:
+            return False
+        else:
+            click_mouse(btn)
+    else:
+        click_mouse(btn)
+
+    return btn
 
 
-def hunt_barbarians(level=8):
+def click_dispatch_search(resource='Food', level=1):
     """
     """
-    pass
+    # Cropland
+    places = {
+        'Food': 'Cropland',
+        'Wood': 'LoggingCamp',
+        'Stone': 'StoneDeposit',
+        'Gold': 'GoldDeposit',
+        'Barbarians': 'Barbarians'
+    }
+
+    place = 'btn_Search_' + places[resource]
+    btn_loc = _uis['btn_Search_' + place]
+    click_mouse(btn_loc)
+
+    n = level - 1
+    for _ in range(0, n):
+        click_mouse(_uis[place + '_Plus'])
+
+    click_mouse(_uis[place + '_Search'])
+
+    click_mouse(_CENTER)
 
 
-def rally_barbarianFort():
+def click_gather(hold_positoin=True):
     """
     """
+    ## 채집(gather)
+    btn_img = _imgs + 'btn_Gather.png' ##@@@@@@@@@@@@@@
+    btn = match_image_box(template=btn_img)
+    click_mouse(btn)
+    time.sleep(2)
+
+
+def click_attack(hold_positoin=True):
+    """
+    """
+    ## Attack
+    btn_img = _imgs + 'btn_Pop_DefeatBarbarians_Attack.png'
+    btn = match_image_box(template=btn_img)
+    click_mouse(btn)
+    time.sleep(2)
+
+
+def click_dispatch_army(nth=0, commandar=None, multi=False):
+    """
+    """
+    btn_img = _imgs + 'btn_Pop_DispatchArmy_NewTroops.png' ##@@@
+    btn = match_image_box(template=btn_img)
+
+    if not btn: ## no new troops
+        btn_img = _imgs + 'btn_Pop_DispatchArmy_March.png' ## 
+        btn2 = match_image_box(template=btn_img)
+        if not btn2:
+            print('Error')
+            return False
+        else:
+            ## @@@@ badge check 부대 상태에 따라, camp
+
+            click_mouse(btn2)
+    else:
+        click_mouse(btn)
+
+    time.sleep(2)
+
+    if multi:  ## Multiple Selection
+        pass
+
+    if nth > 0 & nth < 6:
+        click_mouse(_uis['btn_Mod_Amies_NewTroops_' + str(nth)])
+
+    click_mouse(_uis['btn_Pop_DispatchArmy_March'])
+    time.sleep(2)
+
+
+
+def gather_resources(resource='Food', level=1):
+    """
+    """
+    click_tool_button(btn='Search')
+    click_dispatch_search(resource=resource, level=level)
+    click_gather()
+    click_dispatch_army()
+
+
+
+def hunt_barbarians(level=8, multi=False, potion=False, nth=0):
+    """
+    """
+    click_tool_button(btn='Search')
+    click_dispatch_search_button(resource='Barbarians', level=level)
+    click_attack()
+    click_dispatch_army()
+
+
+def rally_barbarianFort(level=1):
+    """
+    """
+    search_barbarianFort(level=level)
     pass
 
 

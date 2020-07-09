@@ -4,6 +4,11 @@
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ Basic Libraries
+import os
+import sys
+# from pathlib import Path
+import time
+
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ User Libraries
@@ -13,14 +18,15 @@ sys.path.append(os.path.join(os.path.dirname(sys.path[0]), '_utils'))
 from _basics import *
 
 
+
 ##@@@@========================================================================
 ##@@@@ Constants
 
-
 ##@@@-------------------------------------------------------------------------
 ##@@@ From:: External Files .py
+_uis = file_to_json('../_config/uis.json', encoding='UTF-8')
+_imgs = _PATH['_UIS']
 
-#DATA_TYPES = file_to_json('../_files/res_data_type.json')
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ From:: here itself
@@ -71,6 +77,7 @@ def click_tool_button(button='Search'):
     else:
         click_mouse(btn)
 
+    time.sleep(2)
     return btn
 
 
@@ -86,17 +93,18 @@ def click_dispatch_search(resource='Food', level=1):
         'Barbarians': 'Barbarians'
     }
 
-    place = 'btn_Search_' + places[resource]
-    btn_loc = _uis['btn_Search_' + place]
-    click_mouse(btn_loc)
+    click_mouse(_uis['btn_Search_' + places[resource]])
+    place = 'btn_Mod_Search_' + places[resource]
 
     n = level - 1
     for _ in range(0, n):
         click_mouse(_uis[place + '_Plus'])
 
     click_mouse(_uis[place + '_Search'])
-
-    click_mouse(_CENTER)
+    ### 찾는 자원이 있는지 확인
+    time.sleep(3)
+    click_mouse([_ENV['MAX_X']//2,_ENV['MAX_Y']//2])
+    time.sleep(2)
 
 
 def click_gather(hold_positoin=True):
@@ -154,7 +162,7 @@ def click_dispatch_army(nth=0, commandar=None, multi=False):
 def gather_resources(resource='Food', level=1):
     """
     """
-    click_tool_button(btn='Search')
+    click_tool_button(button='Search')
     click_dispatch_search(resource=resource, level=level)
     click_gather()
     click_dispatch_army()
@@ -164,7 +172,7 @@ def gather_resources(resource='Food', level=1):
 def hunt_barbarians(level=8, multi=False, potion=False, nth=0):
     """
     """
-    click_tool_button(btn='Search')
+    click_tool_button(button='Search')
     click_dispatch_search_button(resource='Barbarians', level=level)
     click_attack()
     click_dispatch_army()
@@ -412,11 +420,15 @@ def doAllianceHelp():
 # warrior_of_the_sun
 
 if __name__ == "__main__":
-    receive_VIP()
-    time.sleep(2)
-    do_AllianceHelp()
-    time.sleep(2)
-    #do_AllianceTechnology()
-    #do_AllianceTerritory()
-    time.sleep(2)
-    do_AllianceGifts()
+    # receive_VIP()
+    # time.sleep(2)
+    # do_AllianceHelp()
+    # time.sleep(2)
+    # #do_AllianceTechnology()
+    # #do_AllianceTerritory()
+    # time.sleep(2)
+    # do_AllianceGifts()
+
+    click_tool_button(button='Search')
+    click_dispatch_search(resource='Wood', level=2)
+    click_gather()

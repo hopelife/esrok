@@ -10,21 +10,21 @@ import sys
 import time
 # from datetime import date, timedelta, datetime
 # #from bson.json_util import dumps
-# import json
-# import re
-# import numpy as np
-# import random
+import json
+import re
+import numpy as np
+import random
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ User Libraries
 sys.path.append(os.path.join(os.path.dirname(sys.path[0]), '_config'))
 # sys.path.append(os.path.join(os.path.dirname(sys.path[0]), '_config'))
 # from _settings import _ENV, _PATH, _MAP, _TESSERACT, _GOOGLE
-from _settings import _ENV, _PATH
-# from emulators import KEY_MAP as ui_key
-# from emulators import OBJECTS as ui_obj
-# from emulators import LOCATION_ROK_FULL as ui_xy
-# from emulators import IMAGE_ROK_FULL as ui_img
+from _settings import _ENV, _PATH, _MAP, _TESSERACT, _GOOGLE
+from emulators import KEY_MAP as ui_key
+from emulators import OBJECTS as ui_obj
+from emulators import LOCATION_ROK_FULL as ui_xy
+from emulators import IMAGE_ROK_FULL as ui_img
 sys.path.append(os.path.join(os.path.dirname(sys.path[0]), '_utils'))
 from _basics import *
 
@@ -49,7 +49,7 @@ _imgs = _PATH['_UIS']
 ##@@@@========================================================================
 ##@@@@ Functions
 
-def create_new_character():
+def create_new_character(server=None):
     """
     """
     btns = [
@@ -70,20 +70,43 @@ def create_new_character():
             time.sleep(5)
             print('not Founded create(+) button')
             btn = match_image_box(template=btn_create, precision=0.99)
+            continue
         else:
             print(btn)
             click_mouse(btn)
             time.sleep(10)
-            return True
-    
+            break
+        return False
+
+    if server is None:
+        kingdom = [600, 424] # 서버(왕국) 선택 버튼(last open)!!!
+        # kingdom = [1280, 560] # 서버(왕국) 선택 버튼(4th last open)!!!
+        click_mouse(kingdom)
+    else:
+        btn_server = _imgs + 'img_CreateNewCharacter_' + server + '.png'
+        print(btn_server)
+        btn = match_image_box(template=btn_server, precision=0.997)
+        # print(btn)
+        for _ in range(0, 40):
+            if btn is False:
+                move_mouse_direction(zeroPoint=[_ENV['MAX_X']//2, _ENV['MAX_Y']//2 + 300], direction=[0, -600])
+                time.sleep(3)
+                print('not Founded Server')
+                btn = match_image_box(template=btn_server, precision=0.997)
+                continue
+            else:
+                print('Founded Server: {}'.format(btn))
+                click_mouse(btn)
+                time.sleep(5)
+                click_mouse([1220, 768]) # YES button
+                return True
+
     return False
 
 
 def do_scenario():
     """
     """
-    kingdom = [600, 424] # 서버(왕국) 선택 버튼(last open)!!!
-    # kingdom = [1280, 560] # 서버(왕국) 선택 버튼(4th last open)!!!
     btn_skip = [1770, 50] # SKIP 버튼
     skip = [10, 540]
     btn_tool = [94, 810]
@@ -92,12 +115,6 @@ def do_scenario():
     btn_military = [88, 774]
     btn_quests = [72, 250]
     btn_go = [1510, 364] # go, claim toggle button
-
-    btns0 = [
-        kingdom, # 서버(왕국) 선택 버튼
-        [1220, 768], # YES button
-    ]
-    click_mouse_series(btns0, interval=2, clicks=1)
 
     btn_china = _imgs + 'btn_civilization_china.png'
     pos_china = wait_match_image(template=btn_china, pause=3)
@@ -239,7 +256,7 @@ def do_scenario():
     click_mouse(pos_target)
     time.sleep(2)
 
-    btn_img =  _imgs + 'btn_Scenario_BarbarianAttack.png'
+    btn_img = _imgs + 'btn_Scenario_BarbarianAttack.png'
     #pos_btn = match_image_box(template=btn_img)
     click_mouse(match_image_box(template=btn_img))
     time.sleep(1)
@@ -253,25 +270,26 @@ def do_scenario():
         [294, 912], # confirm
         btn_map, # castle_map button
         skip,
+        btn_quests,
+        btn_go,
         skip,
-        btn_quests,
-        btn_go,
-        # skip,
-        # skip,
-        [1062, 766], # city hall
+        skip,
+        [964, 766], # city hall
         [1490, 830], # upgrade city hall
-        # skip,
+        skip,
         # skip,
         btn_quests,
         btn_go,
-        # skip,
+        skip,
         btn_go,
+        skip,
     ]
 
     click_mouse_series(btns6, interval=3, clicks=1)
     time.sleep(5)
 
     btns7 = [
+        btn_go,
         skip,
         skip,
         btn_tool,
@@ -281,8 +299,11 @@ def do_scenario():
         skip,
         skip,
         [1380, 828], # scout button
-        [1510, 480], # explore button
-        [1210, 780], # explore2 button
+        match_image_box(template= _imgs + 'img_Buildings_ScoutCamp_0.png'), # scout builing
+        match_image_box(template= _imgs + 'btn_ScoutCamp_Explore.png'), # scout builing
+        # [1116, 623], # scout button
+        # [1510, 480], # explore button
+        [1210, 780], # explore2 button @@@@ 안개 지역이 있는 경우에만 해당!!!
         [1510, 250], # send button
         skip,
         skip,
@@ -298,6 +319,10 @@ def do_scenario():
         btn_build, # build archery range
         [1624, 212], # build button
     ]
+
+
+    btn_ScoutCamp_Explore
+    img_Buildings_ScoutCamp_0
 
     click_mouse_series(btns7, interval=3, clicks=1)
     time.sleep(10)
@@ -405,6 +430,195 @@ def remove_tree2(tree=([487, 939], [599, 947])):
 
     click_mouse([712, 770]) # YES button
     time.sleep(2)
+
+
+
+def search_objects_in_map(obj='village_unvisited', location=[500, 300], box=_MAP['SCAN_BOX'], precision=0.51, ms='min'):
+    zoom_out(nth=60)
+    go_by_coordinate(location)
+    time.sleep(3)
+
+    #yellow filter: cvScalar(23,41,133), cvScalar(40,150,255)
+    # yellow_lower = [20, 100, 100]
+    # yellow_upper = [30, 255, 255]
+    yellow_lower = [15, 70, 70]
+    yellow_upper = [28, 255, 255]
+    #template = '../images/uis/img_ExploreVillage.png'  ##@@@@@@@@@@@@
+    template = _PATH['OBJECTS'] + ui_obj[obj]['img_' + ms] + _ENV['IMG_EXT']
+    mask = None
+    if 'msk_' + ms in ui_obj[obj]:
+        mask = _PATH['OBJECTS'] + ui_obj[obj]['msk_' + ms] + _ENV['IMG_EXT']
+
+    #coords = match_image_box(template=template, image=box, mask=mask, precision=precision, show=True, multi=1, color=(yellow_lower, yellow_upper))
+    coords = match_image_box(template=template, image=box, mask=mask, precision=precision, show=False, multi=1, color=(yellow_lower, yellow_upper))
+
+    print(coords)
+
+    return coords
+
+
+def search_coords_in_map(center=[500, 300], locs=[[916, 399], [1192, 420], [1131, 443], [886, 446], [820, 566]]):
+
+    _coords = []
+    coords = [] # map coords
+    for loc in locs:
+        time.sleep(1)
+        zoom_out(nth=60)
+        time.sleep(1)
+        go_by_coordinate(center)
+        time.sleep(2)
+        click_mouse(loc)
+        time.sleep(6)
+        click_mouse([_ENV['MAX_X']//2, _ENV['MAX_Y']//2])
+        time.sleep(1)
+        marker = add_marker_village()
+        # coord = catch_village()
+        # if marker is not False:
+        #     # _coords.append(coord)
+        #     coord = get_coordinate()
+        #     coords.append(coord)
+        #     # add_marker_village()
+        #     print('village: {}'.format(coord))
+
+    #print(_coords)
+    # return coords
+
+
+def visit_villages_by_coords(coords=[]):
+    for coord in coords:
+        if get_viewmode() is 'CITY_VIEW':
+            set_viewmode('WORLD_VIEW')
+
+        go_by_coordinate(coord)
+        #time.sleep(1)
+        btn = _imgs + 'img_TribalVillage.png'
+        village = match_image_box(template=btn, image=[_ENV['MAX_X']//2-350, _ENV['MAX_Y']//2-250, _ENV['MAX_X']//2+350, _ENV['MAX_Y']//2+250], precision=0.98)
+        print('village is at {}'.format(village))
+        click_mouse(village)
+        click_mouse(village)
+        click_mouse(village)
+        #time.sleep(1)
+
+
+
+
+def go_by_coordinate(location=[0,0]):
+    """
+    Brief: 지도에서 x, y 좌표를 입력하여 이동
+    Args:
+        location (list): 좌표
+        viewmode (str): CITY_VIEW / WORLD_VIEW(min -> GLOBE)
+    """
+    #set_viewmode(viewmode)
+
+    click_mouse(ui_xy['btn_LocationSearch'])  ## 좌표로 찾기 버튼
+    click_mouse(ui_xy['btn_Pop_LocationSearch_X'])  ## X 좌표 필드
+    click_mouse(ui_xy['npt_Pop_LocationSearch_Field'])  ## 텍스트 입력 필드
+    pag.typewrite(str(location[0]))
+
+    time.sleep(1)
+
+    click_mouse(ui_xy['btn_Pop_LocationSearch_Y'])  ## Y 좌표 필드
+    click_mouse(ui_xy['btn_Pop_LocationSearch_Y'])  ## Y 좌표 필드
+    click_mouse(ui_xy['npt_Pop_LocationSearch_Field'])  ## 텍스트 입력 필드
+    pag.typewrite(str(location[1]))
+    time.sleep(1)
+
+    click_mouse2(ui_xy['btn_Pop_LocationSearch_Go'])
+
+    time.sleep(3)  ## 지도 데어터 읽을 시간을 주장!!!
+
+
+def get_coordinate():
+    """
+    Brief: 지도에서 x, y 좌표를 입력하여 이동
+    Args:
+        location (list): 좌표
+        viewmode (str): CITY_VIEW / WORLD_VIEW(min -> GLOBE)
+    """
+    # @@@@@@@@@@@@@@@@@
+    if get_viewmode() is 'CITY_VIEW':
+        set_viewmode('WORLD_VIEW')
+
+    #filter_color(image, color='WHITE')
+    #t = do_ocr([400, 16, 642, 46], color='WHITE', lang='eng', reverse=True)  # 전체
+    t = do_ocr([400, 16, 642, 46], lang='eng', reverse=True)  # 전체
+    print('result ocr: {}'.format(t))
+
+    #t = '#10 2 175   X:2 97Y:104'
+    #print(t)
+    ##@@@@@@@@@
+    s = ['i', 'I', 'l', 'o', 'O', ',', '/']
+    d = ['1', '1', '1', '0', '0', '', '7']
+    for i, v in enumerate(s):
+        #print('s: {}, d: {}'.format(s[i], d[i]))
+        t = t.replace(s[i], d[i])
+    t = re.sub(r'(\d) +(\d)', r'\1\2', t)
+    t = re.sub(r'(\d) +(\d)', r'\1\2', t)
+
+    t = re.sub(r'[a-zA-Z]', ' ', t)
+    t = re.sub(r'[^0-9,\. ]+', '', t)
+    t = re.sub(r' {2,}', ' ', t)
+
+    t = " ".join(t.strip().split())
+
+    arr = t.split(' ')
+
+    for i, a in enumerate(arr):
+        if len(a) > 4:
+            print(a)
+            arr[i] = a[len(a)-4:]
+
+    if len(arr) == 3:
+        return (int(arr[0]), int(arr[1]), int(arr[2]))
+    else:
+        return False
+
+def get_viewmode():
+    #cityview = get_center_match_image(get_image_path('btn_GoWorldView'), precision=0.9)
+    cityview = match_image_box(template=get_image_path('btn_GoWorldView'), image=[10, 902, 174, 1070], precision=0.95)
+    print('cityview: {}'.format(cityview))
+    if type(cityview) is list:
+        return 'CITY_VIEW'
+    else:
+        return 'WORLD_VIEW'
+
+
+def set_viewmode(mode='CITY_VIEW'):
+    if get_viewmode() != mode:
+        click_mouse(ui_xy['btn_GoWorldView'])
+
+
+def zoom_out(nth=_ENV['ZOOM_MAX']):
+    pag.moveTo(_ENV['MAX_X']//2, _ENV['MAX_Y']//2)
+    keys = ui_key[_ENV['OS']]['ZOOM_OUT']
+    for _ in range(0, nth):
+        for key in keys:
+            pag.keyDown(key)
+            time.sleep(0.02)
+        for key in keys:
+            pag.keyUp(key)
+            time.sleep(0.01)
+    time.sleep(2)
+
+
+def catch_village():
+    btn_welcome = _imgs + 'btn_TribalVillage_TribalVillage.png'
+    return match_image_box(template=btn_welcome, precision=0.98)
+
+
+def add_marker_village():
+    # btns = [
+    #     match_image_box(template=_imgs + 'btn_Set_Marker.png', precision=0.99),
+    #     [966, 790]
+    #     #match_image_box(template=_imgs + 'btn_AddMarker_Confirm.png', precision=0.995)
+    # ]
+    btn = match_image_box(template=_imgs + 'btn_Set_Marker.png', precision=0.99)
+    if click_mouse(btn) is not False:
+        time.sleep(3)
+        click_mouse([966, 790]) #Add Marker Confirm
+    time.sleep(2)
+    # click_mouse_series(btns, interval=4, clicks=1)
 
 
 
@@ -1050,11 +1264,103 @@ if __name__ == "__main__":
 
     #doCallbackSeries(starter, [cb1, cb2, cb3], ender)
 
-    if create_new_character():
-        time.sleep(10)
-        do_scenario()
+    # create_new_character('1760')
+
+    # if create_new_character():
+    #     time.sleep(10)
+    #     do_scenario()
 
     # do_scenario()
     # remove_trees()
     #remove_tree2(([558, 822], [688, 948]))
     # move_mouse_direction(direction=[0, -100])
+
+    # search_objects_in_map()
+    #search_objects_in_map(location=[800, 500])
+    #search_objects_in_map(obj='village_unvisited', location=[500, 300], box=_MAP['SCAN_BOX'], precision=0.4, ms='min')
+
+    c = [80, 52]
+    vs = [
+        [634, 644],
+        [631, 548],
+        [659, 359],
+        [716, 432],
+        [738, 285],
+        [748, 254],
+        [749, 208],
+        [758, 170],
+        [757, 136],
+        [838, 182],
+        [763, 508],
+        [755, 572],
+        [918, 416],
+        [946, 326],
+        [953, 170],
+        [995, 178],
+        [1004, 233],
+        [1002, 408],
+        [1000, 547],
+        [942, 632],
+        [1100, 643],
+        [1125, 580],
+        [1036, 512],
+        [1087, 386],
+        [1100, 295],
+        [1088, 122],
+        [1127, 133],
+        [1181, 223],
+        [1243, 275],
+        [1191, 414],
+        [1156, 477],
+        [1125, 581],
+        [1103, 644],
+        [1226, 672],
+        [1385, 674],
+        [1244, 277],
+        [1181, 223],
+        [1239, 118],
+        [1259, 180],
+        [1389, 240],
+        [1361, 300],
+        [1345, 328],
+        [1386, 674],
+        [1573, 644],
+        [1503, 540],
+        [1425, 445],
+        [1444, 349],
+        [1459, 558],
+        [1389, 241],
+        [1360, 181],
+        [1512, 300],
+        [1570, 413],
+        [1540, 444],
+        [1640, 536],
+        [1573, 643],
+    ]
+
+    search_coords_in_map(center=c, locs=vs)
+    # coords = search_coords_in_map(center=c, locs=vs)
+    # print(coords)
+
+    # for i in range(0, 2):
+    #     center = [80 + 100*i, 52]
+    #     locs = search_objects_in_map(location=center)
+    #     coords = search_coords_in_map(center=center, locs=locs)
+        #print({'c':center, 'l':coords})
+
+    # search_coords_in_map(center=[500, 300], locs=[[916, 399], [1192, 420], [1131, 443], [886, 446], [820, 566]])
+
+    # coords = [
+    #     [1050, 846],
+    #     [1078, 877],
+    #     [1012, 888],
+    #     [979, 895],
+    #     [932, 898]
+    # ]
+    # coords = [
+    #     [898, 995],
+    #     [309, 274],
+    #     [325, 301],
+    #     [275, 298],
+    # ]
+    # visit_villages_by_coords(coords)

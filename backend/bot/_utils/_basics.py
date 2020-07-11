@@ -294,10 +294,10 @@ def set_cv_image(image=None, color='COLOR', show=False):
             img = cv2.imread(image['path'], cv2.IMREAD_GRAYSCALE)
         box = image['box']
         img = img[box[1]:box[3], box[0]:box[2]]
-        print('local image')
+        #print('local image')
     else: ## image data are none or wrong
         img = snap_screenshot()
-        print('full screen image')
+        #print('full screen image')
         #return []
 
     if show:
@@ -318,6 +318,9 @@ def filter_color(image, color='WHITE'):
         opencv image array
     """
     if color == 'WHITE':
+        lower = np.array([0,0,168])
+        upper = np.array([172,111,255])
+    else: ##@@@@@@@@@@@@@@@@ color에 따른 lower, upper 지정!!!
         lower = np.array([0,0,168])
         upper = np.array([172,111,255])
 
@@ -483,9 +486,9 @@ def match_image_box(template, image=None, mask=None, precision=0.98, method=cv2.
         img = cv2.bitwise_and(img, img, mask=cv2.inRange(cv2.cvtColor(img, cv2.COLOR_BGR2HSV), np.array(color[0]), np.array(color[1])))
         tpl = cv2.bitwise_and(tpl, tpl, mask=cv2.inRange(cv2.cvtColor(tpl, cv2.COLOR_BGR2HSV), np.array(color[0]), np.array(color[1])))
 
-        cv2.imshow('img', img)
-        cv2.waitKey(0)
-        cv2.destroyAllWindows()
+        # cv2.imshow('img', img)
+        # cv2.waitKey(0)
+        # cv2.destroyAllWindows()
 
     return find_match_image_box(template=tpl, image=img, mask=mask, precision=precision, method=method, offset=offset, show=show, multi=multi)
 
@@ -671,7 +674,7 @@ def wait_match_image(template, image=None, precision=0.978, pause=3, duration=15
 ##@@-------------------------------------------------------------------------
 ##@@ tesseract-ocr
 
-def do_ocr(image, color=None, lang='eng', path=None, reverse=True, gauss=1):
+def do_ocr(image, color=None, lang='eng', path=None, reverse=True, gauss=3):
     """
     Brief:
         - 이미지(screen box 좌표 or file path 값) 문자인식
@@ -695,7 +698,8 @@ def do_ocr(image, color=None, lang='eng', path=None, reverse=True, gauss=1):
 #    img = cv2.medianBlur(img, 9)
     if reverse is True:
         img = ~img
-    img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
+    img = cv2.threshold(img, 200, 255, cv2.THRESH_BINARY)[1]
+    #img = cv2.threshold(img, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)[1]
     # img = cv2.GaussianBlur(img, (1, 1), 0)  ## More Info
     img = cv2.GaussianBlur(img, (gauss, gauss), 0)  ## More Info Kill Details
 #    img = cv2.medianBlur(img, 1)
@@ -730,6 +734,10 @@ def rectify_ocr(text, lang='digit'):
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ GUI Functions
+
+def get_image_path(name, category='UIS'):
+    return _PATH[category] + ui_img[name] + _ENV['IMG_EXT']
+
 
 def get_screen_max():
     pass
@@ -914,7 +922,9 @@ def click_mouse_series(positions, interval=_ENV['CLICK_INTERVAL'], clicks=1):
     """
     for position in positions:
         for _ in range(0, clicks):
-            click_mouse(position)
+            click = click_mouse(position)
+            if click is False:
+                return False
             time.sleep(interval)
 
 
@@ -926,6 +936,10 @@ def click_mouse(position=[0, 0], button='LEFT', duration=_ENV['MOUSE_DURATION'])
         button (str): mouse button of click
         duration (int):
     """
+    if position is False:
+        print('position is not selected!!!')
+        return False
+
     pag.moveTo(position[0], position[1], duration)
     time.sleep(0.05)
     #time.sleep(random.uniform(0.0101, 0.0299))

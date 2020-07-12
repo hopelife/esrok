@@ -37,6 +37,7 @@ from _basics import *
 ##@@@ From:: External Files .py
 _uis = file_to_json('../_config/uis.json', encoding='UTF-8')
 _imgs = _PATH['_UIS']
+_shots = _PATH['SCREENSHOT']
 
 #DATA_TYPES = file_to_json('../_files/res_data_type.json')
 
@@ -432,6 +433,25 @@ def remove_tree2(tree=([487, 939], [599, 947])):
     time.sleep(2)
 
 
+def save_screenshot_map_explore():
+    zoom_out(nth=60)
+    center = [80, 52]
+    for i in range(0, 4):
+        for j in range(0, 4):
+            #center = [80 + 100*i, 52]
+            center = [160 + 320*j, 100 + 320*i]
+            go_by_coordinate(center)
+            time.sleep(3)
+            path = _shots + 'map_min_full_' + str(center[0]) + '_' + str(center[1]) + '.png'
+            save_screenshot(box=[1, 1, _ENV['MAX_X'], _ENV['MAX_Y']], path=path)
+        # path2 += 'map_min_area_' + str(center[0]) + '_' + str(center[1]) + '.png'
+        # save_screenshot(box=_MAP['SCAN_BOX'], path=path2)
+    # for i in range(10, 11):
+    #     center = [80 + 100*i, 52]
+    #     locs = search_objects_in_map(location=center)
+    #     coords = search_coords_in_map(center=center, locs=locs)
+    #     print({'c':center, 'l':coords})
+
 
 def search_objects_in_map(obj='village_unvisited', location=[500, 300], box=_MAP['SCAN_BOX'], precision=0.51, ms='min'):
     zoom_out(nth=60)
@@ -466,9 +486,9 @@ def search_coords_in_map(center=[500, 300], locs=[[916, 399], [1192, 420], [1131
         zoom_out(nth=60)
         time.sleep(1)
         go_by_coordinate(center)
-        time.sleep(2)
+        time.sleep(1)
         click_mouse(loc)
-        time.sleep(6)
+        time.sleep(5)
         click_mouse([_ENV['MAX_X']//2, _ENV['MAX_Y']//2])
         time.sleep(1)
         marker = add_marker_village()
@@ -1279,74 +1299,52 @@ if __name__ == "__main__":
     #search_objects_in_map(location=[800, 500])
     #search_objects_in_map(obj='village_unvisited', location=[500, 300], box=_MAP['SCAN_BOX'], precision=0.4, ms='min')
 
-    c = [80, 52]
-    vs = [
-        [634, 644],
-        [631, 548],
-        [659, 359],
-        [716, 432],
-        [738, 285],
-        [748, 254],
-        [749, 208],
-        [758, 170],
-        [757, 136],
-        [838, 182],
-        [763, 508],
-        [755, 572],
-        [918, 416],
-        [946, 326],
-        [953, 170],
-        [995, 178],
-        [1004, 233],
-        [1002, 408],
-        [1000, 547],
-        [942, 632],
-        [1100, 643],
-        [1125, 580],
-        [1036, 512],
-        [1087, 386],
-        [1100, 295],
-        [1088, 122],
-        [1127, 133],
-        [1181, 223],
-        [1243, 275],
-        [1191, 414],
-        [1156, 477],
-        [1125, 581],
-        [1103, 644],
-        [1226, 672],
-        [1385, 674],
-        [1244, 277],
-        [1181, 223],
-        [1239, 118],
-        [1259, 180],
-        [1389, 240],
-        [1361, 300],
-        [1345, 328],
-        [1386, 674],
-        [1573, 644],
-        [1503, 540],
-        [1425, 445],
-        [1444, 349],
-        [1459, 558],
-        [1389, 241],
-        [1360, 181],
-        [1512, 300],
-        [1570, 413],
-        [1540, 444],
-        [1640, 536],
-        [1573, 643],
-    ]
+    # c = [280, 52]
+    # vs = [
+    #     [705, 648],
+    #     [768, 260],
+    #     [790, 186],
+    #     [898, 170],
+    #     [902, 187],
+    #     [946, 185],
+    #     [938, 300],
+    #     [890, 380],
+    #     [939, 389],
+    #     [1143, 149],
+    #     [1118, 222],
+    #     [1192, 251],
+    #     [1209, 243],
+    #     [1146, 294],
+    #     [1221, 356],
+    #     [1287, 143],
+    #     [1354, 316],
+    #     [1403, 347],
+    #     [1392, 671],
+    #     [1486, 599],
+    #     [1527, 544],
+    #     [1531, 418],
+    #     [1500, 364],
+    #     [1401, 176],
+    #     [1497, 180],
+    #     [1556, 272],
+    #     [1501, 364],
+    #     [1532, 419],
+    #     [1528, 544],
+    #     [1555, 271],
+    #     [1602, 377],
+    #     [1651, 433],
+    # ]
 
-    search_coords_in_map(center=c, locs=vs)
+    # search_coords_in_map(center=c, locs=vs)
+
     # coords = search_coords_in_map(center=c, locs=vs)
     # print(coords)
 
-    # for i in range(0, 2):
+    # for i in range(10, 11):
     #     center = [80 + 100*i, 52]
     #     locs = search_objects_in_map(location=center)
     #     coords = search_coords_in_map(center=center, locs=locs)
-        #print({'c':center, 'l':coords})
+    #     print({'c':center, 'l':coords})
 
     # search_coords_in_map(center=[500, 300], locs=[[916, 399], [1192, 420], [1131, 443], [886, 446], [820, 566]])
 
@@ -1364,3 +1362,5 @@ if __name__ == "__main__":
     #     [275, 298],
     # ]
     # visit_villages_by_coords(coords)
+
+    save_screenshot_map_explore()

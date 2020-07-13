@@ -28,8 +28,8 @@ Usage: import
 ##@@@ Basic Libraries
 #import time
 # import keyboard
-#from pynput.keyboard import Listener, Key
-from pynput import keyboard
+from pynput.keyboard import Listener, Key
+# from pynput import keyboard
 
 
 ##@@@-------------------------------------------------------------------------
@@ -64,26 +64,30 @@ import pyautogui as pag
 ##@@@-------------------------------------------------------------------------
 ##@@@ Complex Functions
 
-def on_press(key):
-    try:
-        print('alphanumeric key {0} pressed'.format(
-            key.char))
-    except AttributeError:
-        print('special key {0} pressed'.format(
-            key))
+# def on_press(key):
+#     try:
+#         print('alphanumeric key {0} pressed'.format(
+#             key.char))
+#     except AttributeError:
+#         print('special key {0} pressed'.format(
+#             key))
 
-def on_release(key):
-    print('{0} released'.format(
-        key))
-    if key == keyboard.Key.esc:
-        # Stop listener
-        return False
+# def on_release(key):
+#     print('{0} released'.format(
+#         key))
+#     if key == keyboard.Key.esc:
+#         # Stop listener
+#         return False
 
 # while True:  # making a loop
 #     try:  # used try so that if user pressed other than the given key error will not be shown
 #         if keyboard.is_pressed('q'):  # if key 'q' is pressed 
 #             print('You Pressed A Key!')
 #             break  # finishing the loop
+#         # elif keyboard.is_pressed('p'):  # if key 'q' is pressed
+#         elif keyboard.press_and_release('p'):  # if key 'q' is pressed
+#             print(pag.position())
+#             continue
 #         else:
 #             pass
 #     except:
@@ -95,13 +99,30 @@ def on_release(key):
 # def handleRelease( key ):
 #     print( 'Released: {}'.format( key ) )
 
-#     # 종료
+#     # 
 #     if key == Key.esc:
 #         return False
 
 # with Listener(on_press=handlePress, on_release=handleRelease) as listener:
 #     listener.join()
+coords = []
 
+def handleRelease( key ):
+    print( 'Released: {}'.format( key ) )
+
+    if key == Key.insert:
+        print('Insert is pressed')
+        print(pag.position())
+        x, y = pag.position()
+        coords.append((x, y))
+    if key == Key.enter:
+        print('Enter is pressed')
+        return False
+    elif key == Key.esc:
+        return False
+
+with Listener(on_release=handleRelease) as listener:
+    listener.join()
 
 # ##@@@@========================================================================
 # ##@@@@ Execute Test

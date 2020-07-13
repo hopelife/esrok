@@ -81,7 +81,7 @@ def click_tool_button(button='Search'):
     return btn
 
 
-def click_dispatch_search(resource='Food', level=1):
+def click_dispatch_search(resource='Food', plus=0):
     """
     """
     # Cropland
@@ -96,8 +96,7 @@ def click_dispatch_search(resource='Food', level=1):
     click_mouse(_uis['btn_Search_' + places[resource]])
     place = 'btn_Mod_Search_' + places[resource]
 
-    n = level - 1
-    for _ in range(0, n):
+    for _ in range(0, plus):
         click_mouse(_uis[place + '_Plus'])
 
     click_mouse(_uis[place + '_Search'])

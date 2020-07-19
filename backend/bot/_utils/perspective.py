@@ -9,6 +9,7 @@ from matplotlib import pyplot as plt
 # [x,y] 좌표점을 4x2의 행렬로 작성
 # 좌표점은 좌상->좌하->우상->우하
 ## perspective box(perspective -> floor plane 좌상->좌하->우상->우하)
+
 pts1 = np.float32([[406, 0], [0, 1079], [1513, 0], [1919, 1079]])
 
 # (c[0], c[1]), [x[0], x[1]] -> [m[0], m[1]] : (지도 중앙 좌표), [스크린 좌표] -> [지도 좌표]

@@ -118,7 +118,8 @@ def handleRelease( key ):
     if key == Key.enter:
         print('Enter is pressed')
         print(coords)
-        with open('../_config/villages_160_100.txt', 'w') as f:
+        with open('../_config/caves_160_100.txt', 'w') as f:
+        # with open('../_config/villages_160_100.txt', 'w') as f:
             f.write(str(coords))
         return False
     elif key == Key.esc:

@@ -10,10 +10,16 @@ import numpy as np
 # points1 = [[222, 900], [222, 160], [1642, 900], [1680, 314]]
 # points2 = [[172, 212], [114, 435], [418, 212], [449, 366]]
 
-points1 = [[220, 928], [240, 180], [1708, 924], [1586, 254]]
-points2 = [[176, 208], [124, 424], [426, 208], [446, 395]]
+# points1 = [[220, 928], [240, 180], [1708, 924], [1586, 254]]
+# points2 = [[176, 208], [124, 424], [426, 208], [446, 395]]
+# center_s = [960, 540]
+# center_m = [300, 300]
+
+## samples: 1760 server mysterious caves
+points1 = [[266, 812], [627, 186], [1811, 825], [1421, 273]]
+points2 = [[79, 223], [37, 33], [267, 189], [310, 20]]
 center_s = [960, 540]
-center_m = [300, 300]
+center_m = [160, 100]
 
 points1_r = [[p1[0] - center_s[0], p1[1] - center_s[1]] for p1 in points1]
 points2_r = [[p2[0] - center_m[0], p2[1] - center_m[1]] for p2 in points2]
@@ -40,21 +46,21 @@ print(M)
 #     [ 3.87714948e-05,  4.09896098e-04,  1.00000000e+00]
 # ]
 
-p = [-740, 388, 1]
-p = [0, 0, 1]
-# p = [626, -286, 1]
+# p = [-740, 388, 1]
+# p = [0, 0, 1]
+# # p = [626, -286, 1]
 
-# M = np.matrix(S_M)
-X = M.dot(np.array(p))
-# print(M)
-print(X)
-print([round(X[0]/X[2]), round(X[1]/X[2])])
+# # M = np.matrix(S_M)
 # X = M.dot(np.array(p))
+# # print(M)
+# print(X)
 # print([round(X[0]/X[2]), round(X[1]/X[2])])
+# # X = M.dot(np.array(p))
+# # print([round(X[0]/X[2]), round(X[1]/X[2])])
 
 
-## 여러 점
-# original = np.array([((75, 148), (112, 100), (150, 75))], dtype=np.float32)
-original = np.array([((-740, 388), (-720, -360), (748, 384), (626, -286))], dtype=np.float32)
-converted = cv2.perspectiveTransform(original, M)
-print(converted)
+# ## 여러 점
+# # original = np.array([((75, 148), (112, 100), (150, 75))], dtype=np.float32)
+# original = np.array([((-740, 388), (-720, -360), (748, 384), (626, -286))], dtype=np.float32)
+# converted = cv2.perspectiveTransform(original, M)
+# print(converted)

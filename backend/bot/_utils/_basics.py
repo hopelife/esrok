@@ -336,6 +336,26 @@ def filter_color(image, color='WHITE'):
     return img_result
 
 
+def compute_map_coords_of_screen(center, points):
+    center_s = [_ENV['MAX_X']//2, _ENV['MAX_Y']//2]
+
+    M = np.matrix(_MAP['S_M'])
+    if type(points[0]) is list:  ## multi points [[960, 540], [1060, 540], [1060, 640], [960, 640]]
+        pts = [[p[0] - center_s[0], p[1] - center_s[1]] for p in points]
+        R = cv2.perspectiveTransform(np.array([tuple(tuple(point) for point in pts)], dtype=np.float32), M)
+        R = np.reshape(R, (-1, 2))
+
+        # R = [[int(round(p[0])), int(round(p[1]))] for p in R]
+        R = [[int(p[0]) + center[0], int(p[1]) + center[1]] for p in R]
+        #print('R From Multi Points: {}'.format(R))
+    else:  ## 1 point @@@@ incorrect!!!!
+        X = M.dot(np.array([points[0], points[1], 1]))
+        X = np.asarray(X).reshape(-1)
+        R = [round(X[0]/X[2]) + center[0], round(X[1]/X[2]) + center[1]]
+        #print('R From One Point: {}'.format(R))
+
+    return R
+
 def transform_perspective(points, trans='inverse'):
     if trans == 'inverse':
         M = np.matrix(_MAP['M_R2P'])
@@ -345,13 +365,47 @@ def transform_perspective(points, trans='inverse'):
     if type(points[0]) is list:  ## multi points [[960, 540], [1060, 540], [1060, 640], [960, 640]]
         R = cv2.perspectiveTransform(np.array([tuple(tuple(point) for point in points)], dtype=np.float32), M)
         R = np.reshape(R, (-1, 2))
+
+        # R = [[int(round(p[0])), int(round(p[1]))] for p in R]
+        R = [[int(p[0]), int(p[1])] for p in R]
         print('R From Multi Points: {}'.format(R))
     else:  ## 1 point
         X = M.dot(np.array([points[0], points[1], 1]))
         X = np.asarray(X).reshape(-1)
-        R = [X[0]/X[2], X[1]/X[2]]
+        R = [round(X[0]/X[2]), round(X[1]/X[2])]
         print('R From One Point: {}'.format(R))
     return R
+
+
+def transform_center_relative(points, trans='inverse', center=[_ENV['MAX_X']//2,_ENV['MAX_Y']//2]):
+
+    if type(points[0]) is list:  ## multi points [[960, 540], [1060, 540], [1060, 640], [960, 640]]
+        ps = []
+        for point in points:
+            p = [point[0]-_ENV['MAX_X']//2, point[1]-_ENV['MAX_Y']//2]
+            ps.append(p)
+        return ps
+    else:  ## 1 point
+        return [points[0]-_ENV['MAX_X']//2, points[1]-_ENV['MAX_Y']//2]
+
+
+def transform_perspective_relative(points, trans='inverse', center=[_ENV['MAX_X']//2,_ENV['MAX_Y']//2]):
+    points = transform_perspective(points, trans='inverse')
+    points = transform_center_relative(points, center=center)
+
+    _y = _ENV['MAX_Y']//2 - 395
+
+    if trans is not 'inverse':
+        _y = -_y + 290
+
+    if type(points[0]) is list:  ## multi points [[960, 540], [1060, 540], [1060, 640], [960, 640]]
+        ps = []
+        for point in points:
+            p = [round(point[0]), round(point[1]) + _y]
+            ps.append(p)
+        return ps
+    else:  ## 1 point
+        return [round(point[0]), round(point[1]) + _y]
 
 
 def snap_screenshot(box=[1, 1, _ENV['MAX_X'], _ENV['MAX_Y']]):
@@ -1085,13 +1139,40 @@ if __name__ == "__main__":
     # b = expand_box([100, 200, 10000, 20000], [10])
     # print(b)
 
-    now = datetime.utcnow()
-    nowDatetime = now.strftime('%Y-%m-%d %H:%M:%S')
-    nowTuple = now.timetuple()
-    print(nowDatetime)  # 2020-06-16 06:10:56
-    print(nowTuple)  # time.struct_time(tm_year=2020, tm_mon=6, tm_mday=16, tm_hour=6, tm_min=10, tm_sec=56, tm_wday=1, tm_yday=168, tm_isdst=-1)
-    print(nowTuple.tm_hour*3600)
+    # now = datetime.utcnow()
+    # nowDatetime = now.strftime('%Y-%m-%d %H:%M:%S')
+    # nowTuple = now.timetuple()
+    # print(nowDatetime)  # 2020-06-16 06:10:56
+    # print(nowTuple)  # time.struct_time(tm_year=2020, tm_mon=6, tm_mday=16, tm_hour=6, tm_min=10, tm_sec=56, tm_wday=1, tm_yday=168, tm_isdst=-1)
+    # print(nowTuple.tm_hour*3600)
 
-    time_gap_str = '13:34:27'
-    gap_tuple = datetime.strptime(time_gap_str, '%H:%M:%S').timetuple()
-    print(gap_tuple.tm_hour*3600)
+    # time_gap_str = '13:34:27'
+    # gap_tuple = datetime.strptime(time_gap_str, '%H:%M:%S').timetuple()
+    # print(gap_tuple.tm_hour*3600)
+
+    # points = [[_ENV['MAX_X']//2,_ENV['MAX_Y']//2], [0, 0], [0,_ENV['MAX_Y']],[_ENV['MAX_X'],0]]
+    # #points = [[960, 540], [1060, 540], [1060, 640], [960, 640]]
+    # #trans = transform_perspective(points, trans='inverse')
+    # print(points)
+    #trans = transform_perspective([_ENV['MAX_X']//2,_ENV['MAX_Y']//2])
+    # trans = transform_perspective(points, trans='normal')
+    #trans = transform_perspective(points)
+    #trans = transform_perspective_relative(points, trans='inverse', center=[_ENV['MAX_X']//2,_ENV['MAX_Y']//2])
+    # trans = transform_perspective_relative(points, trans='normal', center=[_ENV['MAX_X']//2,_ENV['MAX_Y']//2])
+    # # trans2 = [round(trans[0]), round(trans[1])+540-395]
+    # print(trans)
+    # print(trans2)
+    # print([round(trans[0]), round(trans[1])+540-395])
+
+    #points1 = [[220, 928], [240, 180], [1708, 924], [1586, 254], [0, 0], [960, 540]]
+    #points1 = [896, 97]
+    points1 = [[1421, 294]]
+    #points2 = [[176, 208], [124, 424], [426, 208], [446, 395]]
+
+    mcs = compute_map_coords_of_screen([431, 554], points1)
+    print(mcs)
+
+
+    #     center original: [960, 540]
+    #     center trans: [959.865919752832, 395.19411816769974]
+    # 

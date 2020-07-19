@@ -63,6 +63,12 @@ _MAP = {
     'ONE_MAX': [320, 240],
     'EDGE': [230, 170, 1600, 900],
     #'EDGE': [210, 150, 1610, 940]
+    ## Transformation Matrix Screen Coordinate To Map Coordinate (중앙: [0,0], 스크린 사이즈 [1920, 1080], 최대 축소 지도 기준) @@@@@@@
+    'S_M': [
+        [ 2.00365660e-01,  7.79591415e-04, -5.80021320e-01],
+        [-1.00510774e-04, -2.84039514e-01, -8.01739157e-02],
+        [-5.86540507e-06,  4.99042211e-04,  1.00000000e+00]
+    ],
     ## Transformation Matrix Carsian(Rectangular) Coordinate To Perspective Coordinate
     'M_R2P': [
         [ 5.76862949e-01, -3.76274328e-01,  4.06000000e+02],

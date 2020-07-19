@@ -112,13 +112,18 @@ def handleRelease( key ):
 
     if key == Key.insert:
         print('Insert is pressed')
-        print(pag.position())
+        #print(pag.position())
         x, y = pag.position()
-        coords.append((x, y))
+        coords.append([x, y])
     if key == Key.enter:
         print('Enter is pressed')
+        print(coords)
+        with open('../_config/villages_160_100.txt', 'w') as f:
+            f.write(str(coords))
         return False
     elif key == Key.esc:
+        print('Esc is pressed')
+        print(coords)
         return False
 
 with Listener(on_release=handleRelease) as listener:

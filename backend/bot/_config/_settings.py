@@ -20,6 +20,7 @@ _ENV = {
     'IMG_EXT': '.png',
     'EMULATOR': 'LDPLAYER',
     'MOUSE_DURATION': 0.5,
+    'MOUSE_CLICK_PAUSE': (0, 0), # 마우스 클릭 (전, 후) 멈춤 시간
     'CLICK_INTERVAL': 1,
 }
 
@@ -34,12 +35,15 @@ _PATH = {
 
 _TESSERACT = {
     'WIN': {
+        ## 안방 PC
         'EXE': 'C:/Program Files/Tesseract-OCR/tesseract.exe',
         'DATA': '--tessdata-dir "C:\\Program Files\\Tesseract-OCR\\tessdata"',
-    #'EXE': 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe',
-    #'DATA': '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"', 
+        ## 병원 PC
+        'EXE2': 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe',
+        'DATA2': '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"', 
     },
     'OSX': {
+        ## 안방 macMini
         'EXE': '/usr/local/Cellar/tesseract/4.1.1/bin/tesseract',
         'DATA': '--tessdata-dir "/usr/local/Cellar/tesseract-lang/4.0.0/share/tessdata/"',
     }
@@ -53,7 +57,8 @@ _GOOGLE = {
         'https://www.googleapis.com/auth/drive',
     ],
     'URLS': {
-        'TEST': 'https://docs.google.com/spreadsheets/d/1zwHf6FEcqb_vyHC-3uSlzzE0ln8zoMsW5-YwNzTryLU/edit#gid=0'
+        'TEST': 'https://docs.google.com/spreadsheets/d/1zwHf6FEcqb_vyHC-3uSlzzE0ln8zoMsW5-YwNzTryLU/edit#gid=0',
+        'LOGS': 'https://docs.google.com/spreadsheets/d/1yOj3yXIAZzDyEfzwqr0MMsEq9vwEyo0WXvS9yj_L7uY/edit#gid=443257774'
     }
 }
 

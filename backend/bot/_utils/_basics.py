@@ -51,10 +51,10 @@ import pyautogui as pag
 import gspread  ## google drive gspread
 from oauth2client.service_account import ServiceAccountCredentials  ## google drive gspread
 
+from pynput.keyboard import Listener, Key
+
 ##@@@-------------------------------------------------------------------------
 ##@@@ User Libraries
-
-
 
 ##@@@@========================================================================
 ##@@@@ Constants
@@ -62,6 +62,14 @@ from oauth2client.service_account import ServiceAccountCredentials  ## google dr
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ External(.json/.py)
+# _uis = file_to_json('../_config/uis.json', encoding='UTF-8')
+# _vals = file_to_json('../_config/ui_boxes.json', encoding='UTF-8')
+
+with open('../_config/uis.json', encoding='UTF-8') as f:
+    _uis = json.load(f)
+with open('../_config/ui_boxes.json', encoding='UTF-8') as f:
+    _vals = json.load(f)
+
 sys.path.append(os.path.join(os.path.dirname(sys.path[0]), '_config'))
 from _settings import _ENV, _PATH, _MAP, _TESSERACT, _GOOGLE
 from emulators import KEY_MAP as ui_key
@@ -69,40 +77,30 @@ from emulators import OBJECTS as ui_obj
 from emulators import LOCATION_ROK_FULL as ui_xy
 from emulators import IMAGE_ROK_FULL as ui_img
 
+_imgs = _PATH['_UIS']
+_shots = _PATH['SCREENSHOT']
+
 
 ##@@@-------------------------------------------------------------------------
 ##@@@ internal
-# _TESSERACT = {
-#     'EXE': 'C:/Program Files/Tesseract-OCR/tesseract.exe',
-#     'DATA': '--tessdata-dir "C:\\Program Files\\Tesseract-OCR\\tessdata"',
-#     #'EXE': 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe',
-#     #'DATA': '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"', 
-# }
-# pytesseract.pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract.exe'
-# tessdata_dir_config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"'
+## OCR TESSERACT(OSX)
+# pytesseract.pytesseract.tesseract_cmd = '/usr/local/Cellar/tesseract/4.1.1/bin/tesseract'
+# tessdata_dir_config = '--tessdata-dir "/usr/local/Cellar/tesseract-lang/4.0.0/share/tessdata/"'
+pytesseract.pytesseract.tesseract_cmd = _TESSERACT['OSX']['EXE']
+tessdata_dir_config = _TESSERACT['OSX']['DATA']
 
-pytesseract.pytesseract.tesseract_cmd = '/usr/local/Cellar/tesseract/4.1.1/bin/tesseract'
-tessdata_dir_config = '--tessdata-dir "/usr/local/Cellar/tesseract-lang/4.0.0/share/tessdata/"'
-
-# sudo cp digits.traineddata /usr/local/Cellar/tesseract-lang/4.0.0/share/tessdata/digits.traineddata
-
-# pytesseract.pytesseract.tesseract_cmd = _TESSERACT['EXE']
-# tessdata_dir_config = _TESSERACT['DATA']
-
-
+## Google Drive Spreadsheet
 credentials = ServiceAccountCredentials.from_json_keyfile_name(_GOOGLE['JSON'], _GOOGLE['SCOPE'])
 gc = gspread.authorize(credentials)
 
 # 스프레스시트 문서 가져오기 
 _FILE = gc.open_by_url(_GOOGLE['URLS']['TEST'])
+_LOGS = gc.open_by_url(_GOOGLE['URLS']['LOGS'])
 
 # 시트 선택하기
-# _SHEET = doc.worksheet('crop')
 _SHEET = 'crop'
 _SHEET = 'test'
-
-
-
+_SHEET_LOGS = 'logs'
 
 ##@@@@========================================================================
 ##@@@@ Functions
@@ -112,7 +110,6 @@ _SHEET = 'test'
 
 ##@@-------------------------------------------------------------------------
 ##@@ Data Management(File/Json/list/dict/Clipboard/Time)
-
 
 def json_to_file(data, path, encoding='UTF-8'):
     """
@@ -230,6 +227,37 @@ def click_copy(position=[1002, 346]):
 #         time.sleep(interval)
 #     return 0
 
+def insert_coords_to_file(keys={'insert':Key.insert, 'enter':Key.enter, 'esc':Key.esc}, path='../_config/tests_160_100.txt', coords=[]):
+    """
+    Brief: 화면 좌표 저장('insert'키: )
+    Args:
+        keys : 자판 기능 설정('insert': 화면 좌표 입력 추가, 'enter': 입력 종료)
+        path (str): 저장 파일 경로.이름
+        coords (list): 좌표 저장 배열
+    Returns:
+        coords (list): 좌표 저장 배열
+    Note:
+        from pynput.keyboard import Listener, Key
+    """
+
+    def handleRelease(key):
+        # print( 'Released: {}'.format(key) )
+
+        if key == keys['insert']:
+            x, y = pag.position()
+            coords.append([x, y])
+            return True
+        elif key == keys['enter']:
+            with open(path, 'w') as f:
+                f.write(str(coords))
+            return False
+        else:
+            return False
+
+    with Listener(on_release=handleRelease) as listener:
+        listener.join()
+
+    return coords
 
 
 ##@@@-------------------------------------------------------------------------
@@ -982,7 +1010,7 @@ def click_mouse_series(positions, interval=_ENV['CLICK_INTERVAL'], clicks=1):
             time.sleep(interval)
 
 
-def click_mouse(position=[0, 0], button='LEFT', duration=_ENV['MOUSE_DURATION']):
+def click_mouse(position=[0, 0], button='LEFT', duration=_ENV['MOUSE_DURATION'], pause=_ENV['MOUSE_CLICK_PAUSE']):
     """
     Brief: click Mouse(마우스 클릭)
     Args:
@@ -994,6 +1022,7 @@ def click_mouse(position=[0, 0], button='LEFT', duration=_ENV['MOUSE_DURATION'])
         print('position is not selected!!!')
         return False
 
+    time.sleep(pause[0])
     pag.moveTo(position[0], position[1], duration)
     time.sleep(0.05)
     #time.sleep(random.uniform(0.0101, 0.0299))
@@ -1001,6 +1030,7 @@ def click_mouse(position=[0, 0], button='LEFT', duration=_ENV['MOUSE_DURATION'])
     time.sleep(0.05)
     #time.sleep(random.uniform(0.0101, 0.0299))
     pag.mouseUp()
+    time.sleep(pause[1])
 
 
 def click_mouse2(position=[0, 0], button='LEFT', duration=_ENV['MOUSE_DURATION']):
@@ -1056,6 +1086,7 @@ def down_mouse(callback, position=[0, 0], duration=1):
     callback()
     pag.mouseUp()
 
+
 ##@@@-------------------------------------------------------------------------
 ##@@@ Google Drive(gspread)
 
@@ -1094,7 +1125,6 @@ def get_filled_dict(data, header=0):
         header : 공백 열 제거 후 header 열의 상대 위치(ex: 1 -> 다음 행)
     Returns: 2
     """
-    #return list_to_dict([v[find_first_filled_col(data)-1:] for v in data[find_first_filled_row(data)-1:]][header:])
     return list_to_dict([v[find_first_filled_col(data)-1:] for v in remove_empty_list(data)][header:])
 
 
@@ -1110,6 +1140,12 @@ def get_dict_from_sheet(ws, header=0):
 
 
 def fill_sheet_from_dict(file, sheet, sheet_data, new=False):
+    """
+    Brief: google drive file 의 sheet에 sheet_data를 넣음
+    Args: 
+        data = [{'action':'action1', 'device':'device1', 'character':'character1', 'time':'time1', 'done':'done1', 'next':'next1'}, {'action':'action2', 'device':'device2', 'character':'character2', 'time':'time2', 'done':'done2', 'next':'next2'}]
+        new : 기존 데이터가 없음
+    """
     #ws = file.worksheet(sheet)
     headers = [key for key, val in sheet_data[0].items()]
 
@@ -1125,6 +1161,898 @@ def fill_sheet_from_dict(file, sheet, sheet_data, new=False):
         put_values.append(temp)
     print(put_values)
     file.values_append(sheet, {'valueInputOption': 'USER_ENTERED'}, {'values': put_values})
+
+
+##@@@-------------------------------------------------------------------------
+##@@@ InGame Functions(Basic)
+
+def go_by_coordinate(location=[0,0]):
+    """
+    Brief: 지도에서 x, y 좌표를 입력하여 이동
+    Args:
+        location (list): 좌표
+        viewmode (str): CITY_VIEW / WORLD_VIEW(min -> GLOBE)
+    """
+    #set_viewmode(viewmode)
+
+    click_mouse(ui_xy['btn_LocationSearch'])  ## 좌표로 찾기 버튼
+    click_mouse(ui_xy['btn_Pop_LocationSearch_X'])  ## X 좌표 필드
+    click_mouse(ui_xy['npt_Pop_LocationSearch_Field'])  ## 텍스트 입력 필드
+    pag.typewrite(str(location[0]))
+
+    time.sleep(1)
+
+    click_mouse(ui_xy['btn_Pop_LocationSearch_Y'])  ## Y 좌표 필드
+    click_mouse(ui_xy['btn_Pop_LocationSearch_Y'])  ## Y 좌표 필드
+    click_mouse(ui_xy['npt_Pop_LocationSearch_Field'])  ## 텍스트 입력 필드
+    pag.typewrite(str(location[1]))
+    time.sleep(1)
+
+    click_mouse2(ui_xy['btn_Pop_LocationSearch_Go'])
+
+    time.sleep(3)  ## 지도 데어터 읽을 시간을 주장!!!
+
+
+def get_coordinate():
+    """
+    Brief: 지도에서 x, y 좌표를 입력하여 이동
+    Args:
+        location (list): 좌표
+        viewmode (str): CITY_VIEW / WORLD_VIEW(min -> GLOBE)
+    """
+    # @@@@@@@@@@@@@@@@@
+    if get_viewmode() is 'CITY_VIEW':
+        set_viewmode('WORLD_VIEW')
+
+    #filter_color(image, color='WHITE')
+    #t = do_ocr([400, 16, 642, 46], color='WHITE', lang='eng', reverse=True)  # 전체
+    t = do_ocr([400, 16, 642, 46], lang='eng', reverse=True)  # 전체
+    print('result ocr: {}'.format(t))
+
+    #t = '#10 2 175   X:2 97Y:104'
+    #print(t)
+    ##@@@@@@@@@
+    s = ['i', 'I', 'l', 'o', 'O', ',', '/']
+    d = ['1', '1', '1', '0', '0', '', '7']
+    for i, v in enumerate(s):
+        #print('s: {}, d: {}'.format(s[i], d[i]))
+        t = t.replace(s[i], d[i])
+    t = re.sub(r'(\d) +(\d)', r'\1\2', t)
+    t = re.sub(r'(\d) +(\d)', r'\1\2', t)
+
+    t = re.sub(r'[a-zA-Z]', ' ', t)
+    t = re.sub(r'[^0-9,\. ]+', '', t)
+    t = re.sub(r' {2,}', ' ', t)
+
+    t = " ".join(t.strip().split())
+
+    arr = t.split(' ')
+
+    for i, a in enumerate(arr):
+        if len(a) > 4:
+            print(a)
+            arr[i] = a[len(a)-4:]
+
+    if len(arr) == 3:
+        return (int(arr[0]), int(arr[1]), int(arr[2]))
+    else:
+        return False
+
+
+def get_viewmode():
+    #cityview = get_center_match_image(get_image_path('btn_GoWorldView'), precision=0.9)
+    cityview = match_image_box(template=get_image_path('btn_GoWorldView'), image=[10, 902, 174, 1070], precision=0.95)
+    print('cityview: {}'.format(cityview))
+    if type(cityview) is list:
+        return 'CITY_VIEW'
+    else:
+        return 'WORLD_VIEW'
+
+
+def set_viewmode(mode='CITY_VIEW'):
+    if get_viewmode() != mode:
+        click_mouse(ui_xy['btn_GoWorldView'])
+
+
+def zoom_out(nth=_ENV['ZOOM_MAX']):
+    pag.moveTo(_ENV['MAX_X']//2, _ENV['MAX_Y']//2)
+    keys = ui_key[_ENV['OS']]['ZOOM_OUT']
+    for _ in range(0, nth):
+        for key in keys:
+            pag.keyDown(key)
+            time.sleep(0.02)
+        for key in keys:
+            pag.keyUp(key)
+            time.sleep(0.01)
+    time.sleep(2)
+
+
+def click_tool_button(button='Search'):
+    """
+    """
+    btn_img = _imgs + 'btn_Tool' + button + '.png'
+    btn = match_image_box(template=btn_img)
+    if not btn:
+        click_mouse(_uis['btn_GoCityView'])
+        time.sleep(2)
+        btn = match_image_box(template=btn_img)
+        if not btn:
+            return False
+        else:
+            click_mouse(btn)
+    else:
+        click_mouse(btn)
+
+    time.sleep(2)
+    return btn
+
+
+##@@@-------------------------------------------------------------------------
+##@@@ InGame Functions(TurnOn, TurnOff / Errors)
+
+
+
+##@@@-------------------------------------------------------------------------
+##@@@ InGame Functions(Account/Character)
+
+def create_new_character(server=None):
+    """
+    Brief: 새로운 계정 만들기
+    Args:
+        server: 서버
+    """
+    btns = [
+        _uis['btn_Profile'],
+        _uis['btn_Mod_Profile_Settings'],
+        _uis['btn_Mod_Profile_Settings_CharacterManagement'],
+    ]
+
+    click_mouse_series(btns, interval=2, clicks=1)
+
+    btn_create = _imgs + 'btn_Mod_CharacterMangement_CreateNewCharacter.png'
+    print(btn_create)
+    btn = match_image_box(template=btn_create, precision=0.99)
+
+    for _ in range(0, 5):
+        if btn is False:
+            move_mouse_direction(direction=[0, -300])
+            time.sleep(5)
+            print('not Founded create(+) button')
+            btn = match_image_box(template=btn_create, precision=0.99)
+            continue
+        else:
+            print(btn)
+            click_mouse(btn)
+            time.sleep(10)
+            break
+        return False
+
+    if server is None:
+        kingdom = [600, 424] # 서버(왕국) 선택 버튼(last open)!!!
+        # kingdom = [1280, 560] # 서버(왕국) 선택 버튼(4th last open)!!!
+        click_mouse(kingdom)
+    else:
+        btn_server = _imgs + 'img_CreateNewCharacter_' + server + '.png'
+        print(btn_server)
+        btn = match_image_box(template=btn_server, precision=0.997)
+        # print(btn)
+        for _ in range(0, 40):
+            if btn is False:
+                move_mouse_direction(zeroPoint=[_ENV['MAX_X']//2, _ENV['MAX_Y']//2 + 300], direction=[0, -600])
+                time.sleep(3)
+                print('not Founded Server')
+                btn = match_image_box(template=btn_server, precision=0.997)
+                continue
+            else:
+                print('Founded Server: {}'.format(btn))
+                click_mouse(btn)
+                time.sleep(5)
+                click_mouse([1220, 768]) # YES button
+                return True
+
+    return False
+
+
+def do_scenario():
+    """
+    Brief: 초반 시나리오 완료
+    """
+    btn_skip = [1770, 50] # SKIP 버튼
+    skip = [10, 540]
+    btn_tool = [94, 810]
+    btn_map = [84, 994] # map, castle toggle button
+    btn_build = [400, 800]
+    btn_military = [88, 774]
+    btn_quests = [72, 250]
+    btn_go = [1510, 364] # go, claim toggle button
+
+    btn_china = _imgs + 'btn_civilization_china.png'
+    pos_china = wait_match_image(template=btn_china, pause=3)
+    print('pos_china: {}'.format(pos_china))
+
+    if pos_china is not False:
+        print('matched: {}'.format(pos_china))
+        click_mouse(pos_china)
+    else:
+        return False
+
+    btns1 = [
+        pos_china, # 문명 선택 china
+        [968, 768], # 약관 동의 accept btn
+        pos_china, # 문명 선택 china
+        [1624, 760], # confirm
+        btn_skip,
+    ]
+
+    click_mouse_series(btns1, interval=2, clicks=1)
+    time.sleep(3)
+
+    btn_cityhall = _imgs + 'img_CityHall_01.png'
+    pos_cityhall = wait_match_image(template=btn_cityhall, pause=3)
+    
+    if pos_cityhall is False:
+        print('ROK is not loaded, YET.')
+        return False
+    else:
+        print('ROK is loaded!!!')
+
+    btns2 = [
+        skip,
+        skip,
+        skip,
+        skip,
+        skip,
+        btn_tool,
+        btn_build,
+        [1100, 550], # upgrage building button
+        # skip,
+        [988, 690], # collect button
+        skip,
+        skip,
+        skip,
+        btn_map,
+        skip,
+        skip,
+    ]
+
+    click_mouse_series(btns2, interval=2, clicks=1)
+    time.sleep(30)
+
+    btns2 = [
+        skip,
+        skip,
+        btn_map,
+        btn_map,
+        skip,
+        [780, 646], # barrack
+        skip,
+        [990, 860],
+        skip,
+        [1490, 890],
+        skip,
+        [778, 544], # train
+        skip,
+        [978, 480], # upgrade wall
+        # skip,
+        [960, 720],
+        # skip,
+        [1490, 830]
+    ]
+
+    click_mouse_series(btns2, interval=3, clicks=1)
+    time.sleep(2)
+
+    btns3 = [
+        skip,
+        skip,
+        skip,
+        btn_tool,
+        btn_military,
+        btn_build, # build tavern button
+        [580, 333], # 
+        skip,
+        [670, 760], # recruit button
+        skip,
+        [1380, 910], # open button
+        skip,
+        skip,
+        [292, 914], # confirm button
+        skip,
+        [600, 936], # confirm button2
+        skip,
+        [56, 60], # back button
+    ]
+
+    click_mouse_series(btns3, interval=3, clicks=1)
+    time.sleep(5)
+
+    btns4 = [
+        skip,
+        skip,
+        skip,
+        btn_map,
+        btn_tool,
+        [410, 740], # search button
+        skip,
+        skip,
+        [956, 526], # barbarian
+        [1382, 724], # attack
+        [1516, 212], # new troops
+        [298, 682], # select commandar
+        [110, 282], # select commandar2
+        [1390, 942], # march
+    ]
+
+    click_mouse_series(btns4, interval=3, clicks=1)
+    time.sleep(40)
+
+    btns5 = [
+        skip,
+        skip,
+        skip,
+        [868, 448], # barbarian target @@@@@
+    ]
+    click_mouse_series(btns5, interval=2, clicks=1)
+    time.sleep(2)
+
+    img_word =  _imgs + 'img_Scenario_SelectNewTarget.png'
+    offset = [114, -128]  ## select new target (620, 540, 248, 32) / click center [858, 428]
+    pos_word = wait_match_image(template=img_word, pause=3)
+    if pos_word is False:
+        return False
+    else:
+        pos_target = [pos_word[0] + offset[0], pos_word[1] + offset[1]]
+
+    click_mouse(pos_target)
+    time.sleep(2)
+
+    btn_img = _imgs + 'btn_Scenario_BarbarianAttack.png'
+    #pos_btn = match_image_box(template=btn_img)
+    click_mouse(match_image_box(template=btn_img))
+    time.sleep(1)
+    click_mouse([1514, 290])  # march
+    time.sleep(30)
+
+    btns6 = [
+        skip,
+        skip,
+        skip,
+        [294, 912], # confirm
+        btn_map, # castle_map button
+        skip,
+        btn_quests,
+        btn_go,
+        skip,
+        skip,
+        [964, 766], # city hall
+        [1490, 830], # upgrade city hall
+        skip,
+        # skip,
+        btn_quests,
+        btn_go,
+        skip,
+        btn_go,
+        skip,
+    ]
+
+    click_mouse_series(btns6, interval=3, clicks=1)
+    time.sleep(5)
+
+    btns7 = [
+        btn_go,
+        skip,
+        skip,
+        btn_tool,
+        btn_military,
+        btn_build, # build scout camp
+        [1280, 402], # build button
+        skip,
+        skip,
+        [1380, 828], # scout button
+        match_image_box(template= _imgs + 'img_Buildings_ScoutCamp_0.png'), # scout builing
+        match_image_box(template= _imgs + 'btn_ScoutCamp_Explore.png'), # scout builing
+        # [1116, 623], # scout button
+        # [1510, 480], # explore button
+        [1210, 780], # explore2 button @@@@ 안개 지역이 있는 경우에만 해당!!!
+        [1510, 250], # send button
+        skip,
+        skip,
+        skip,
+        btn_map,
+        btn_quests,
+        btn_go,
+        btn_go,
+        # skip,
+        # skip,
+        btn_tool,
+        btn_military,
+        btn_build, # build archery range
+        [1624, 212], # build button
+    ]
+
+
+    btn_ScoutCamp_Explore
+    img_Buildings_ScoutCamp_0
+
+    click_mouse_series(btns7, interval=3, clicks=1)
+    time.sleep(10)
+
+
+
+def remove_trees():
+    """
+    Brief: 도시내 나무 제거
+    Args:
+    Notes:
+        맵 유형에 따른 나무 위치 고려해야 함!!!
+    """
+    trees1 = [
+        [160, 680],
+        [410, 506],
+        [255, 452],
+        [315, 326],
+        [528, 210],
+        [732, 216],
+        [949, 361],
+        [903, 226],
+        # [1057, 373],  ##
+        [1070, 400],
+        [1172, 468],
+        [1194, 336],
+        # [1324, 378],  ##
+        [1332, 414],
+        [1325, 383],
+        [1448, 389],
+        # [1688, 550], ##
+        [1688, 578],
+    ]
+
+    trees2 = [
+        [1718, 483],
+        [1686, 419],
+        [1562, 598],
+        [1804, 430],
+        [1444, 490],
+    ]
+
+    trees3 = [
+        ([219, 927], [492, 949]),
+        ([459, 840], [583, 945]),
+        ([792, 879], [918, 947]),
+        ([998, 724], [1126, 890]),
+        ([947, 786], [1064, 950]),
+    ]
+
+    for tree in trees1:
+        remove_tree(tree)
+
+    btn_map = [84, 994] # map, castle toggle button
+    click_mouse(btn_map)
+    time.sleep(3)
+    click_mouse(btn_map)
+    time.sleep(3)
+
+    for tree in trees2:
+        remove_tree(tree)
+
+    for tree in trees3:
+        remove_tree2(tree)
+
+
+def remove_tree(pos=[204, 510]):
+    """
+    Brief: 도시내 나무 제거(Unit)
+    Args:
+        pos (list): 나무 위치
+    """
+    #set_standard_view()
+    click_mouse(pos)
+    time.sleep(2)
+    btn_shovel = _imgs + 'btn_RemoveBuilding_Shovel.png'
+    print(btn_shovel)
+    btn = match_image_box(btn_shovel)
+
+    if btn is False:
+        print('not founded!!')
+        return False
+    else:
+        click_mouse(btn)
+
+    click_mouse([712, 770]) # YES button
+    time.sleep(3)
+
+
+def remove_tree2(tree=([487, 939], [599, 947])):
+    """
+    Brief: 도시내 나무 제거(Unit)
+    Args:
+        tree (tuple): (나무 위치, 다음 나무 위치)
+    """
+    #set_standard_view()
+    click_mouse(tree[0])
+    time.sleep(2)
+    click_mouse(tree[1])
+    time.sleep(3)
+
+    click_mouse([712, 770]) # YES button
+    time.sleep(2)
+
+
+##@@@-------------------------------------------------------------------------
+##@@@ InGame Functions(Record / Log)
+
+def record_test():
+    return click_copy(position=[1002, 346])
+
+
+def click_test():
+    click_mouse(position=_uis['btn_Mod_Alliance_Members_Rank4_1'])  ## btn_Mod_Alliance_Members_Rank4_1 / btn_QuickloanchOsxROK -> btn_WallpaperEmulROKMax
+
+# def ocr_test():
+#     return do_ocr([1420, 308, 1564, 356])  ## 
+
+def record_moreinfo_unit(level='R4', row=0, col=0):
+    moreinfo = {'nick':''}
+
+    prefix = 'val_Mod_Governor_Info_MoreInfo_'
+    vals = ['Power', 'Kills', 'HighestPower', 'Victory', 'Defeat', 'Dead', 'ScoutTimes', 'ResourcesGathered', 'ResourceAssistance', 'AllianceHelpTimes']
+    print('vals: {}'.format(vals))
+
+    for val in vals:
+        print('_vals[prefix + val]: {}'.format(_vals[prefix + val]))
+        moreinfo[val] = do_ocr(_vals[prefix + val], color='WHITE', lang='digits', path='../images/test/' + val + '.png')
+
+    ## More Info 내에 있는 Kill 상세 버튼
+    click_mouse(position=[1290, 186])
+
+    prefix = 'val_Pop_Governor_Info_MoreInfo_'
+    tiers = ['Kills_1', 'Kills_2', 'Kills_3', 'Kills_4', 'Kills_5']
+    #print('tiers: {}'.format(tiers))
+
+    for tier in tiers:
+        print('_tiers[prefix + tier]: {}'.format(_vals[prefix + tier]))
+        moreinfo[tier] = do_ocr(_vals[prefix + tier], color='WHITE', lang='digits', path='../images/test/' + tier + '.png', reverse=False, gauss=7)
+
+    #### btn_Mod_Governor_Info_MoreInfo_CopyNick
+    position = compute_center_from_box(compute_box_from_wh([437, 171, 30, 30]))
+    nick = click_copy(position=position)
+    moreinfo['nick'] = nick
+
+
+    for i in range(0, 3):
+        pag.keyDown('esc')
+        time.sleep(0.1)
+        pag.keyUp('esc')
+        time.sleep(3)
+
+    return moreinfo  ## 
+
+
+def record_moreinfo_level(level='R4'):
+    ## 자기 등급 멤버 목록만 unfold
+    ## 등급 멤버 인원 수 확인(행수 = ceil(우측 인원 수 / 열 수))
+    ## - 마우스 드래그가 필요한 지 확인
+    ## 행, 열 반복 루프(R4: 4열, 이외: 2열)
+    ## 마우스 드래그가 필요한 지 확인
+
+    #unfold_members_level(level)
+
+    infos = []
+
+    for i in range(0, rows):
+        for j in range(0, cols):
+            info = record_moreinfo_unit(level, i, j)
+            infos.append(info)
+
+    return infos
+
+
+def ocr_test():
+    positions = [
+        [1540, 1000],  ## btn_  Alliance
+        [124, 420],  ## tab_ Members
+    ]
+
+    click_coords = {
+        'chief': [
+            [660, 216],  ## 맹주 Profile
+            [870, 164],  ## btn_   Info
+            [464, 800]  ## btn_ MoreInfo
+        ],
+        'R4': {
+            'title': [976, 390],
+            'matrix': [4, 2],
+            'interval': [360, 184],
+            'start': [460, 516]
+        }
+    }
+
+    btn_info = '../images/uis/btn_Mod_Alliance_AllianceMembers_Info.png'
+
+    for position in positions:
+        click_mouse(position=position)
+        time.sleep(1.5)
+
+
+def change_test():
+    positions = [
+        [74, 60],  ## btn_  Profile
+        [1470, 800],  ## btn_ Settings
+        [430, 572],  ## btn_ CharacterManagement
+    ]
+
+    for position in positions:
+        click_mouse(position=position)
+        time.sleep(1.5)
+
+    btn_m004 = '../images/uis/btn_Character_m004.png'
+
+    center = match_image_box(btn_m004)
+
+    click_mouse(center)
+
+
+##@@@-------------------------------------------------------------------------
+##@@@ InGame Functions(NonDispatch Actions)
+
+def tour_sunsetCanyon():
+    """
+    """
+    pass
+
+
+def tour_lostCanyon():
+    """
+    """
+    pass
+
+
+
+## @@brief:: VIP Point / Gift 수령 (period: 1day)
+## @@note:: 
+def receive_VIP():
+    series = [
+        _UI['VIP']['BUTTON']['xy'], 
+        _UI['VIP']['POP_VIP']['BTN_ClaimPoints']['xy'], 
+        _UI['VIP']['POP_VIP']['BTN_ClaimGifts']['xy']
+    ]
+    clickMouseSeries(series, 0.5, 2)
+    clickMouse( _UI['VIP']['POP_VIP']['BTN_CLOSE']['xy'])
+    return 0
+
+
+
+## @@brief:: 연맹 자원 수령
+## @@note:: 
+def do_AllianceTerritory():
+    # 하단 메뉴 펼침
+    unfoldMenuBtn()
+    # 클릭
+    series = [
+        _UI['MENU']['BTN_Alliance']['xy'], 
+        _UI['MENU']['POP_Alliance']['BTN_Territory']['xy'], 
+        _UI['MENU']['POP_Alliance_Territory']['BTN_Claim']['xy'],
+        _UI['MENU']['POP_Alliance_Territory']['BTN_CLOSE']['xy'],
+        _UI['MENU']['POP_Alliance']['BTN_CLOSE']['xy']
+    ]
+    clickMouseSeries(series, 2)  
+    return 0
+
+
+
+## @@brief:: VIP Point / Gift 수령 (period: 1day)
+## @@note:: 
+def do_AllianceHelp():
+    # 하단 메뉴 펼침
+    unfoldMenuBtn()
+    # 클릭
+    series = [
+        _UI['MENU']['BTN_Alliance']['xy'], 
+        _UI['MENU']['POP_Alliance']['BTN_Help']['xy'], 
+        _UI['MENU']['POP_Alliance_Help']['BTN_Help']['xy'],
+        _UI['MENU']['POP_Alliance_Help']['BTN_CLOSE']['xy'],
+        _UI['MENU']['POP_Alliance']['BTN_CLOSE']['xy']
+    ]
+    clickMouseSeries(series, 0.5)  
+    return 0
+
+
+## @@brief:: 연맹 기술 지원@@@@@@@@@@@@@@@@@@
+## @@note:: 
+def do_AllianceTechnology():
+    # 하단 메뉴 펼침
+    unfoldMenuBtn()
+    series = [_UI['MENU']['BTN_Alliance']['xy'], _UI['MENU']['POP_Alliance']['BTN_Technology']['xy']]
+    clickMouseSeries(series, 2)
+    ## 기술 지원 항목 찾기!!!
+    #findAllianceTechnology()
+    # 'POP_Alliance_Technology_Donate': {
+    #     'BTN_CLOSE': {'xy': [1570, 150], 'fn':''},
+    #     'BTN_Donate': {'xy': [1414, 812], 'fn':''},
+    # },
+    ## 팝업창 닫기
+    series = [
+        _UI['MENU']['POP_Alliance_Technology_Donate']['BTN_CLOSE']['xy'], 
+        _UI['MENU']['POP_Alliance_Technology']['BTN_CLOSE']['xy'], 
+        _UI['MENU']['POP_Alliance']['BTN_CLOSE']['xy']
+    ]
+    clickMouseSeries(series, 0.5)
+    return 0
+
+
+## @@brief:: 연맹 자원 수령
+## @@note:: 
+def do_AllianceGifts():
+    # 하단 메뉴 펼침
+    unfoldMenuBtn()
+
+    # 선물 팝업 열기
+    series = [
+        _UI['MENU']['BTN_Alliance']['xy'], 
+        _UI['MENU']['POP_Alliance']['BTN_Gifts']['xy'], 
+        _UI['MENU']['POP_Alliance_Gifts']['TAB_Rare']['xy'],
+        _UI['MENU']['POP_Alliance_Gifts']['ARR_Items']['first'],
+    ]
+    clickMouseSeries(series, 0.5)
+
+    # 희귀 선물 클릭
+    items = _UI['MENU']['POP_Alliance_Gifts']['ARR_Items']
+    for _ in range(0, _ENV['_GIFT_MAX']//10 + 1):
+        claim = matchImageBox(_ENV['_IMAGES_FOLDER'] + _UI['MENU']['POP_Alliance_Gifts']['BTN_Claim']['fn'])
+        if not claim:
+            print('claim buttons not exist!!')
+            break
+        else:
+            for _ in range(0, 10):
+                btn_2nd = [items['first'][0] + items['offset'][0], items['first'][1] + items['offset'][1]]
+                clickMouse(btn_2nd)
+
+    # 일반 선물 클릭
+    series = [
+        _UI['MENU']['POP_Alliance_Gifts']['TAB_Normal']['xy'],
+        _UI['MENU']['POP_Alliance_Gifts']['BTN_ClaimAll']['xy']
+    ]
+    clickMouseSeries(series, 0.5)  
+
+    # 팝업창 닫기
+    series = [
+        _UI['MENU']['POP_Alliance_Gifts']['BTN_Confirm']['xy'],
+        _UI['MENU']['POP_Alliance_Gifts']['BTN_CLOSE']['xy'],
+        _UI['MENU']['POP_Alliance']['BTN_CLOSE']['xy']
+    ]
+    clickMouseSeries(series, 0.5)  
+    return 0
+
+
+##@@@-------------------------------------------------------------------------
+##@@@ InGame Functions(Dispatch Actions)
+
+
+def click_dispatch_search(resource='Food', plus=0):
+    """
+    """
+    # Cropland
+    places = {
+        'Food': 'Cropland',
+        'Wood': 'LoggingCamp',
+        'Stone': 'StoneDeposit',
+        'Gold': 'GoldDeposit',
+        'Barbarians': 'Barbarians'
+    }
+
+    click_mouse(_uis['btn_Search_' + places[resource]])
+    place = 'btn_Mod_Search_' + places[resource]
+
+    for _ in range(0, plus):
+        click_mouse(_uis[place + '_Plus'])
+
+    click_mouse(_uis[place + '_Search'])
+    ### 찾는 자원이 있는지 확인
+    time.sleep(3)
+    click_mouse([_ENV['MAX_X']//2,_ENV['MAX_Y']//2])
+    time.sleep(2)
+
+
+def click_gather(hold_positoin=True):
+    """
+    """
+    ## 채집(gather)
+    btn_img = _imgs + 'btn_Gather.png' ##@@@@@@@@@@@@@@
+    btn = match_image_box(template=btn_img)
+    click_mouse(btn)
+    time.sleep(2)
+
+
+def click_attack(hold_positoin=True):
+    """
+    """
+    ## Attack
+    btn_img = _imgs + 'btn_Pop_DefeatBarbarians_Attack.png'
+    btn = match_image_box(template=btn_img)
+    click_mouse(btn)
+    time.sleep(2)
+
+
+def click_dispatch_army(nth=0, commandar=None, multi=False):
+    """
+    """
+    btn_img = _imgs + 'btn_Pop_DispatchArmy_NewTroops.png' ##@@@
+    btn = match_image_box(template=btn_img)
+
+    if not btn: ## no new troops
+        btn_img = _imgs + 'btn_Pop_DispatchArmy_March.png' ## 
+        btn2 = match_image_box(template=btn_img)
+        if not btn2:
+            print('Error')
+            return False
+        else:
+            ## @@@@ badge check 부대 상태에 따라, camp
+
+            click_mouse(btn2)
+    else:
+        click_mouse(btn)
+
+    time.sleep(2)
+
+    if multi:  ## Multiple Selection
+        pass
+
+    if nth > 0 & nth < 6:
+        click_mouse(_uis['btn_Mod_Amies_NewTroops_' + str(nth)])
+
+    click_mouse(_uis['btn_Pop_DispatchArmy_March'])
+    time.sleep(2)
+
+
+
+def gather_resources(resource='Food', level=1):
+    """
+    """
+    click_tool_button(button='Search')
+    click_dispatch_search(resource=resource, level=level)
+    click_gather()
+    click_dispatch_army()
+
+
+
+def hunt_barbarians(level=8, multi=False, potion=False, nth=0):
+    """
+    """
+    click_tool_button(button='Search')
+    click_dispatch_search_button(resource='Barbarians', level=level)
+    click_attack()
+    click_dispatch_army()
+
+
+def rally_barbarianFort(level=1):
+    """
+    """
+    search_barbarianFort(level=level)
+    pass
+
+
+def join_barbarianFort():
+    """
+    """
+    pass
+
+
+def defeat_guardian():
+    """
+    """
+    pass
+
+
+def recover_fog():
+    """
+    """
+    pass
+
+
+##@@@-------------------------------------------------------------------------
+##@@@ InGame Functions(Quests / Events)
+
+
 
 ##@@@@========================================================================
 ##@@@@ Execute Test
@@ -1150,33 +2078,8 @@ if __name__ == "__main__":
     # gap_tuple = datetime.strptime(time_gap_str, '%H:%M:%S').timetuple()
     # print(gap_tuple.tm_hour*3600)
 
-    # points = [[_ENV['MAX_X']//2,_ENV['MAX_Y']//2], [0, 0], [0,_ENV['MAX_Y']],[_ENV['MAX_X'],0]]
-    # #points = [[960, 540], [1060, 540], [1060, 640], [960, 640]]
-    # #trans = transform_perspective(points, trans='inverse')
-    # print(points)
-    #trans = transform_perspective([_ENV['MAX_X']//2,_ENV['MAX_Y']//2])
-    # trans = transform_perspective(points, trans='normal')
-    #trans = transform_perspective(points)
-    #trans = transform_perspective_relative(points, trans='inverse', center=[_ENV['MAX_X']//2,_ENV['MAX_Y']//2])
-    # trans = transform_perspective_relative(points, trans='normal', center=[_ENV['MAX_X']//2,_ENV['MAX_Y']//2])
-    # # trans2 = [round(trans[0]), round(trans[1])+540-395]
-    # print(trans)
-    # print(trans2)
-    # print([round(trans[0]), round(trans[1])+540-395])
+    print(fetch_sheet('LOGS', 'logs'))
 
-    #points1 = [[220, 928], [240, 180], [1708, 924], [1586, 254], [0, 0], [960, 540]]
-    #points1 = [896, 97]
-    points1 = [[252, 859], [298, 751], [304, 661], [285, 598], [290, 479], [363, 408], [367, 388], [376, 334]]
-    #points2 = [[176, 208], [124, 424], [426, 208], [446, 395]]
-    ### caves
-    points1 = [[266, 812], [385, 586], [431, 303], [439, 288], [627, 185], [594, 396], [604, 558], [426, 861], [943, 675], [816, 283], [966, 293], [1191, 257], [1278, 362], [1348, 362], [1309, 492], [1422, 271], [1190, 256], [1502, 620], [1662, 928], [1781, 859], [1809, 826], [1660, 399], [1421, 271]]
-    #points2 = [[38, 43], [48, 98], [40, 186], [41, 191], [79, 232], [81, 153], [89, 105], [68, 32], [157, 75], [127, 193], [160, 189], [213, 203], [229, 165], [244, 165], [231, 123], [266, 198], [212, 204], [264, 88], [278, 18], [302, 32], [309, 39], [310, 153], [266, 198]]
-    #points2 = [[79, 233], [72, 204], [26, 131], [23, 124], [37, 43], [80, 155], [101, 192], [100, 233], [155, 201], [116, 95], [159, 88], [232,
-42], [237, 102], [256, 97], [225, 149], [311, 29], [232, 41], [245, 173], [237, 214], [258, 204], [266, 199], [332, 93], [310, 29]]
-    mcs = compute_map_coords_of_screen([160, 110], points1)
-    print(mcs)
+    sheet_data = [{'action':'action1', 'character':'character1', 'time':'time1', 'device':'device1', 'done':'done1', 'next':'next1'},{'action':'action2', 'device':'device2', 'character':'character2', 'time':'time2', 'done':'done2', 'next':'next2'}]
 
-
-    #     center original: [960, 540]
-    #     center trans: [959.865919752832, 395.19411816769974]
-    # 
+    fill_sheet_from_dict(_LOGS, _SHEET_LOGS, sheet_data, new=False)

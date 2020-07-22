@@ -266,21 +266,44 @@ def insert_coords_to_file(keys={'insert':Key.insert, 'enter':Key.enter, 'esc':Ke
 ##@@ brief:: 
 ##@@ note:: bgn=start time, gap=int, unit=[sec]) / time formate '%Y%m%d%H%M'
 def add_datetime(bgn='', gap=300, f='%Y%m%d%H%M'):
-  base = datetime.strptime(bgn, f) if type(bgn) is str else bgn
-  return base + timedelta(seconds=gap)
+    base = datetime.strptime(bgn, f) if type(bgn) is str else bgn
+    return base + timedelta(seconds=gap)
+
+
+def add_timedelta_to_now(td, f='%Y-%m-%d %H:%M:%S'):
+    return (datetime.utcnow() + datetime_to_timedelta(time_str=td)).strftime(f)
 
 
 ##@@ brief:: 
 ##@@ note:: 
 def gap_datetime(end='', bgn='', f='%Y%m%d%H%M'):
-  _bgn = datetime.strptime(bgn, f) if type(bgn) is str else bgn
-  _end = datetime.strptime(end, f) if type(end) is str else end
-  return int((_end - _bgn).total_seconds())
+    _bgn = datetime.strptime(bgn, f) if type(bgn) is str else bgn
+    _end = datetime.strptime(end, f) if type(end) is str else end
+    return int((_end - _bgn).total_seconds())
 
 
 def convert_time_to_sec(t='', f='%H:%M:%S'):
-  base = datetime.strptime(bgn, f) if type(bgn) is str else bgn
-  return base + timedelta(seconds=gap)
+    base = datetime.strptime(bgn, f) if type(bgn) is str else bgn
+    return base + timedelta(seconds=gap)
+
+
+def datetime_to_timedelta(time_str='5d 14:22:33', f='%H:%M:%S'):
+    time_arr = time_str.split('d ')
+
+    if len(time_arr) > 1:
+        time_arr2 = time_arr[1].split(':')
+        if len(time_arr2) > 2:
+            td = timedelta(days=int(time_arr[0]), hours=int(time_arr2[0]), minutes=int(time_arr2[1]), seconds=int(time_arr2[2]))
+        elif len(time_arr2) > 1:
+            td = timedelta(days=int(time_arr[0]), minutes=int(time_arr2[0]), seconds=int(time_arr2[1]))
+    else:
+        time_arr2 = time_str.split(':')
+        if len(time_arr2) > 2:
+            td = timedelta(hours=int(time_arr2[0]), minutes=int(time_arr2[1]), seconds=int(time_arr2[2]))
+        elif len(time_arr2) > 1:
+            td = timedelta(minutes=int(time_arr2[0]), seconds=int(time_arr2[1]))
+
+    return td
 
 
 # nowDatetime = now.strftime('%Y-%m-%d %H:%M:%S')
@@ -291,7 +314,7 @@ def convert_time_to_sec(t='', f='%H:%M:%S'):
 ##@@ brief:: 
 ##@@ note:: string: default format ['%Y%m%d%H%M'] -> datetime
 def string_to_time(s, f='%Y%m%d%H%M'):
-  return datetime.strptime(s, f)
+    return datetime.strptime(s, f)
 
 
 ##@@@-------------------------------------------------------------------------
@@ -1839,7 +1862,6 @@ def do_AllianceTerritory():
     return 0
 
 
-
 ## @@brief:: VIP Point / Gift 수령 (period: 1day)
 ## @@note:: 
 def do_AllianceHelp():
@@ -2058,28 +2080,12 @@ def recover_fog():
 ##@@@@ Execute Test
 if __name__ == "__main__":
     #time.sleep(5)
-    # sheet_data = [
-    #     {'nick': 'test1', 'Power': '5', 'Kills': '207.662', 'HighestPower': '4174465', 'Victory': '562', 'Defeat': '1', 'Dead': '127074', 'ScoutTimes': '849', 'ResourcesGathered': '443.776.184', 'ResourceAssistance': '45596538', 'AllianceHelpTimes': '16', 'Kills_1': '', 'Kills_2': '', 'Kills_3': '', 'Kills_4': '25009', 'Kills_5': ''},
-    #     {'nick': 'test2', 'Power': '6', 'Kills': '207662', 'HighestPower': '4465', 'Victory': '56', 'Defeat': '123', 'Dead': '124', 'ScoutTimes': '849', 'ResourcesGathered': '443.776.184', 'ResourceAssistance': '45596538', 'AllianceHelpTimes': '16', 'Kills_1': '5', 'Kills_2': '8', 'Kills_3': '92', 'Kills_4': '25009', 'Kills_5': '0'}
-    # ]
-    # fill_sheet_from_dict(_FILE, 'test', sheet_data, new=False)
 
-    # b = expand_box([100, 200, 10000, 20000], [10])
-    # print(b)
+    time_gap_str = '34:27'
+    add_timedelta_to_now(td=time_gap_str)
+    print(add_timedelta_to_now(td=time_gap_str))
+    # print((now + td).strftime('%Y-%m-%d %H:%M:%S'))
 
-    # now = datetime.utcnow()
-    # nowDatetime = now.strftime('%Y-%m-%d %H:%M:%S')
-    # nowTuple = now.timetuple()
-    # print(nowDatetime)  # 2020-06-16 06:10:56
-    # print(nowTuple)  # time.struct_time(tm_year=2020, tm_mon=6, tm_mday=16, tm_hour=6, tm_min=10, tm_sec=56, tm_wday=1, tm_yday=168, tm_isdst=-1)
-    # print(nowTuple.tm_hour*3600)
+    # sheet_data = [{'action':'action1', 'character':'character1', 'time':'time1', 'device':'device1', 'done':'done1', 'next':'next1'},{'action':'action2', 'device':'device2', 'character':'character2', 'time':'time2', 'done':'done2', 'next':'next2'}]
 
-    # time_gap_str = '13:34:27'
-    # gap_tuple = datetime.strptime(time_gap_str, '%H:%M:%S').timetuple()
-    # print(gap_tuple.tm_hour*3600)
-
-    print(fetch_sheet('LOGS', 'logs'))
-
-    sheet_data = [{'action':'action1', 'character':'character1', 'time':'time1', 'device':'device1', 'done':'done1', 'next':'next1'},{'action':'action2', 'device':'device2', 'character':'character2', 'time':'time2', 'done':'done2', 'next':'next2'}]
-
-    fill_sheet_from_dict(_LOGS, _SHEET_LOGS, sheet_data, new=False)
+    # fill_sheet_from_dict(_LOGS, _SHEET_LOGS, sheet_data, new=False)
